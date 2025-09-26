@@ -25,13 +25,13 @@ format:
 
     # Title slide typography
     title-font: "Roboto"              # Title font family
-    title-size: 42                    # Title font size (pt)
+    title-size: 42pt                  # Title font size
     title-weight: "bold"              # Title font weight
     subtitle-font: "Roboto"            # Subtitle font family
-    subtitle-size: 28                 # Subtitle font size (pt)
+    subtitle-size: 28pt               # Subtitle font size
     subtitle-weight: "regular"        # Subtitle font weight
-    author-size: 20                   # Author font size (pt)
-    date-size: 18                     # Date font size (pt)
+    author-size: 20pt                 # Author font size
+    date-size: 18pt                   # Date font size
 
     # ===================================================================
     # COLOR SCHEME (3-COLOR SYSTEM)
@@ -49,13 +49,15 @@ format:
     # CODE BLOCK CONFIGURATION
     # ===================================================================
     # Standard code blocks
-    raw-font-size: 15                 # Code block font size
-    raw-inline-size: 14               # Inline code font size
-    raw-inset: 2                      # Code block padding (controls line spacing!)
+    raw-font-size: 15pt               # Code block font size
+    raw-inline-size: 14pt             # Inline code font size
+    # Code block padding (controls line spacing!)
+    raw-inset: 2pt                    # Simple format: applies to top/bottom for zebraw
+    # Note: For zebraw, this automatically becomes (top: 2pt, bottom: 2pt)
 
     # Enhanced zebraw code blocks
     use-zebraw: true                  # Enable mathematical annotations
-    zebraw-font-size: 12              # Zebraw code font size
+    zebraw-font-size: 12pt            # Zebraw code font size
     zebraw-comment-flag: "##"         # Comment prefix for annotations
     zebraw-comment-color: "#2E8B57"   # Color for zebraw comments
 
@@ -73,7 +75,7 @@ format:
     # QR Code
     qr-code-url: "https://github.com/gragusa/superslides"
     qr-code-title: "View Source"      # Button text
-    qr-code-size: 4cm                 # QR code size
+    qr-code-size: 4cm                 # QR code size (can use cm, pt, em)
     qr-code-button-color: "#2E8B57"   # Button color
 
     # Updates functionality
@@ -137,6 +139,30 @@ def fibonacci(n):
     for i in range(n):       ## Loop n times
         a, b = b, a + b      ## Update values
     return a                 ## Return result
+```
+
+Let's try different CSS approaches:
+
+:::{style="margin: 2pt"}
+```python
+def with_margin():
+    print("CSS margin approach")
+```
+:::
+
+:::{style="border: 1px solid gray; padding: 2pt"}
+```python
+def with_border_padding():
+    print("CSS border + padding")
+```
+:::
+
+Regular code block for comparison:
+
+```python
+def simple_example():
+    print("This is a normal code block")
+    return True
 ```
 
 ## More Information

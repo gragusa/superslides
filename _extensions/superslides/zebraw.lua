@@ -4,6 +4,8 @@ local use_zebraw = false
 local zebraw_font_size = "10pt"
 local zebraw_comment_flag = "##"
 local zebraw_comment_color = "blue"
+local raw_inset = "(top: 2pt, bottom: 2pt)"
+local injected_styling = false
 
 -- Function to read metadata and check if zebraw is enabled
 function Meta(meta)
@@ -12,7 +14,12 @@ function Meta(meta)
 
     -- Read zebraw configuration from YAML
     if meta['zebraw-font-size'] then
-      zebraw_font_size = pandoc.utils.stringify(meta['zebraw-font-size']) .. "pt"
+      local val_str = pandoc.utils.stringify(meta['zebraw-font-size'])
+      -- Add 'pt' suffix if not present
+      if not string.match(val_str, "pt$") and not string.match(val_str, "em$") then
+        val_str = val_str .. "pt"
+      end
+      zebraw_font_size = val_str
     end
 
 
@@ -23,6 +30,17 @@ function Meta(meta)
     if meta['zebraw-comment-color'] then
       zebraw_comment_color = pandoc.utils.stringify(meta['zebraw-comment-color'])
     end
+
+    if meta['raw-inset'] then
+      -- Simple format: raw-inset: 2 or raw-inset: 2pt
+      local val_str = pandoc.utils.stringify(meta['raw-inset'])
+      if not string.match(val_str, "pt$") and not string.match(val_str, "em$") then
+        val_str = val_str .. "pt"
+      end
+      -- For zebraw, default to top/bottom spacing even with simple format
+      raw_inset = "(top: " .. val_str .. ", bottom: " .. val_str .. ")"
+    end
+    -- Note: Default is already set above if no raw-inset provided
 
     if use_zebraw then
       quarto.log.output("Zebraw code blocks enabled with font-size: " .. zebraw_font_size)
@@ -146,19 +164,32 @@ function CodeBlock(el)
     local code_content = el.text
     local language = el.classes[1] or ""
 
+    -- Inject raw block styling override on first zebraw code block
+    local styling_override = ""
+    if not injected_styling then
+      styling_override = [[
+// Override Quarto's raw block inset for zebraw - injected by zebraw.lua filter
+#show raw.where(block: true): set block(
+  fill: luma(245),
+  width: 100%,
+  inset: ]] .. raw_inset .. [[,
+  radius: 2pt)
+
+]]
+      injected_styling = true
+    end
+
     -- Extract zebraw options from attributes
     local zebraw_options = extract_zebraw_options(el.attr.attributes)
 
     -- Build the zebraw code block
-    local zebraw_code = "#zebraw("
+    local zebraw_code = styling_override .. "#zebraw("
 
     if zebraw_options ~= "" then
       zebraw_code = zebraw_code .. zebraw_options .. ",\n"
     end
 
     zebraw_code = zebraw_code .. "```" .. language .. "\n" .. code_content .. "\n```\n)"
-
-    -- No wrapper needed - global show raw rule in typst-template.typ handles font size and line spacing
 
     return pandoc.RawBlock('typst', zebraw_code)
   end
