@@ -1,0 +1,27 @@
+# Quarto/Typst output files
+*.pdf
+*.typ
+*.html
+
+# Temporary files
+.quarto/
+_site/
+_book/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Backup files
+*~
+*.bak
+*.backup
