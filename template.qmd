@@ -7,6 +7,8 @@ authors:
 date: "2025-09-26"
 lecture-date: "September 26, 2025"
 
+editor:
+  render-on-save: true
 # Note: This document uses the _quarto.yml configuration
 # You can override any setting here if needed
 
@@ -64,7 +66,7 @@ format:
     # ===================================================================
     # LIST CUSTOMIZATION
     # ===================================================================
-    list-indent: 1em                  # List indentation
+    list-indent: 0.6em                  # List indentation
     list-marker-1: "•"                # Level 1 bullet
     list-marker-2: "◦"                # Level 2 bullet
     list-marker-3: "▪"                # Level 3 bullet
@@ -76,7 +78,7 @@ format:
     qr-code-url: "https://github.com/gragusa/superslides"
     qr-code-title: "View Source"      # Button text
     qr-code-size: 4cm                 # QR code size (can use cm, pt, em)
-    qr-code-button-color: "#2E8B57"   # Button color
+    qr-code-button-color: "#404040"   # Button color
 
     # Updates functionality
     updates-link: "https://github.com/gragusa/superslides/releases"
@@ -129,40 +131,80 @@ Welcome to **Superslides**! This template demonstrates:
 
 # Advanced Usage
 
-## Code Block Examples
+## Zebraw Enhanced Code Blocks
 
-Enhanced code with zebraw annotations:
+### Mathematical Annotations
 
+Zebraw allows mathematical formulas and explanations directly in code comments:
+
+::: {zebraw-comments="1:The discriminant formula $Delta = b^2 - 4 a c$, 2:No real solutions when $Delta < 0$, 4:One solution when $Delta = 0$ gives $x = -b\/(2a)$, 6:Two solutions when $Delta > 0$, 7:Calculate $sqrt(Delta)$, 8:First solution $x_1 = (-b + sqrt(Delta))\/(2a)$, 9:Second solution $x_2 = (-b - sqrt(Delta))\/(2a)$"}
 ```python
-def fibonacci(n):
-    a, b = 0, 1              ## Initialize sequence
-    for i in range(n):       ## Loop n times
-        a, b = b, a + b      ## Update values
-    return a                 ## Return result
-```
-
-Let's try different CSS approaches:
-
-:::{style="margin: 2pt"}
-```python
-def with_margin():
-    print("CSS margin approach")
-```
-:::
-
-:::{style="border: 1px solid gray; padding: 2pt"}
-```python
-def with_border_padding():
-    print("CSS border + padding")
+def quadratic_formula(a, b, c):
+    discriminant = b**2 - 4*a*c
+    if discriminant < 0:
+        return None
+    elif discriminant == 0:
+        return -b / (2*a)
+    else:
+        sqrt_d = discriminant**0.5
+        x1 = (-b + sqrt_d) / (2*a)
+        x2 = (-b - sqrt_d) / (2*a)
+        return x1, x2
 ```
 :::
 
-Regular code block for comparison:
+### Statistical Functions
+
+::: {zebraw-comments="2:Sample size $n$, 3:Sample mean $overline(x) = sum x_i \/ n$, 4:Sample variance $s^2 = sum (x_i - overline(x))^2 \/ (n-1)$, 5:Standard deviation $s = sqrt(s^2)$, 6:Standard error $\"SE\" = s \/ sqrt(n)$, 9:Sample mean $overline(x)$, 10:Sample variance $s^2$, 11:Standard deviation $s$, 12:Standard error $\"SE\"$"}
+```r
+calculate_statistics <- function(data) {
+    n <- length(data)
+    mean_x <- sum(data) / n
+    variance <- sum((data - mean_x)^2) / (n-1)
+    std_dev <- sqrt(variance)
+    se <- std_dev / sqrt(n)
+
+    return(list(
+        mean = mean_x,
+        variance = variance,
+        std_dev = std_dev,
+        std_error = se
+    ))
+}
+```
+:::
+
+### Economic Models
+
+```{.python zebraw-comments="3:[Production function: $Y = A dot K^alpha dot L^(1-alpha)$], 6:[Marginal product of capital: $\"MP\"_K = alpha Y\/K = (diff Y)\/(diff K)$], 7:[Marginal product of labor: $\"MP\"_L = (1-alpha) Y\/L = (diff Y)\/(diff L)$], 10:[Constant returns to scale: $alpha + (1-alpha) = 1$], 13:[Total output $Y$], 14:[Marginal product of capital $\"MP\"_K$], 15:[Marginal product of labor $\"MP\"_L$]"}
+def cobb_douglas_production(K, L, A=1, alpha=0.3):
+    """Cobb-Douglas production function"""
+    Y = A * (K**alpha) * (L**(1-alpha))
+
+    # Marginal products
+    MPK = alpha * Y / K
+    MPL = (1-alpha) * Y / L
+
+    # Returns to scale
+    returns = alpha + (1-alpha)
+
+    return {
+        'output': Y,
+        'mpk': MPK,
+        'mpl': MPL,
+        'returns_to_scale': returns
+    }
+```
+
+### Comparison: Regular vs Enhanced
+
+Regular code block (without zebraw):
 
 ```python
-def simple_example():
-    print("This is a normal code block")
-    return True
+def simple_function():
+    # This is a regular comment
+    result = 2 + 2
+    return result
 ```
 
 ## More Information
