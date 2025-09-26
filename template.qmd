@@ -13,33 +13,135 @@ lecture-date: "September 26, 2025"
 # Example of overriding some settings for this specific document
 format:
   superslides-typst:
-    # Enable advanced code blocks
-    use-zebraw: true
-    zebraw-font-size: 12
+    keep-typ: true
+    # ===================================================================
+    # TYPOGRAPHY SETTINGS
+    # ===================================================================
+    fontsize: 24pt                    # Base font size
+    mainfont: "Roboto"                 # Body text font
+    sansfont: "Roboto"                 # Heading font
+    font-weight-heading: "light"      # Heading weight: light, regular, bold
+    font-weight-body: "regular"       # Body weight: light, regular, bold
 
-    # Custom colors for this presentation
-    accent: "2E8B57"           # Sea green
-    accent2: "CD853F"          # Peru
+    # Title slide typography
+    title-font: "Roboto"              # Title font family
+    title-size: 42                    # Title font size (pt)
+    title-weight: "bold"              # Title font weight
+    subtitle-font: "Roboto"            # Subtitle font family
+    subtitle-size: 28                 # Subtitle font size (pt)
+    subtitle-weight: "regular"        # Subtitle font weight
+    author-size: 20                   # Author font size (pt)
+    date-size: 18                     # Date font size (pt)
 
-    # QR code for this presentation
-    qr-code-url: "https://github.com/gragusa/superslides-typst"
-    qr-code-title: "View Source"
-    qr-code-button-color: "2E8B57"
+    # ===================================================================
+    # COLOR SCHEME (3-COLOR SYSTEM)
+    # ===================================================================
+    jet: "#404040"                  # Main text color (dark blue-gray)
+    accent: "#2836A6"               # Primary accent (sea green) - headings, links, buttons
+    accent2: "#004494"              # Secondary accent (peru) - highlights, warnings
 
-    # Updates link
-    updates-link: "https://github.com/gragusa/superslides-typst/releases"
+    # Author styling colors
+    affiliation-color: "#707070"    # Affiliation text color
+    affiliation-style: "italic"       # Affiliation style: normal, italic
+    email-color: "#CD853F"            # Email link color
 
-    # Language
-    lang: "en"
+    # ===================================================================
+    # CODE BLOCK CONFIGURATION
+    # ===================================================================
+    # Standard code blocks
+    raw-font-size: 15                 # Code block font size
+    raw-inline-size: 14               # Inline code font size
+    raw-inset: 2                      # Code block padding (controls line spacing!)
+
+    # Enhanced zebraw code blocks
+    use-zebraw: true                  # Enable mathematical annotations
+    zebraw-font-size: 12              # Zebraw code font size
+    zebraw-comment-flag: "##"         # Comment prefix for annotations
+    zebraw-comment-color: "#2E8B57"   # Color for zebraw comments
+
+    # ===================================================================
+    # LIST CUSTOMIZATION
+    # ===================================================================
+    list-indent: 1em                  # List indentation
+    list-marker-1: "•"                # Level 1 bullet
+    list-marker-2: "◦"                # Level 2 bullet
+    list-marker-3: "▪"                # Level 3 bullet
+
+    # ===================================================================
+    # INTERACTIVE ELEMENTS
+    # ===================================================================
+    # QR Code
+    qr-code-url: "https://github.com/gragusa/superslides"
+    qr-code-title: "View Source"      # Button text
+    qr-code-size: 4cm                 # QR code size
+    qr-code-button-color: "#2E8B57"   # Button color
+
+    # Updates functionality
+    updates-link: "https://github.com/gragusa/superslides/releases"
+
+    # ===================================================================
+    # LAYOUT & BRANDING
+    # ===================================================================
+    # Background
+    # background-color: "FFFFFF"      # Slide background color
+    # background-image: "bg.png"      # Background image path
+
+    # Title page customization
+    # logo-path: "logo.png"           # Organization logo
+    title-compact: false              # Compact title layout
+
+    # ===================================================================
+    # LANGUAGE & LOCALIZATION
+    # ===================================================================
+    lang: "en"                        # Interface language: "en" or "it"
+
+    # ===================================================================
+    # ADVANCED CUSTOMIZATION
+    # ===================================================================
+    # Box colors (for callouts/alerts)
+    # simplebox-color: "E8F4FD"       # Simple box background
+    # warningbox-color: "FFF3CD"      # Warning box background
+    # infobox-color: "D1ECF1"         # Info box background
 ---
+
+# Getting Started
 
 ## Introduction
 
-*TODO* Create an example file that demonstrates the formatting and features of your format.
+Welcome to **Superslides**! This template demonstrates:
+
+- Enhanced Typst presentations with Touying
+- Professional title slides with interactive elements
+- Advanced code blocks with zebraw integration
+- Complete customization through YAML parameters
+
+## Features Overview
+
+**Key capabilities:**
+
+- 🎨 Professional title slides with left-aligned layout
+- 🔗 Interactive QR codes and clickable links
+- 📝 Enhanced code blocks with mathematical annotations
+- 🎯 40+ YAML parameters for customization
+- 🌐 Multi-language support (English/Italian)
+
+# Advanced Usage
+
+## Code Block Examples
+
+Enhanced code with zebraw annotations:
+
+```python
+def fibonacci(n):
+    a, b = 0, 1              ## Initialize sequence
+    for i in range(n):       ## Loop n times
+        a, b = b, a + b      ## Update values
+    return a                 ## Return result
+```
 
 ## More Information
 
-You can learn more about creating custom Typst templates here: 
+Learn more about creating custom Typst templates:
 
 <https://quarto.org/docs/prerelease/1.4/typst.html#custom-formats>
 
