@@ -20,19 +20,19 @@ format:
     # TYPOGRAPHY SETTINGS
     #===================================================================
     fontsize: 24pt                    # Base font size
-    mainfont: "Roboto"                # Body text font
-    sansfont: "Roboto"                # Heading font
+    mainfont: "Inter"                # Body text font
+    sansfont: "Inter"                # Heading font
     font-weight-heading: "regular"    # Heading weight: light, regular, bold
     font-weight-body: "regular"       # Body weight: light, regular, bold
     # handout: true                   # Generate handout version (removes animations)
 
     # Title slide typography
-    title-font: "Roboto"              # Title font family
+    title-font: "Inter"              # Title font family
     title-size: 42pt                  # Title font size
     title-weight: "bold"              # Title font weight
     # font-size-title: 2.0em          # Alternative title size (relative to base)
     # font-weight-title: "bold"       # Alternative title weight
-    subtitle-font: "Roboto"           # Subtitle font family
+    subtitle-font: "Inter"           # Subtitle font family
     subtitle-size: 30pt               # Subtitle font size
     subtitle-weight: "regular"        # Subtitle font weight
     # font-size-subtitle: 1.2em       # Alternative subtitle size (relative to base)
@@ -103,9 +103,16 @@ format:
     # ADVANCED CUSTOMIZATION
     #===================================================================
     # Box colors (for callouts/alerts)
-    # simplebox-color: "#E8F4FD"      # Simple box background
-    # warningbox-color: "#FFF3CD"     # Warning box background
+    # simplebox-color: "#EEF4FF"      # Simple box background
+    #   Info light bg: #EEF4FF (very light tint of your accents)
+    #   Info border: #B9C9F5
+    #   Info text / icon: #1F2E85
+    # warningbox-color: "#FFF6E0"     # Warning box background
+    #   Warning border: #E8D2A8
+    #.  Warning text / icon: #7A5A00
     # infobox-color: "#D1ECF1"        # Info box background
+    #.    
+
 
     # Alert/strong text color
     alert-color: "#FF6B35"            # Color for bold/strong text and alerts
@@ -136,12 +143,12 @@ Welcome to **Superslides**! This template demonstrates:
 
 Standard markdown formatting works as expected:
 
-  - _emphasis_
-  - **bold**
-  - **_bold emphasis_**
-  - ~~strikethrough~~
-  - `inline code`
-  - [alert]{.alert}
+  - _emphasis_ (`_emphasis_`)
+  - **bold** (`**bold**`)
+  - **_bold emphasis_** (`**_bold emphasis_**`)
+  - ~~strikethrough~~ (`~~strikethrough~~`)
+  - [alert]{.alert} (`[alert]{.alert}`)
+  - [strong]{.strong} (`[strong]{.strong}`)
 
 ## Code Blocks
 

@@ -173,21 +173,6 @@
 #import "@preview/fontawesome:0.5.0": *
 #import "@preview/ctheorems:1.1.0": *
 #import "@preview/cades:0.3.0": qr-code
-
-// Helper function to handle hex colors and Typst color functions
-#let parse-color(color-str) = {
-  if color-str.starts-with("\\#") {
-    rgb(color-str.slice(2))
-  } else if color-str.starts-with("#") {
-    rgb(color-str.slice(1))
-  } else if color-str.starts-with("luma(") or color-str.starts-with("rgb(") or color-str.starts-with("color.") {
-    // Handle Typst color functions - evaluate them directly
-    eval(color-str)
-  } else {
-    // Assume it's a literal color name or other valid Typst color
-    eval(color-str)
-  }
-}
 #let new-section-slide(self: none, body)  = touying-slide-wrapper(self => {
   let main-body = {
     set align(left + horizon)
@@ -258,18 +243,22 @@
   font-size: 18pt,
   font-family-heading: ("Roboto"),
   font-family-body: ("Roboto"),
-  font-weight-heading: "regular",
-  font-weight-body: "regular",
+  font-weight-heading: "light",
+  font-weight-body: "light",
   font-weight-title: "light",
   font-weight-subtitle: "light",
   font-size-title: 1.4em,
   font-size-subtitle: 1em,
-  color-jet: parse-color("#131516"),
-  color-accent: parse-color("#107895"),
-  color-accent2: parse-color("#9a2515"),
-  raw-font-size: 15pt,  // Code block font size
+  color-jet: rgb("131516"),
+  color-accent: rgb("107895"),
+  color-accent2: rgb("9a2515"),
+  raw-font-size: 15,  // For backward compatibility - affects code blocks
   raw-inline-size: none,  // Separate size for inline code (if none, uses body font size)
-  raw-inset: 8pt,  // Inset for raw code blocks
+  raw-inset: 8pt,  // Inset for raw code blocks (8pt default, 2pt for zebraw)
+  use-zebraw: false,  // Enable zebraw for enhanced code blocks
+  zebraw-font-size: 10,  // Font size for zebraw code blocks (in pt)
+  zebraw-comment-flag: "##",  // Comment flag for zebraw annotations
+  zebraw-comment-color: rgb("107895"),  // Color for zebraw comments
   // List customization options
   list-indent: 1em,  // Indentation for list items
   list-marker-1: "▶",  // First level list marker (triangle.filled symbol)
@@ -307,33 +296,31 @@
   simplebox-color: none,
   warningbox-color: none,
   infobox-color: none,
-  // Alert text color (for bold/strong text)
-  alert-color: none,
   ..args,
   body,
 ) = {
   set text(size: font-size, font: font-family-body, fill: color-jet,
            weight: font-weight-body)
 
-  // Configure raw text styling for all code blocks
-  show raw.where(block: true): it => {
-    // Regular code blocks get normal styling
-    set text(size: raw-font-size)
-    set block(inset: raw-inset, fill: luma(245), radius: 2pt)
-    it
+  // Configure raw text styling based on zebraw usage
+  if not use-zebraw {
+    // Standard raw block styling with normal inset
+    show raw.where(block: true): set text(size: raw-font-size * 1pt)
+
+    // Inline code uses raw-inline-size if specified, otherwise uses body font size
+    show raw.where(block: false): set text(
+      size: if raw-inline-size != none { raw-inline-size * 1pt } else { font-size }
+    )
+  } else {
+    // When zebraw is enabled, automatically use tight inset for better line spacing
+    // The inset parameter controls line spacing in zebraw blocks
+    let zebraw-inset = 2pt  // Tight spacing for zebraw
+
+    // Apply inline code styling for non-zebraw inline code
+    show raw.where(block: false): set text(
+      size: if raw-inline-size != none { raw-inline-size * 1pt } else { font-size }
+    )
   }
-
-  // Inline code uses raw-inline-size if specified, otherwise uses body font size
-  show raw.where(block: false): set text(
-    size: if raw-inline-size != none { raw-inline-size } else { font-size }
-  )
-
-  // Strong/bold text styling - handled by Touying's alert system when show-strong-with-alert: true
-  // show strong: it => text(
-  //   fill: if alert-color != none { alert-color } else { color-accent2 },
-  //   weight: "bold",
-  //   it.body
-  // )
   
   show: touying-slides.with(
     config-page(
@@ -348,12 +335,11 @@
       handout: handout,
       enable-frozen-states-and-counters: false, // https://github.com/touying-typ/touying/issues/72
       show-hide-set-list-marker-none: true,
-      show-strong-with-alert: true
+      show-strong-with-alert: false
     ),
     config-methods(
       init: (self: none, body) => {
         show link: set text(fill: self.colors.primary)
-
         // Unordered List with customizable markers and indent
         set list(
           indent: list-indent,
@@ -392,7 +378,7 @@
 
         body
       },
-      alert: (self: none, it) => text(fill: if alert-color != none { alert-color } else { self.colors.secondary }, weight: "bold", it),
+      alert: (self: none, it) => text(fill: self.colors.secondary, it),
     ),
     config-colors(
       primary: color-accent,
@@ -423,6 +409,10 @@
       simplebox-color: simplebox-color,
       warningbox-color: warningbox-color,
       infobox-color: infobox-color,
+      use-zebraw: use-zebraw,
+      zebraw-font-size: zebraw-font-size,
+      zebraw-comment-flag: zebraw-comment-flag,
+      zebraw-comment-color: zebraw-comment-color,
       title-font: title-font,
       title-size: title-size,
       title-weight: title-weight,
@@ -437,7 +427,6 @@
       affiliation-weight: affiliation-weight,
       email-color: email-color,
       lang: lang,
-      alert-color: alert-color,
       ..args,
     ),
   )
@@ -463,7 +452,7 @@
 
     // Title - Left aligned, all caps, customizable font
     block(
-      inset: (bottom: 0.1em),
+      inset: (bottom: 1em),
       text(
         size: if self.store.title-size != none { self.store.title-size } else { 36pt },
         fill: self.colors.neutral-darkest,
@@ -731,78 +720,64 @@
   numbering: "1",
 )
 
-// Helper function to handle hex colors and Typst color functions
-#let parse-color(color-str) = {
-  if color-str.starts-with("\\#") {
-    rgb(color-str.slice(2))
-  } else if color-str.starts-with("#") {
-    rgb(color-str.slice(1))
-  } else if color-str.starts-with("luma(") or color-str.starts-with("rgb(") or color-str.starts-with("color.") {
-    // Handle Typst color functions - evaluate them directly
-    eval(color-str)
-  } else {
-    // Assume it's a literal color name or other valid Typst color
-    eval(color-str)
-  }
-}
-
 #show: superslides-theme.with(
   aspect-ratio: "16-9",
     // Typography ---------------------------------------------------------------
-      font-size: 24pt,
+      font-size: 18pt,
         font-family-heading: ("Inter",),
         font-family-body: ("Inter",),
-        font-weight-heading: "regular",
-        font-weight-body: "regular",
-        raw-font-size: 14pt,
-        raw-inline-size: 22pt,
-        raw-inset: 8pt,
+        font-weight-heading: "light",
+        font-weight-body: "light",
+              use-zebraw: true,
+        zebraw-font-size: 12pt,
+        zebraw-comment-flag: "\#\#",
+        zebraw-comment-color: rgb("2E8B57"),
   
   // List customization --------------------------------------------------------
-      list-indent: 0.6em,
-        list-marker-1: "•",
-        list-marker-2: "◦",
-        list-marker-3: "▪",
-  
+        
   // Colors --------------------------------------------------------------------
-      color-jet: parse-color("\#404040"),
-        color-accent: parse-color("\#2836A6"),
-        color-accent2: parse-color("\#004494"),
+      color-jet: rgb("2C3E50"),
+        color-accent: rgb("2E8B57"),
+        color-accent2: rgb("CD853F"),
   
   // Background ----------------------------------------------------------------
       // Title slide ---------------------------------------------------------------
-      title-font: "Inter",
         title-size: 42pt,
         title-weight: "bold",
-        subtitle-font: "Inter",
-        subtitle-size: 30pt,
-        subtitle-weight: "regular",
-        author-size: 20pt,
+          subtitle-size: 28pt,
+          author-size: 20pt,
         date-size: 18pt,
-              updates-link: "https:\/\/github.com/gragusa/superslides/releases",
-        affiliation-color: parse-color("\#707070"),
+              updates-link: "https:\/\/github.com/example/updates",
+        affiliation-color: rgb("2E8B57"),
         affiliation-style: "italic",
-          email-color: parse-color("\#CD853F"),
+          email-color: rgb("CD853F"),
         lang: "en",
   
   // Title page customization --------------------------------------------------
-          qr-code-url: "https:\/\/github.com/gragusa/superslides",
-        qr-code-title: "View Source",
+          qr-code-url: "https:\/\/www.google.com",
+        qr-code-title: "Test Link",
         qr-code-size: 4cm,
-        qr-code-button-color: parse-color("\#404040"),
+        qr-code-button-color: rgb("2E8B57"),
     
   // Showybox color customization ----------------------------------------------
-            alert-color: parse-color("\#FF6B35"),
-  )
+      )
+
+
+// Override Quarto's raw block inset for zebraw - must come early to affect slides
+#show raw.where(block: true): set block(
+  fill: luma(245),
+  width: 100%,
+  inset: 2pt,
+  radius: 2pt)
 
 #title-slide(
-  title: [Superslides Template],
-  subtitle: [Super features demo],
+  title: [Superslides Complete Feature Test],
+  subtitle: [Testing All Functionality],
   authors: (
-                    ( name: [Giuseppe Ragusa],
+                    ( name: [Dr.~Giuseppe Ragusa],
             affiliation: [Luiss University],
-            email: [],
-            orcid: []),
+            email: [gragusa\@luiss.it],
+            orcid: [0000-0002-1234-5678]),
             ),
   date: [2025-09-26],
   lecture-date: [September 26, 2025],
@@ -810,6 +785,11 @@
   icon: []
 )
 
+#show raw.where(block: true): set block(
+  fill: luma(245),
+  width: 100%,
+  inset: 8pt,
+  radius: 2pt)
 #show: thmrules
 #let example = thmbox("example", "Esempio", fill: rgb("#F0F8E6")).with(numbering: none)
 #let theorem = thmbox("theorem", "Teorema", fill: rgb("#E9E5F3")).with(numbering: none)
@@ -823,6 +803,7 @@
   )[#body]}
 #import "@preview/showybox:2.0.4": showybox
 #import "@preview/cades:0.3.0": qr-code
+#import "@preview/zebraw:0.5.5": zebraw
 #let highlightbox(body) = {
 showybox(
 frame: (
@@ -832,111 +813,89 @@ frame: (
   footer-color: blue.lighten(80%)
 ))[#body]}
 
-= Getting Started
-<getting-started>
-== Introduction
-<introduction>
-Welcome to #strong[Superslides];! This template demonstrates:
+= Typography Test
+<typography-test>
+This slide tests the typography system:
 
-- Enhanced Typst presentations with Touying
-- Professional title slides with interactive elements
-- Advanced code blocks with zebraw integration
-- Complete customization through YAML parameters
+== Fonts and Weights
+<fonts-and-weights>
+- #strong[Bold text] for emphasis
+- #emph[Italic text] for style
+- `Inline code` with custom styling
+- Regular paragraph text
 
-== Features Overview
-<features-overview>
-#strong[Key capabilities:]
+== Lists with Custom Markers
+<lists-with-custom-markers>
+- First level item (▶)
+  - Second level item (▷)
+    - Third level item (•)
 
-- 🎨 Professional title slides with left-aligned layout
-- 🔗 Interactive QR codes and clickable links
-- 📝 Enhanced code blocks with mathematical annotations
-- 🎯 40+ YAML parameters for customization
-- 🌐 Multi-language support (English/Italian)
++ Numbered lists
+  #block[
+  #set enum(numbering: "i.", start: 1)
+  + Roman numerals
+  + Continue numbering
+  ]
 
-== Typography
-<typography>
-Standard markdown formatting works as expected:
+  #block[
+  #set enum(numbering: "a.", start: 1)
+  + Letters
+  + More letters
+  ]
 
-- #emph[emphasis] (`_emphasis_`)
-- #strong[bold] (`**bold**`)
-- #strong[#emph[bold emphasis];] (`**_bold emphasis_**`)
-- #strike[strikethrough] (`~~strikethrough~~`)
-- #alert()[alert] (`[alert]{.alert}`)
-- strong (`[strong]{.strong}`)
-
-== Code Blocks
-<code-blocks>
-Superslides supports standard code blocks with proper syntax highlighting and customizable formatting.
-
-```r
-plot(rnorm(10))
-```
-
-#box(image("template_files/figure-typst/unnamed-chunk-1-1.svg"))
-
-== Code Block Configuration
-<code-block-configuration>
-You can control code block appearance through YAML parameters:
-
-- `raw-font-size: 20pt` - Font size for code blocks
-- `raw-inline-size: 20pt` - Font size for inline code
-- `raw-inset: 2pt` - Padding around code blocks
-
-== Python Example
-<python-example>
+= Enhanced Code Blocks
+<enhanced-code-blocks>
+== Standard Code Block
+<standard-code-block>
+#zebraw(numbering: true, inset: (top: 2pt, bottom: 2pt),
 ```python
-def quadratic_formula(a, b, c):
-    """Solve quadratic equation ax² + bx + c = 0"""
-    discriminant = b**2 - 4*a*c
-
-    if discriminant < 0:
-        return None  # No real solutions
-    elif discriminant == 0:
-        return -b / (2*a)  # One solution
-    else:
-        sqrt_d = discriminant**0.5
-        x1 = (-b + sqrt_d) / (2*a)
-        x2 = (-b - sqrt_d) / (2*a)
-        return x1, x2
+def hello_world():
+    print("Hello, World!")
+    return "success"
 ```
-
-== R Statistical Analysis
-<r-statistical-analysis>
-```r
-calculate_statistics <- function(data) {
-    n <- length(data)
-    mean_x <- sum(data) / n
-    variance <- sum((data - mean_x)^2) / (n-1)
-    std_dev <- sqrt(variance)
-    se <- std_dev / sqrt(n)
-
-    return(list(
-        mean = mean_x,
-        variance = variance,
-        std_dev = std_dev,
-        std_error = se
-    ))
-}
+)
+== Zebraw Enhanced Code
+<zebraw-enhanced-code>
+#zebraw(numbering: true, inset: (top: 2pt, bottom: 2pt),
+```python
+def calculate_area(radius):
+    pi = 3.14159          ## Mathematical constant
+    area = pi * r²        ## Area formula
+    return area           ## Result
 ```
+)
+= Interactive Elements Test
+<interactive-elements-test>
+== Author Information
+<author-information>
+- Single author display with:
+  - ORCID icon (clickable)
+  - Styled affiliation
+  - Clickable email link
 
-== Julia Mathematical Functions
-<julia-mathematical-functions>
-```julia
-function fibonacci(n)
-    if n <= 1
-        return n
-    else
-        return fibonacci(n-1) + fibonacci(n-2)
-    end
-end
-```
+== QR Code and Button
+<qr-code-and-button>
+- QR code in bottom right
+- Clickable button below QR code
+- Both link to same URL
 
-== Inline Code
-<inline-code>
-You can also use `inline code` within text. The font size is controlled by the `raw-inline-size` parameter.
+== Last Updated Button
+<last-updated-button>
+- Bottom left corner
+- Links to updates page
+- Language-aware text
 
-== More Information
-<more-information>
-Learn more about creating custom Typst templates:
+= Color Scheme Test
+<color-scheme-test>
+The presentation uses: - #strong[Primary color] (sea green): Headings, lists, links - #strong[Secondary color] (peru): Email links, highlights - #strong[Text color] (dark blue-gray): Body text
 
-#link("https://quarto.org/docs/prerelease/1.4/typst.html#custom-formats")
+= URL Escaping Test
+<url-escaping-test>
+All links should work properly: - ORCID icon → ORCID profile - Email → mailto link - QR button → test URL - Updates button → GitHub updates
+
+= Success Indicators
+<success-indicators>
+✅ #strong[Title slide] with left-aligned layout ✅ #strong[ORCID icon] clickable and green ✅ #strong[Email links] working properly ✅ #strong[QR code] and button in correct positions ✅ #strong[Enhanced code] with zebraw ✅ #strong[Typography] consistency ✅ #strong[Colors] from 3-color system
+
+---
+#emph[If all elements above work correctly, the Superslides extension is functioning properly!]

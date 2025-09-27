@@ -157,12 +157,12 @@
     size: if raw-inline-size != none { raw-inline-size } else { font-size }
   )
 
-  // Strong/bold text styling - applied globally to override any theme defaults
-  show strong: it => text(
-    fill: if alert-color != none { alert-color } else { color-accent2 },
-    weight: "bold",
-    it.body
-  )
+  // Strong/bold text styling - handled by Touying's alert system when show-strong-with-alert: true
+  // show strong: it => text(
+  //   fill: if alert-color != none { alert-color } else { color-accent2 },
+  //   weight: "bold",
+  //   it.body
+  // )
   
   show: touying-slides.with(
     config-page(
@@ -177,7 +177,7 @@
       handout: handout,
       enable-frozen-states-and-counters: false, // https://github.com/touying-typ/touying/issues/72
       show-hide-set-list-marker-none: true,
-      show-strong-with-alert: false
+      show-strong-with-alert: true
     ),
     config-methods(
       init: (self: none, body) => {
