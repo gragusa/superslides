@@ -29,6 +29,12 @@ local function formatValue(value)
         end
     end
     
+    -- Check if it's a spacing value (like "1em 1em") - should not be quoted
+    if clean_value:match("^%d+[%a]+%s+%d+[%a]+$") then
+        print("DEBUG: Spacing value, returning as-is: " .. clean_value)
+        return clean_value
+    end
+
     -- Check if it's a number, measurement, command, or RGB expression
     if tonumber(clean_value) or
        clean_value:match("^%d+[%a]+$") or
@@ -208,26 +214,104 @@ local box_presets = {
     }
 }
 
--- Function to update box presets with custom colors from metadata
+-- Function to update box presets with custom colors and settings from metadata
 local function updateBoxPresets(meta)
+    -- Helper function to get parameter value with fallback
+    local function getParam(param_name, default_value)
+        if meta[param_name] then
+            return pandoc.utils.stringify(meta[param_name])
+        end
+        return default_value
+    end
+
+    -- Global box settings
+    local globalThickness = getParam("box-border-thickness", "1pt")
+    local globalRadius = getParam("box-border-radius", "4pt")
+    local globalShadow = meta["box-shadow"] and pandoc.utils.stringify(meta["box-shadow"]) or nil
+    local globalSpacingAbove = getParam("box-spacing-above", "1em")
+    local globalSpacingBelow = getParam("box-spacing-below", "1em")
+    local globalPadding = getParam("box-padding", "8pt")
+
+    -- Typography settings
+    local titleFontSize = meta["box-title-font-size"] and pandoc.utils.stringify(meta["box-title-font-size"]) or nil
+    local titleFontWeight = getParam("box-title-font-weight", "bold")
+    local bodyFontSize = meta["box-body-font-size"] and pandoc.utils.stringify(meta["box-body-font-size"]) or nil
+    local bodyFontWeight = getParam("box-body-font-weight", "regular")
+
+    -- Update simplebox
+    local simpleColor = "blue"
     if meta["simplebox-color"] then
         local color = pandoc.utils.stringify(meta["simplebox-color"])
-        local baseColor = "rgb(\"" .. color .. "\")"
-        box_presets.simplebox.frame = "border-color: " .. baseColor .. ".lighten(80%), title-color: " .. baseColor .. ".lighten(30%), body-color: " .. baseColor .. ".lighten(96%), footer-color: " .. baseColor .. ".lighten(80%), thickness: 1pt"
+        simpleColor = "rgb(\"" .. color .. "\")"
     end
 
+    local simpleThickness = getParam("simplebox-thickness", globalThickness)
+    local simpleRadius = getParam("simplebox-radius", globalRadius)
+
+    box_presets.simplebox.frame = "border-color: " .. simpleColor .. ".lighten(80%), title-color: " .. simpleColor .. ".lighten(30%), body-color: " .. simpleColor .. ".lighten(96%), footer-color: " .. simpleColor .. ".lighten(80%), thickness: " .. simpleThickness .. ", radius: " .. simpleRadius
+
+    if globalShadow then
+        box_presets.simplebox.shadow = globalShadow
+    end
+    box_presets.simplebox.above = globalSpacingAbove
+    box_presets.simplebox.below = globalSpacingBelow
+    box_presets.simplebox.sep = "thickness: " .. globalPadding
+
+    -- Add title style with typography
+    local titleStyle = "weight: " .. titleFontWeight
+    if titleFontSize then
+        titleStyle = titleStyle .. ", size: " .. titleFontSize
+    end
+    box_presets.simplebox["title-style"] = titleStyle
+
+    -- Add body style with typography
+    local bodyStyle = "weight: " .. bodyFontWeight
+    if bodyFontSize then
+        bodyStyle = bodyStyle .. ", size: " .. bodyFontSize
+    end
+    box_presets.simplebox["body-style"] = bodyStyle
+
+    -- Update warningbox
+    local warningColor = "red"
     if meta["warningbox-color"] then
         local color = pandoc.utils.stringify(meta["warningbox-color"])
-        local baseColor = "rgb(\"" .. color .. "\")"
-        box_presets.warningbox.frame = "border-color: " .. baseColor .. ", title-color: " .. baseColor .. ".lighten(30%), body-color: " .. baseColor .. ".lighten(95%), thickness: 2pt"
+        warningColor = "rgb(\"" .. color .. "\")"
     end
 
+    local warningThickness = getParam("warningbox-thickness", "2pt")
+    local warningRadius = getParam("warningbox-radius", globalRadius)
+
+    box_presets.warningbox.frame = "border-color: " .. warningColor .. ", title-color: " .. warningColor .. ".lighten(30%), body-color: " .. warningColor .. ".lighten(95%), thickness: " .. warningThickness .. ", radius: " .. warningRadius
+    if globalShadow then
+        box_presets.warningbox.shadow = globalShadow
+    end
+    box_presets.warningbox.above = globalSpacingAbove
+    box_presets.warningbox.below = globalSpacingBelow
+    box_presets.warningbox.sep = "thickness: " .. globalPadding
+
+    -- Override title style for warning (keep white title)
+    box_presets.warningbox["title-style"] = "color: white, weight: " .. titleFontWeight .. (titleFontSize and (", size: " .. titleFontSize) or "")
+    box_presets.warningbox["body-style"] = "weight: " .. bodyFontWeight .. (bodyFontSize and (", size: " .. bodyFontSize) or "")
+
+    -- Update infobox
+    local infoColor = "green"
     if meta["infobox-color"] then
         local color = pandoc.utils.stringify(meta["infobox-color"])
-        local baseColor = "rgb(\"" .. color .. "\")"
-        box_presets.infobox.frame = "border-color: " .. baseColor .. ", title-color: " .. baseColor .. ".lighten(30%), body-color: " .. baseColor .. ".lighten(95%)"
-        box_presets.infobox["body-style"] = "color: " .. baseColor .. ".darken(20%)"
+        infoColor = "rgb(\"" .. color .. "\")"
     end
+
+    local infoThickness = getParam("infobox-thickness", globalThickness)
+    local infoRadius = getParam("infobox-radius", globalRadius)
+
+    box_presets.infobox.frame = "border-color: " .. infoColor .. ", title-color: " .. infoColor .. ".lighten(30%), body-color: " .. infoColor .. ".lighten(95%), radius: " .. infoRadius .. ", thickness: " .. infoThickness
+    if globalShadow then
+        box_presets.infobox.shadow = globalShadow
+    end
+    box_presets.infobox.above = globalSpacingAbove
+    box_presets.infobox.below = globalSpacingBelow
+    box_presets.infobox.sep = "thickness: " .. globalPadding
+    box_presets.infobox["title-style"] = "weight: " .. titleFontWeight .. (titleFontSize and (", size: " .. titleFontSize) or "")
+    box_presets.infobox["body-style"] = "color: " .. infoColor .. ".darken(20%), weight: " .. bodyFontWeight .. (bodyFontSize and (", size: " .. bodyFontSize) or "")
 end
 
 -- Main function to process showybox divs
@@ -276,7 +360,7 @@ local function processShowybox(el)
     -- List of valid attributes and their mappings
     local attribute_map = {
         ["footer"] = "footer",
-        ["frame"] = "frame", 
+        ["frame"] = "frame",
         ["title-style"] = "title_style",
         ["body-style"] = "body_style",
         ["footer-style"] = "footer_style",
@@ -309,6 +393,7 @@ local function processShowybox(el)
             if attr_name == "footer" and footer then
                 print("DEBUG: Skipping footer attribute because footer element exists")
             else
+                -- Parse all attributes as dictionaries if they contain key-value pairs
                 local parsedValue = parseAttributeValue(value)
                 table.insert(attrs, "  " .. typst_name .. ": " .. parsedValue)
             end

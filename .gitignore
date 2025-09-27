@@ -25,3 +25,6 @@ Thumbs.db
 *.bak
 *.backup
 /.luarc.json
+
+/.quarto/
+**/*.quarto_ipynb

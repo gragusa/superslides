@@ -1,0 +1,8 @@
+project:
+  type: default
+
+crossref:
+  custom:
+    - kind: float
+      reference-prefix: Assumption
+      key: ass

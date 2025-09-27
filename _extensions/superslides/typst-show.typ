@@ -172,7 +172,8 @@
     last-updated-text: "$last-updated-text$",
   $endif$
 
-  // Showybox color customization ----------------------------------------------
+  // Showybox customization -----------------------------------------------------
+  // Color settings
   $if(simplebox-color)$
     simplebox-color: parse-color("$simplebox-color$"),
   $endif$
@@ -185,7 +186,215 @@
   $if(alert-color)$
     alert-color: parse-color("$alert-color$"),
   $endif$
+
+  // Border and appearance settings
+  $if(box-border-thickness)$
+    box-border-thickness: $box-border-thickness$,
+  $endif$
+  $if(box-border-radius)$
+    box-border-radius: $box-border-radius$,
+  $endif$
+  $if(box-shadow)$
+    box-shadow: $box-shadow$,
+  $endif$
+
+  // Typography settings
+  $if(box-title-font-size)$
+    box-title-font-size: $box-title-font-size$,
+  $endif$
+  $if(box-title-font-weight)$
+    box-title-font-weight: "$box-title-font-weight$",
+  $endif$
+  $if(box-body-font-size)$
+    box-body-font-size: $box-body-font-size$,
+  $endif$
+  $if(box-body-font-weight)$
+    box-body-font-weight: "$box-body-font-weight$",
+  $endif$
+
+  // Spacing settings
+  $if(box-spacing-above)$
+    box-spacing-above: $box-spacing-above$,
+  $endif$
+  $if(box-spacing-below)$
+    box-spacing-below: $box-spacing-below$,
+  $endif$
+  $if(box-padding)$
+    box-padding: $box-padding$,
+  $endif$
+
+  // Individual box type overrides
+  $if(simplebox-thickness)$
+    simplebox-thickness: $simplebox-thickness$,
+  $endif$
+  $if(simplebox-radius)$
+    simplebox-radius: $simplebox-radius$,
+  $endif$
+  $if(warningbox-thickness)$
+    warningbox-thickness: $warningbox-thickness$,
+  $endif$
+  $if(warningbox-radius)$
+    warningbox-radius: $warningbox-radius$,
+  $endif$
+  $if(infobox-thickness)$
+    infobox-thickness: $infobox-thickness$,
+  $endif$
+  $if(infobox-radius)$
+    infobox-radius: $infobox-radius$,
+  $endif$
+
+  // Theorem configuration -----------------------------------------------------
+  $if(theorem-package)$
+    theorem-package: "$theorem-package$",
+  $endif$
+  $if(theorem-lang)$
+    theorem-lang: "$theorem-lang$",
+  $endif$
+  $if(theorem-numbering)$
+    theorem-numbering: $theorem-numbering$,
+  $endif$
+  $if(theorem-font-size)$
+    theorem-font-size: $theorem-font-size$,
+  $endif$
+  $if(theorem-title-weight)$
+    theorem-title-weight: "$theorem-title-weight$",
+  $endif$
+  $if(theorem-body-weight)$
+    theorem-body-weight: "$theorem-body-weight$",
+  $endif$
+
+  // Individual theorem type colors
+  $if(theorem-color)$
+    theorem-color: "$theorem-color$",
+  $endif$
+  $if(theorem-border)$
+    theorem-border: "$theorem-border$",
+  $endif$
+  $if(lemma-color)$
+    lemma-color: "$lemma-color$",
+  $endif$
+  $if(lemma-border)$
+    lemma-border: "$lemma-border$",
+  $endif$
+  $if(corollary-color)$
+    corollary-color: "$corollary-color$",
+  $endif$
+  $if(corollary-border)$
+    corollary-border: "$corollary-border$",
+  $endif$
+  $if(proposition-color)$
+    proposition-color: "$proposition-color$",
+  $endif$
+  $if(proposition-border)$
+    proposition-border: "$proposition-border$",
+  $endif$
+  $if(conjecture-color)$
+    conjecture-color: "$conjecture-color$",
+  $endif$
+  $if(conjecture-border)$
+    conjecture-border: "$conjecture-border$",
+  $endif$
+  $if(definition-color)$
+    definition-color: "$definition-color$",
+  $endif$
+  $if(definition-border)$
+    definition-border: "$definition-border$",
+  $endif$
+  $if(example-color)$
+    example-color: "$example-color$",
+  $endif$
+  $if(example-border)$
+    example-border: "$example-border$",
+  $endif$
+  $if(exercise-color)$
+    exercise-color: "$exercise-color$",
+  $endif$
+  $if(exercise-border)$
+    exercise-border: "$exercise-border$",
+  $endif$
+  $if(solution-color)$
+    solution-color: "$solution-color$",
+  $endif$
+  $if(solution-border)$
+    solution-border: "$solution-border$",
+  $endif$
+  $if(remark-color)$
+    remark-color: "$remark-color$",
+  $endif$
+  $if(remark-border)$
+    remark-border: "$remark-border$",
+  $endif$
+  $if(assumption-color)$
+    assumption-color: "$assumption-color$",
+  $endif$
+  $if(assumption-border)$
+    assumption-border: "$assumption-border$",
+  $endif$
+
+  // Global theorem styling
+  $if(theorem-border-thickness)$
+    theorem-border-thickness: "$theorem-border-thickness$",
+  $endif$
+  $if(theorem-border-radius)$
+    theorem-border-radius: "$theorem-border-radius$",
+  $endif$
+  $if(theorem-title-font-size)$
+    theorem-title-font-size: "$theorem-title-font-size$",
+  $endif$
+  $if(theorem-title-font-weight)$
+    theorem-title-font-weight: "$theorem-title-font-weight$",
+  $endif$
+  $if(theorem-body-font-size)$
+    theorem-body-font-size: "$theorem-body-font-size$",
+  $endif$
+  $if(theorem-body-font-weight)$
+    theorem-body-font-weight: "$theorem-body-font-weight$",
+  $endif$
+  $if(theorem-padding)$
+    theorem-padding: "$theorem-padding$",
+  $endif$
+  $if(theorem-spacing)$
+    theorem-spacing: "$theorem-spacing$",
+  $endif$
 )
+
+
+// Helper function for simple sequential numbering
+#let unary(.., last) = last
+
+// Dynamic theorem setup based on YAML
+$if(theorem-package)$
+// Current implementation: ctheorems package (theorion support planned)
+#show: thmrules
+// Setup theorem environments with YAML configuration
+$if(theorem-numbering)$
+#let theorem = thmbox("theorem", if "$theorem-lang$" == "en" { "Theorem" } else { "Teorema" }, fill: rgb("#$theorem-color$")).with(numbering: unary)
+#let proposition = thmbox("proposition", if "$theorem-lang$" == "en" { "Proposition" } else { "Proposizione" }, fill: rgb("$if(proposition-color)$$proposition-color$$else$#E5F3E9$endif$")).with(numbering: unary)
+#let lemma = thmbox("lemma", if "$theorem-lang$" == "en" { "Lemma" } else { "Lemma" }, fill: rgb("#$lemma-color$")).with(numbering: unary)
+#let corollary = thmbox("corollary", if "$theorem-lang$" == "en" { "Corollary" } else { "Corollario" }, fill: rgb("$if(corollary-color)$$corollary-color$$else$#F8F0E8$endif$")).with(numbering: unary)
+#let conjecture = thmbox("conjecture", if "$theorem-lang$" == "en" { "Conjecture" } else { "Congettura" }, fill: rgb("$if(conjecture-color)$$conjecture-color$$else$#F3F8F0$endif$")).with(numbering: unary)
+#let definition = thmbox("definition", if "$theorem-lang$" == "en" { "Definition" } else { "Definizione" }, fill: rgb("$if(definition-color)$$definition-color$$else$#E0EDF4$endif$")).with(numbering: unary)
+#let example = thmbox("example", if "$theorem-lang$" == "en" { "Example" } else { "Esempio" }, fill: rgb("$if(example-color)$$example-color$$else$#F0F8E6$endif$")).with(numbering: unary)
+#let exercise = thmbox("exercise", if "$theorem-lang$" == "en" { "Exercise" } else { "Esercizio" }, fill: rgb("$if(exercise-color)$$exercise-color$$else$#E0EDF4$endif$")).with(numbering: unary)
+#let solution = thmbox("solution", if "$theorem-lang$" == "en" { "Solution" } else { "Soluzione" }, fill: rgb("$if(solution-color)$$solution-color$$else$#F5F0F8$endif$")).with(numbering: unary)
+#let assumption = thmbox("assumption", if "$theorem-lang$" == "en" { "Assumption" } else { "Assunzione" }, fill: rgb("#$assumption-color$")).with(numbering: unary)
+#let remark = thmbox("remark", if "$theorem-lang$" == "en" { "Remark" } else { "Osservazione" }, fill: rgb("$if(remark-color)$$remark-color$$else$#F0F8F5$endif$")).with(numbering: unary)
+#let proof = thmbox("proof", if "$theorem-lang$" == "en" { "Proof" } else { "Dimostrazione" }, fill: rgb("$if(remark-color)$$remark-color$$else$#F8F5F0$endif$")).with(numbering: none)
+$else$
+#let theorem = thmbox("theorem", if "$theorem-lang$" == "en" { "Theorem" } else { "Teorema" }, fill: rgb("#$theorem-color$")).with(numbering: none)
+#let proposition = thmbox("proposition", if "$theorem-lang$" == "en" { "Proposition" } else { "Proposizione" }, fill: rgb("$if(proposition-color)$$proposition-color$$else$#E5F3E9$endif$")).with(numbering: none)
+#let lemma = thmbox("lemma", if "$theorem-lang$" == "en" { "Lemma" } else { "Lemma" }, fill: rgb("#$lemma-color$")).with(numbering: none)
+#let corollary = thmbox("corollary", if "$theorem-lang$" == "en" { "Corollary" } else { "Corollario" }, fill: rgb("$if(corollary-color)$$corollary-color$$else$#F8F0E8$endif$")).with(numbering: none)
+#let conjecture = thmbox("conjecture", if "$theorem-lang$" == "en" { "Conjecture" } else { "Congettura" }, fill: rgb("$if(conjecture-color)$$conjecture-color$$else$#F3F8F0$endif$")).with(numbering: none)
+#let definition = thmbox("definition", if "$theorem-lang$" == "en" { "Definition" } else { "Definizione" }, fill: rgb("$if(definition-color)$$definition-color$$else$#E0EDF4$endif$")).with(numbering: none)
+#let example = thmbox("example", if "$theorem-lang$" == "en" { "Example" } else { "Esempio" }, fill: rgb("$if(example-color)$$example-color$$else$#F0F8E6$endif$")).with(numbering: none)
+#let exercise = thmbox("exercise", if "$theorem-lang$" == "en" { "Exercise" } else { "Esercizio" }, fill: rgb("$if(exercise-color)$$exercise-color$$else$#E0EDF4$endif$")).with(numbering: none)
+#let solution = thmbox("solution", if "$theorem-lang$" == "en" { "Solution" } else { "Soluzione" }, fill: rgb("$if(solution-color)$$solution-color$$else$#F5F0F8$endif$")).with(numbering: none)
+#let assumption = thmbox("assumption", if "$theorem-lang$" == "en" { "Assumption" } else { "Assunzione" }, fill: rgb("#$assumption-color$")).with(numbering: none)
+#let remark = thmbox("remark", if "$theorem-lang$" == "en" { "Remark" } else { "Osservazione" }, fill: rgb("$if(remark-color)$$remark-color$$else$#F0F8F5$endif$")).with(numbering: none)
+#let proof = thmbox("proof", if "$theorem-lang$" == "en" { "Proof" } else { "Dimostrazione" }, fill: rgb("$if(remark-color)$$remark-color$$else$#F8F5F0$endif$")).with(numbering: none)
+$endif$
+$endif$
 
 #title-slide(
   title: [$title$],
@@ -205,4 +414,3 @@
   web: [$web$],
   icon: [$icon$]
 )
-

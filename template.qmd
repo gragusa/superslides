@@ -100,19 +100,41 @@ format:
     lang: "en"                        # Interface language: "en" or "it"
 
     #===================================================================
-    # ADVANCED CUSTOMIZATION
+    # THEOREM CONFIGURATION
     #===================================================================
-    # Box colors (for callouts/alerts)
-    # simplebox-color: "#EEF4FF"      # Simple box background
-    #   Info light bg: #EEF4FF (very light tint of your accents)
-    #   Info border: #B9C9F5
-    #   Info text / icon: #1F2E85
-    # warningbox-color: "#FFF6E0"     # Warning box background
-    #   Warning border: #E8D2A8
-    #.  Warning text / icon: #7A5A00
-    # infobox-color: "#D1ECF1"        # Info box background
-    #.    
+    theorem-lang: "en"                # Theorem language: "en" or "it"
+    theorem-numbering: false          # Enable theorem numbering
+    # theorem-font-size: 1.0em        # Theorem font size
+    # theorem-title-weight: "bold"    # Theorem title weight
+    # theorem-body-weight: "regular"  # Theorem body weight
 
+    #===================================================================
+    # ADVANCED BOX CUSTOMIZATION
+    #===================================================================
+    # Global box styling (applies to all box types unless overridden)
+    # box-border-thickness: 1pt        # Default border thickness
+    # box-border-radius: 4pt           # Default border radius
+    # box-shadow: "5pt 5pt 10pt gray"  # Box shadow (none for no shadow)
+    # box-title-font-size: 1.1em      # Title font size
+    # box-title-font-weight: "bold"   # Title font weight
+    # box-body-font-size: 1.0em       # Body text font size
+    # box-body-font-weight: "regular" # Body text font weight
+    # box-spacing-above: 1em          # Space above boxes
+    # box-spacing-below: 1em          # Space below boxes
+    # box-padding: 8pt                # Internal padding
+
+    # Box type colors
+    # simplebox-color: "#EEF4FF"      # Simple box background color
+    # warningbox-color: "#FFF6E0"     # Warning box background color
+    # infobox-color: "#D1ECF1"        # Info box background color
+
+    # Individual box type overrides (overrides global settings)
+    # simplebox-thickness: 1pt        # Override thickness for simple boxes
+    # simplebox-radius: 6pt           # Override radius for simple boxes
+    # warningbox-thickness: 3pt       # Override thickness for warning boxes
+    # warningbox-radius: 2pt          # Override radius for warning boxes
+    # infobox-thickness: 1.5pt        # Override thickness for info boxes
+    # infobox-radius: 8pt             # Override radius for info boxes
 
     # Alert/strong text color
     alert-color: "#FF6B35"            # Color for bold/strong text and alerts
@@ -122,12 +144,14 @@ format:
 
 ## Introduction
 
+::: {.infobox}
 Welcome to **Superslides**! This template demonstrates:
 
 - Enhanced Typst presentations with Touying
 - Professional title slides with interactive elements
 - Advanced code blocks with zebraw integration
 - Complete customization through YAML parameters
+:::
 
 ## Features Overview
 
@@ -218,8 +242,405 @@ end
 
 You can also use `inline code` within text. The font size is controlled by the `raw-inline-size` parameter.
 
-## More Information
+# Box and Theorem Systems
 
-Learn more about creating custom Typst templates:
+## Current Showybox System
 
-<https://quarto.org/docs/prerelease/1.4/typst.html#custom-formats>
+Superslides supports three types of showyboxes via the `::: {.classname}` syntax:
+
+## Simplebox
+
+::: {layout-ncol=2}
+
+::: {.column}
+**Code:**
+```markdown
+::: {.simplebox}
+## Simple Information
+This is a simple information box
+with blue styling.
+:::
+```
+:::
+
+::: {.column}
+**Result:**
+
+::: {.simplebox}
+## Simple Information
+This is a simple information box with blue styling.
+:::
+:::
+
+## 
+
+::: {layout-ncol=2}
+
+::: {.column}
+**Code:**
+
+```
+::: {.warningbox}
+### Warning
+This is a warning box with
+red styling for alerts.
+:::
+```
+:::
+
+::: {.column}
+**Result:**
+
+::: {.warningbox}
+### Warning
+This is a warning box with red styling for alerts.
+:::
+
+:::
+
+## 
+
+::: {layout-ncol=2}
+
+::: {.column}
+**Code:**
+
+```markdown
+::: {.infobox}
+## Information
+This is an info box with
+green styling.
+:::
+```
+:::
+
+::: {.column}
+**Result:**
+
+::: {.infobox}
+## Information
+This is an info box with green styling.
+:::
+
+:::
+
+
+
+# Theorem-like env
+
+
+## Theorem
+
+::: {layout-ncol=2}
+
+::: {.column}
+**Code:**
+```typst
+#theorem[
+This is a theorem with
+Italian "Teorema" title.
+]
+```
+:::
+
+::: {.column}
+**Result:**
+
+#theorem[
+This is a theorem with Italian "Teorema" title.
+]
+
+:::
+
+## Proposition
+
+::: {layout-ncol=2}
+
+::: {.column}
+**Code:**
+```typst
+#proposition[
+This is a proposition with
+Italian "Proposizione" title.
+]
+```
+:::
+
+::: {.column}
+**Result:**
+#proposition[
+This is a proposition with Italian "Proposizione" title.
+]
+:::
+
+## Lemma
+
+::: {layout-ncol=2}
+
+::: {.column}
+**Code:**
+```typst
+#lemma[
+This is a lemma with
+Italian "Lemma" title.
+]
+```
+:::
+
+::: {.column}
+**Result:**
+#lemma[
+This is a lemma with Italian "Lemma" title.
+]
+:::
+
+## Corollary
+
+::: {layout-ncol=2}
+
+::: {.column}
+**Code:**
+```typst
+#corollary[
+This is a corollary with
+Italian "Corollario" title.
+]
+```
+:::
+
+::: {.column}
+**Result:**
+#corollary[
+This is a corollary with Italian "Corollario" title.
+]
+:::
+
+## Conjecture
+
+::: {layout-ncol=2}
+
+::: {.column}
+**Code:**
+```typst
+#conjecture[
+This is a conjecture with
+Italian "Congettura" title.
+]
+```
+:::
+
+::: {.column}
+**Result:**
+#conjecture[
+This is a conjecture with Italian "Congettura" title.
+]
+:::
+
+
+## Definition
+
+::: {layout-ncol=2}
+
+::: {.column}
+**Code:**
+```typst
+#definition[
+This is a definition with
+Italian "Definizione" title.
+]
+```
+:::
+
+::: {.column}
+**Result:**
+#definition[
+This is a definition with Italian "Definizione" title.
+]
+:::
+
+## Example
+
+::: {layout-ncol=2}
+
+::: {.column}
+**Code:**
+```typst
+#example[
+This is an example with
+Italian "Esempio" title.
+]
+```
+:::
+
+::: {.column}
+**Result:**
+#example[
+This is an example with Italian "Esempio" title.
+]
+:::
+
+## Exercise
+
+::: {layout-ncol=2}
+
+::: {.column}
+**Code:**
+```typst
+#exercise[
+This is an exercise with
+Italian "Esercizio" title.
+]
+```
+:::
+
+::: {.column}
+**Result:**
+#exercise[
+This is an exercise with Italian "Esercizio" title.
+]
+:::
+
+
+
+## Assumptions
+
+::: {layout-ncol=2}
+
+::: {.column}
+**Code:**
+```typst
+#assumption[
+This is an assumption with
+Italian "Assunzione" title.
+]
+```
+:::
+
+::: {.column}
+**Result:**
+#assumption[
+This is an assumption with Italian "Assunzione" title.
+]
+:::
+
+## Remark
+
+::: {layout-ncol=2}
+
+::: {.column}
+**Code:**
+```typst
+#remark[
+This is a remark with
+Italian "Osservazione" title.
+]
+```
+:::
+
+::: {.column}
+**Result:**
+#remark[
+This is a remark with Italian "Osservazione" title.
+]
+:::
+
+## Proof
+
+::: {layout-ncol=2}
+
+::: {.column}
+**Code:**
+```typst
+#proof[
+This is a proof with
+Italian "Dimostrazione" title.
+]
+```
+:::
+
+::: {.column}
+**Result:**
+#proof[
+This is a proof with Italian "Dimostrazione" title.
+]
+:::
+
+:::
+
+# YAML Configuration System
+
+
+## Theorem Language Configuration
+
+The theorem system now supports YAML configuration with language switching:
+
+```yaml
+theorem-lang: "en"          # "en" or "it"
+theorem-numbering: false    # Enable numbering
+```
+
+**Current setting**: `theorem-lang: "en"` (English titles)
+
+## Global Box Configuration
+
+You can set default styling for all box types using these YAML parameters:
+
+```yaml
+# Global settings (affect all box types)
+box-border-thickness: 2pt        # Border thickness
+box-border-radius: 6pt           # Corner radius
+box-shadow: "3pt 3pt 8pt gray"   # Drop shadow
+box-title-font-size: 1.2em      # Title font size
+box-title-font-weight: "bold"   # Title weight
+box-body-font-size: 1.0em       # Body font size
+box-body-font-weight: "regular" # Body weight
+box-spacing-above: 1.5em        # Space above
+box-spacing-below: 1.5em        # Space below
+box-padding: 12pt               # Internal padding
+```
+
+## Individual Box Type Overrides
+
+::: {layout-ncol=2}
+
+::: {.column}
+**YAML Configuration:**
+```yaml
+# Override specific box types
+simplebox-color: "#E8F4FD"
+simplebox-thickness: 1pt
+simplebox-radius: 8pt
+
+warningbox-color: "#FFF3CD"
+warningbox-thickness: 3pt
+warningbox-radius: 4pt
+
+infobox-color: "#D4EDDA"
+infobox-thickness: 2pt
+infobox-radius: 6pt
+```
+:::
+
+::: {.column}
+**Enhanced Styling:**
+
+Individual box types can override global settings for precise control. This allows different visual hierarchies and emphasis levels across your presentation.
+
+**Typography Control:**
+- Title and body font sizes
+- Font weight customization
+- Consistent spacing control
+:::
+
+::::
+
+## Advanced Styling Examples
+
+The enhanced system supports sophisticated styling combinations while maintaining the simple `::: {.boxtype}` syntax for content creation.
+
+## Remaining Tasks
+
+1. **Div syntax support** - `::: {.theorem}` syntax for theorems
+2. **Color coordination** - Better brand integration
+3. **Dynamic box themes** - Preset style combinations
+

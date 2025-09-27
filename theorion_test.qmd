@@ -1,0 +1,32 @@
+---
+title: "Theorion Test"
+format:
+  superslides-typst:
+    keep-typ: true
+    theorem-package: "theorion"
+    theorem-lang: "en"
+    theorem-numbering: true
+    theorem-color: "FFE5E5"
+    lemma-color: "E5FFE5"
+    assumption-color: "E5E5FF"
+---
+
+# Theorion Package Test
+
+## Basic Theorem
+
+::: {#thm-main}
+### Main Result
+Every positive integer can be written as a sum of distinct powers of 2.
+:::
+
+## Supporting Lemma
+
+::: {#lem-binary}
+### Binary Representation
+Any positive integer has a unique binary representation.
+:::
+
+---
+
+*If theorems appear with colored backgrounds using theorion package, it works!*

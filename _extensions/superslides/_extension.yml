@@ -18,11 +18,6 @@ contributes:
         - typst-show.typ
       include-before-body:
         - text: |
-            #show: thmrules
-            #let example = thmbox("example", "Esempio", fill: rgb("#F0F8E6")).with(numbering: none)
-            #let theorem = thmbox("theorem", "Teorema", fill: rgb("#E9E5F3")).with(numbering: none)
-            #let exercise = thmbox("exercise", "Esercizio", fill: rgb("#E0EDF4")).with(numbering: none)
-            #let definition = thmbox("definition", "Definizione", fill: rgb("#E0EDF4")).with(numbering: none)
             #import "@preview/colorful-boxes:1.4.3": *
             #let bluebox(body) = {
               outline-colorbox(
@@ -39,3 +34,4 @@ contributes:
               body-color: blue.lighten(95%),
               footer-color: blue.lighten(80%)
             ))[#body]}
+

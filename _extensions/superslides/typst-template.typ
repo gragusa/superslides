@@ -1,6 +1,6 @@
 #import "@preview/touying:0.6.1": *
 #import "@preview/fontawesome:0.5.0": *
-#import "@preview/ctheorems:1.1.0": *
+#import "@preview/ctheorems:1.1.3": *
 #import "@preview/cades:0.3.0": qr-code
 
 // Helper function to handle hex colors and Typst color functions
@@ -15,6 +15,68 @@
   } else {
     // Assume it's a literal color name or other valid Typst color
     eval(color-str)
+  }
+}
+
+// Enhanced theorem environment configuration function
+#let setup-theorems(self) = {
+  // Define theorem titles for different languages
+  let theorem-titles = (
+    "it": (
+      "theorem": "Teorema",
+      "proposition": "Proposizione",
+      "lemma": "Lemma",
+      "corollary": "Corollario",
+      "conjecture": "Congettura",
+      "definition": "Definizione",
+      "example": "Esempio",
+      "exercise": "Esercizio",
+      "solution": "Soluzione",
+      "assumption": "Assunzione",
+      "remark": "Osservazione",
+      "proof": "Dimostrazione"
+    ),
+    "en": (
+      "theorem": "Theorem",
+      "proposition": "Proposition",
+      "lemma": "Lemma",
+      "corollary": "Corollary",
+      "conjecture": "Conjecture",
+      "definition": "Definition",
+      "example": "Example",
+      "exercise": "Exercise",
+      "solution": "Solution",
+      "assumption": "Assumption",
+      "remark": "Remark",
+      "proof": "Proof"
+    )
+  )
+
+  // Get colors from YAML configuration
+  let theorem-colors = (
+    "theorem": parse-color(self.store.theorem-color),
+    "proposition": parse-color(self.store.proposition-color),
+    "lemma": parse-color(self.store.lemma-color),
+    "corollary": parse-color(self.store.corollary-color),
+    "conjecture": parse-color(self.store.conjecture-color),
+    "definition": parse-color(self.store.definition-color),
+    "example": parse-color(self.store.example-color),
+    "exercise": parse-color(self.store.exercise-color),
+    "solution": parse-color(self.store.solution-color),
+    "assumption": parse-color(self.store.assumption-color),
+    "remark": parse-color(self.store.remark-color),
+  )
+
+  let titles = theorem-titles.at(self.store.theorem-lang, default: theorem-titles.at("it"))
+  let numbering-setting = if self.store.theorem-numbering { "1.1" } else { none }
+
+  // Choose package and setup globally accessible theorem functions
+  if self.store.theorem-package == "theorion" {
+    // Theorion setup - not implemented yet
+    none
+  } else {
+    // ctheorems setup (default) - this needs to be in include-before-body
+    none
   }
 }
 #let new-section-slide(self: none, body)  = touying-slide-wrapper(self => {
@@ -132,12 +194,73 @@
   email-color: none,        // Color for email text
   // Language support
   lang: "en",              // Language for last updated text
-  // Showybox color options
+  // Showybox customization options
+  // Color settings
   simplebox-color: none,
   warningbox-color: none,
   infobox-color: none,
-  // Alert text color (for bold/strong text)
-  alert-color: none,
+  alert-color: none,        // Alert text color (for bold/strong text)
+
+  // Global box settings
+  box-border-thickness: 1pt,
+  box-border-radius: 4pt,
+  box-shadow: none,
+  box-title-font-size: none,
+  box-title-font-weight: "bold",
+  box-body-font-size: none,
+  box-body-font-weight: "regular",
+  box-spacing-above: 1em,
+  box-spacing-below: 1em,
+  box-padding: 8pt,
+
+  // Individual box type overrides
+  simplebox-thickness: none,
+  simplebox-radius: none,
+  warningbox-thickness: none,
+  warningbox-radius: none,
+  infobox-thickness: none,
+  infobox-radius: none,
+  // Theorem system configuration
+  theorem-package: "ctheorems",  // "ctheorems" or "theorion"
+  theorem-lang: "it",
+  theorem-numbering: false,
+  theorem-font-size: none,
+  theorem-title-weight: "bold",
+  theorem-body-weight: "regular",
+
+  // Individual theorem type colors
+  theorem-color: "#E9E5F3",
+  theorem-border: none,
+  lemma-color: "#F3E9E5",
+  lemma-border: none,
+  corollary-color: "#F8F0E8",
+  corollary-border: none,
+  proposition-color: "#E5F3E9",
+  proposition-border: none,
+  conjecture-color: "#F3F8F0",
+  conjecture-border: none,
+  definition-color: "#E0EDF4",
+  definition-border: none,
+  example-color: "#F0F8E6",
+  example-border: none,
+  exercise-color: "#E0EDF4",
+  exercise-border: none,
+  solution-color: "#F5F0F8",
+  solution-border: none,
+  remark-color: "#F0F8F5",
+  remark-border: none,
+  assumption-color: "#F5F0F8",
+  assumption-border: none,
+
+  // Global theorem styling
+  theorem-border-thickness: "1pt",
+  theorem-border-radius: "4pt",
+  theorem-title-font-size: "1.1em",
+  theorem-title-font-weight: "bold",
+  theorem-body-font-size: "1.0em",
+  theorem-body-font-weight: "regular",
+  theorem-padding: "8pt",
+  theorem-spacing: "1em",
   ..args,
   body,
 ) = {
@@ -252,6 +375,23 @@
       simplebox-color: simplebox-color,
       warningbox-color: warningbox-color,
       infobox-color: infobox-color,
+      // Enhanced box configuration
+      box-border-thickness: box-border-thickness,
+      box-border-radius: box-border-radius,
+      box-shadow: box-shadow,
+      box-title-font-size: box-title-font-size,
+      box-title-font-weight: box-title-font-weight,
+      box-body-font-size: box-body-font-size,
+      box-body-font-weight: box-body-font-weight,
+      box-spacing-above: box-spacing-above,
+      box-spacing-below: box-spacing-below,
+      box-padding: box-padding,
+      simplebox-thickness: simplebox-thickness,
+      simplebox-radius: simplebox-radius,
+      warningbox-thickness: warningbox-thickness,
+      warningbox-radius: warningbox-radius,
+      infobox-thickness: infobox-thickness,
+      infobox-radius: infobox-radius,
       title-font: title-font,
       title-size: title-size,
       title-weight: title-weight,
@@ -267,6 +407,43 @@
       email-color: email-color,
       lang: lang,
       alert-color: alert-color,
+      // Theorem configuration
+      theorem-package: theorem-package,
+      theorem-lang: theorem-lang,
+      theorem-numbering: theorem-numbering,
+      theorem-font-size: theorem-font-size,
+      theorem-title-weight: theorem-title-weight,
+      theorem-body-weight: theorem-body-weight,
+      theorem-color: theorem-color,
+      theorem-border: theorem-border,
+      lemma-color: lemma-color,
+      lemma-border: lemma-border,
+      corollary-color: corollary-color,
+      corollary-border: corollary-border,
+      proposition-color: proposition-color,
+      proposition-border: proposition-border,
+      conjecture-color: conjecture-color,
+      conjecture-border: conjecture-border,
+      definition-color: definition-color,
+      definition-border: definition-border,
+      example-color: example-color,
+      example-border: example-border,
+      exercise-color: exercise-color,
+      exercise-border: exercise-border,
+      solution-color: solution-color,
+      solution-border: solution-border,
+      remark-color: remark-color,
+      remark-border: remark-border,
+      assumption-color: assumption-color,
+      assumption-border: assumption-border,
+      theorem-border-thickness: theorem-border-thickness,
+      theorem-border-radius: theorem-border-radius,
+      theorem-title-font-size: theorem-title-font-size,
+      theorem-title-font-weight: theorem-title-font-weight,
+      theorem-body-font-size: theorem-body-font-size,
+      theorem-body-font-weight: theorem-body-font-weight,
+      theorem-padding: theorem-padding,
+      theorem-spacing: theorem-spacing,
       ..args,
     ),
   )
