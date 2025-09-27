@@ -1,6 +1,5 @@
 # Quarto/Typst output files
 *.pdf
-*.typ
 *.html
 
 # Temporary files

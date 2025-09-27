@@ -12,18 +12,12 @@ contributes:
         - incremental.lua
         - typst-function.lua
         - showy-box.lua
-        - zebraw.lua
         - revealjs.lua
       template-partials:
         - typst-template.typ
         - typst-show.typ
       include-before-body:
         - text: |
-            #show raw.where(block: true): set block(
-              fill: luma(245),
-              width: 100%,
-              inset: 8pt,
-              radius: 2pt)
             #show: thmrules
             #let example = thmbox("example", "Esempio", fill: rgb("#F0F8E6")).with(numbering: none)
             #let theorem = thmbox("theorem", "Teorema", fill: rgb("#E9E5F3")).with(numbering: none)
@@ -37,7 +31,6 @@ contributes:
               )[#body]}
             #import "@preview/showybox:2.0.4": showybox
             #import "@preview/cades:0.3.0": qr-code
-            #import "@preview/zebraw:0.5.5": zebraw
             #let highlightbox(body) = {
             showybox(
             frame: (

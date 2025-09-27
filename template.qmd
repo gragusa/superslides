@@ -16,28 +16,28 @@ editor:
 format:
   superslides-typst:
     keep-typ: true
-    # ===================================================================
+    #===================================================================
     # TYPOGRAPHY SETTINGS
-    # ===================================================================
+    #===================================================================
     fontsize: 24pt                    # Base font size
-    mainfont: "Roboto"                 # Body text font
-    sansfont: "Roboto"                 # Heading font
-    font-weight-heading: "light"      # Heading weight: light, regular, bold
+    mainfont: "Roboto"                # Body text font
+    sansfont: "Roboto"                # Heading font
+    font-weight-heading: "regular"    # Heading weight: light, regular, bold
     font-weight-body: "regular"       # Body weight: light, regular, bold
 
     # Title slide typography
     title-font: "Roboto"              # Title font family
     title-size: 42pt                  # Title font size
     title-weight: "bold"              # Title font weight
-    subtitle-font: "Roboto"            # Subtitle font family
-    subtitle-size: 28pt               # Subtitle font size
+    subtitle-font: "Roboto"           # Subtitle font family
+    subtitle-size: 30pt               # Subtitle font size
     subtitle-weight: "regular"        # Subtitle font weight
     author-size: 20pt                 # Author font size
     date-size: 18pt                   # Date font size
 
-    # ===================================================================
+    #===================================================================
     # COLOR SCHEME (3-COLOR SYSTEM)
-    # ===================================================================
+    #===================================================================
     jet: "#404040"                  # Main text color (dark blue-gray)
     accent: "#2836A6"               # Primary accent (sea green) - headings, links, buttons
     accent2: "#004494"              # Secondary accent (peru) - highlights, warnings
@@ -45,35 +45,29 @@ format:
     # Author styling colors
     affiliation-color: "#707070"    # Affiliation text color
     affiliation-style: "italic"       # Affiliation style: normal, italic
-    email-color: "#CD853F"            # Email link color
+    email-color: "#CD853F"          # Email link color
 
-    # ===================================================================
+    #===================================================================
     # CODE BLOCK CONFIGURATION
-    # ===================================================================
+    #===================================================================
     # Standard code blocks
-    raw-font-size: 15pt               # Code block font size
-    raw-inline-size: 14pt             # Inline code font size
-    # Code block padding (controls line spacing!)
-    raw-inset: 2pt                    # Simple format: applies to top/bottom for zebraw
-    # Note: For zebraw, this automatically becomes (top: 2pt, bottom: 2pt)
+    raw-font-size: 14pt               # Code block font size
+    raw-inline-size: 22pt             # Inline code font size
+    raw-inset: 8pt
+                        # Code block padding (controls line spacing!)
+      
 
-    # Enhanced zebraw code blocks
-    use-zebraw: true                  # Enable mathematical annotations
-    zebraw-font-size: 12pt            # Zebraw code font size
-    zebraw-comment-flag: "##"         # Comment prefix for annotations
-    zebraw-comment-color: "#2E8B57"   # Color for zebraw comments
-
-    # ===================================================================
+    #===================================================================
     # LIST CUSTOMIZATION
-    # ===================================================================
+    #===================================================================
     list-indent: 0.6em                  # List indentation
     list-marker-1: "•"                # Level 1 bullet
     list-marker-2: "◦"                # Level 2 bullet
     list-marker-3: "▪"                # Level 3 bullet
 
-    # ===================================================================
+    #===================================================================
     # INTERACTIVE ELEMENTS
-    # ===================================================================
+    #===================================================================
     # QR Code
     qr-code-url: "https://github.com/gragusa/superslides"
     qr-code-title: "View Source"      # Button text
@@ -83,9 +77,9 @@ format:
     # Updates functionality
     updates-link: "https://github.com/gragusa/superslides/releases"
 
-    # ===================================================================
+    #===================================================================
     # LAYOUT & BRANDING
-    # ===================================================================
+    #===================================================================
     # Background
     # background-color: "FFFFFF"      # Slide background color
     # background-image: "bg.png"      # Background image path
@@ -94,18 +88,21 @@ format:
     # logo-path: "logo.png"           # Organization logo
     title-compact: false              # Compact title layout
 
-    # ===================================================================
+    #===================================================================
     # LANGUAGE & LOCALIZATION
-    # ===================================================================
+    #===================================================================
     lang: "en"                        # Interface language: "en" or "it"
 
-    # ===================================================================
+    #===================================================================
     # ADVANCED CUSTOMIZATION
-    # ===================================================================
+    #===================================================================
     # Box colors (for callouts/alerts)
     # simplebox-color: "E8F4FD"       # Simple box background
     # warningbox-color: "FFF3CD"      # Warning box background
     # infobox-color: "D1ECF1"         # Info box background
+
+    # Alert/strong text color
+    alert-color: "#FF6B35"            # Color for bold/strong text and alerts
 ---
 
 # Getting Started
@@ -129,33 +126,52 @@ Welcome to **Superslides**! This template demonstrates:
 - 🎯 40+ YAML parameters for customization
 - 🌐 Multi-language support (English/Italian)
 
-# Advanced Usage
+## Typography
 
-## Zebraw Enhanced Code Blocks
+Standard markdown formatting works as expected:
 
-### Mathematical Annotations
+  - _emphasis_
+  - **bold**
+  - **_bold emphasis_**
+  - ~~strikethrough~~
+  - `inline code`
+  - [alert]{.alert}
 
-Zebraw allows mathematical formulas and explanations directly in code comments:
+## Code Blocks
 
-::: {zebraw-comments="1:The discriminant formula $Delta = b^2 - 4 a c$, 2:No real solutions when $Delta < 0$, 4:One solution when $Delta = 0$ gives $x = -b\/(2a)$, 6:Two solutions when $Delta > 0$, 7:Calculate $sqrt(Delta)$, 8:First solution $x_1 = (-b + sqrt(Delta))\/(2a)$, 9:Second solution $x_2 = (-b - sqrt(Delta))\/(2a)$"}
+Superslides supports standard code blocks with proper syntax highlighting and customizable formatting.
+
+```{r}
+plot(rnorm(10))
+```
+## Code Block Configuration
+
+You can control code block appearance through YAML parameters:
+
+- `raw-font-size: 20pt` - Font size for code blocks
+- `raw-inline-size: 20pt` - Font size for inline code
+- `raw-inset: 2pt` - Padding around code blocks
+
+## Python Example
+
 ```python
 def quadratic_formula(a, b, c):
+    """Solve quadratic equation ax² + bx + c = 0"""
     discriminant = b**2 - 4*a*c
+
     if discriminant < 0:
-        return None
+        return None  # No real solutions
     elif discriminant == 0:
-        return -b / (2*a)
+        return -b / (2*a)  # One solution
     else:
         sqrt_d = discriminant**0.5
         x1 = (-b + sqrt_d) / (2*a)
         x2 = (-b - sqrt_d) / (2*a)
         return x1, x2
 ```
-:::
 
-### Statistical Functions
+## R Statistical Analysis
 
-::: {zebraw-comments="2:Sample size $n$, 3:Sample mean $overline(x) = sum x_i \/ n$, 4:Sample variance $s^2 = sum (x_i - overline(x))^2 \/ (n-1)$, 5:Standard deviation $s = sqrt(s^2)$, 6:Standard error $\"SE\" = s \/ sqrt(n)$, 9:Sample mean $overline(x)$, 10:Sample variance $s^2$, 11:Standard deviation $s$, 12:Standard error $\"SE\"$"}
 ```r
 calculate_statistics <- function(data) {
     n <- length(data)
@@ -172,46 +188,25 @@ calculate_statistics <- function(data) {
     ))
 }
 ```
-:::
 
-### Economic Models
+## Julia Mathematical Functions
 
-```{.python zebraw-comments="3:[Production function: $Y = A dot K^alpha dot L^(1-alpha)$], 6:[Marginal product of capital: $\"MP\"_K = alpha Y\/K = (diff Y)\/(diff K)$], 7:[Marginal product of labor: $\"MP\"_L = (1-alpha) Y\/L = (diff Y)\/(diff L)$], 10:[Constant returns to scale: $alpha + (1-alpha) = 1$], 13:[Total output $Y$], 14:[Marginal product of capital $\"MP\"_K$], 15:[Marginal product of labor $\"MP\"_L$]"}
-def cobb_douglas_production(K, L, A=1, alpha=0.3):
-    """Cobb-Douglas production function"""
-    Y = A * (K**alpha) * (L**(1-alpha))
-
-    # Marginal products
-    MPK = alpha * Y / K
-    MPL = (1-alpha) * Y / L
-
-    # Returns to scale
-    returns = alpha + (1-alpha)
-
-    return {
-        'output': Y,
-        'mpk': MPK,
-        'mpl': MPL,
-        'returns_to_scale': returns
-    }
+```julia
+function fibonacci(n)
+    if n <= 1
+        return n
+    else
+        return fibonacci(n-1) + fibonacci(n-2)
+    end
+end
 ```
 
-### Comparison: Regular vs Enhanced
+## Inline Code
 
-Regular code block (without zebraw):
-
-```python
-def simple_function():
-    # This is a regular comment
-    result = 2 + 2
-    return result
-```
+You can also use `inline code` within text. The font size is controlled by the `raw-inline-size` parameter.
 
 ## More Information
 
 Learn more about creating custom Typst templates:
 
 <https://quarto.org/docs/prerelease/1.4/typst.html#custom-formats>
-
-
-
