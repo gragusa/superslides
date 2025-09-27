@@ -24,14 +24,18 @@ format:
     sansfont: "Roboto"                # Heading font
     font-weight-heading: "regular"    # Heading weight: light, regular, bold
     font-weight-body: "regular"       # Body weight: light, regular, bold
+    # handout: true                   # Generate handout version (removes animations)
 
     # Title slide typography
     title-font: "Roboto"              # Title font family
     title-size: 42pt                  # Title font size
     title-weight: "bold"              # Title font weight
+    # font-size-title: 2.0em          # Alternative title size (relative to base)
+    # font-weight-title: "bold"       # Alternative title weight
     subtitle-font: "Roboto"           # Subtitle font family
     subtitle-size: 30pt               # Subtitle font size
     subtitle-weight: "regular"        # Subtitle font weight
+    # font-size-subtitle: 1.2em       # Alternative subtitle size (relative to base)
     author-size: 20pt                 # Author font size
     date-size: 18pt                   # Date font size
 
@@ -45,6 +49,7 @@ format:
     # Author styling colors
     affiliation-color: "#707070"    # Affiliation text color
     affiliation-style: "italic"       # Affiliation style: normal, italic
+    # affiliation-weight: "regular"   # Affiliation text weight: light, regular, bold
     email-color: "#CD853F"          # Email link color
 
     #===================================================================
@@ -76,12 +81,13 @@ format:
 
     # Updates functionality
     updates-link: "https://github.com/gragusa/superslides/releases"
+    # last-updated-text: "Last updated:"  # Custom text for last updated label
 
     #===================================================================
     # LAYOUT & BRANDING
     #===================================================================
     # Background
-    # background-color: "FFFFFF"      # Slide background color
+    # background-color: "#FFFFFF"     # Slide background color
     # background-image: "bg.png"      # Background image path
 
     # Title page customization
@@ -97,9 +103,9 @@ format:
     # ADVANCED CUSTOMIZATION
     #===================================================================
     # Box colors (for callouts/alerts)
-    # simplebox-color: "E8F4FD"       # Simple box background
-    # warningbox-color: "FFF3CD"      # Warning box background
-    # infobox-color: "D1ECF1"         # Info box background
+    # simplebox-color: "#E8F4FD"      # Simple box background
+    # warningbox-color: "#FFF3CD"     # Warning box background
+    # infobox-color: "#D1ECF1"        # Info box background
 
     # Alert/strong text color
     alert-color: "#FF6B35"            # Color for bold/strong text and alerts

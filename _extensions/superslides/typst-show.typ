@@ -21,7 +21,7 @@
   // Typography ---------------------------------------------------------------
   $if(fontsize)$
     font-size: $fontsize$,
-  $elseif(brand.typography.base.size)$,
+  $elseif(brand.typography.base.size)$
     font-size: $brand.typography.base.size$,
   $endif$
   $if(sansfont)$

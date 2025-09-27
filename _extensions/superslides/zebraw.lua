@@ -4,6 +4,10 @@ local use_zebraw = false
 local zebraw_font_size = "10pt"
 local zebraw_comment_flag = "##"
 local zebraw_comment_color = "blue"
+local zebraw_comment_style = "italic"
+local zebraw_numbering = true
+local zebraw_highlight_color = "luma(245)"
+local zebraw_background_color = "luma(245)"
 local raw_inset = "(top: 2pt, bottom: 2pt)"
 local injected_styling = false
 
@@ -31,6 +35,22 @@ function Meta(meta)
       zebraw_comment_color = pandoc.utils.stringify(meta['zebraw-comment-color'])
     end
 
+    if meta['zebraw-comment-style'] then
+      zebraw_comment_style = pandoc.utils.stringify(meta['zebraw-comment-style'])
+    end
+
+    if meta['zebraw-numbering'] then
+      zebraw_numbering = meta['zebraw-numbering'] and meta['zebraw-numbering']
+    end
+
+    if meta['zebraw-highlight-color'] then
+      zebraw_highlight_color = pandoc.utils.stringify(meta['zebraw-highlight-color'])
+    end
+
+    if meta['zebraw-background-color'] then
+      zebraw_background_color = pandoc.utils.stringify(meta['zebraw-background-color'])
+    end
+
     if meta['raw-inset'] then
       -- Simple format: raw-inset: 2 or raw-inset: 2pt
       local val_str = pandoc.utils.stringify(meta['raw-inset'])
@@ -45,6 +65,91 @@ function Meta(meta)
     if use_zebraw then
       quarto.log.output("Zebraw code blocks enabled with font-size: " .. zebraw_font_size)
     end
+  end
+end
+
+-- Helper function to escape special characters for Typst strings
+local function escape_typst_string(str)
+  if not str then return str end
+  -- Escape backslashes first (must be done before other escapes)
+  str = str:gsub("\\", "\\\\")
+  -- Escape double quotes
+  str = str:gsub('"', '\\"')
+  -- Escape special characters that have meaning in Typst
+  str = str:gsub("#", "\\#")  -- Hash for comments/functions
+  str = str:gsub("%$", "\\$")  -- Dollar for math mode
+  str = str:gsub("@", "\\@")  -- At symbol for references
+  str = str:gsub("<", "\\<")  -- Less than for markup
+  str = str:gsub(">", "\\>")  -- Greater than for markup
+  str = str:gsub("%[", "\\[")  -- Left bracket
+  str = str:gsub("%]", "\\]")  -- Right bracket
+  str = str:gsub("{", "\\{")  -- Left brace
+  str = str:gsub("}", "\\}")  -- Right brace
+  return str
+end
+
+-- Helper function to detect inline comments in code and extract them
+local function extract_inline_comments(code_content, comment_flag)
+  local lines = {}
+  local highlight_parts = {}
+
+  -- Split code into lines
+  for line in code_content:gmatch("[^\r\n]*") do
+    table.insert(lines, line)
+  end
+
+  -- Look for comment flag patterns in each line
+  for line_num, line in ipairs(lines) do
+    local comment_pos = line:find(comment_flag, 1, true)
+    if comment_pos then
+      -- Extract comment text after the flag
+      local comment_text = line:sub(comment_pos + #comment_flag):gsub("^%s+", "")
+      if comment_text ~= "" then
+        table.insert(highlight_parts, "(" .. line_num .. ", [" .. comment_text .. "])")
+      end
+    end
+  end
+
+  return highlight_parts
+end
+
+-- Helper function to clean code content by removing inline comments
+local function clean_code_content(code_content, comment_flag)
+  local lines = {}
+  local cleaned_lines = {}
+
+  -- Split code into lines
+  for line in code_content:gmatch("[^\r\n]*") do
+    table.insert(lines, line)
+  end
+
+  -- Clean each line by removing comment flag and everything after it
+  for _, line in ipairs(lines) do
+    local comment_pos = line:find(comment_flag, 1, true)
+    if comment_pos then
+      -- Remove comment flag and everything after it, but keep trailing whitespace structure
+      local clean_line = line:sub(1, comment_pos - 1):gsub("%s+$", "")
+      table.insert(cleaned_lines, clean_line)
+    else
+      -- Keep line as-is if no comment flag
+      table.insert(cleaned_lines, line)
+    end
+  end
+
+  return table.concat(cleaned_lines, "\n")
+end
+
+-- Helper function to process color values
+local function process_color(color_str)
+  if color_str:match("^#%x%x%x%x%x%x$") then
+    -- Hex color: wrap with rgb()
+    return 'rgb("' .. color_str .. '")'
+  elseif color_str:match("^luma%(") or color_str:match("^rgb%(") or color_str:match("^color%.") then
+    -- Typst function: use as-is
+    return color_str
+  else
+    -- Assume it's a literal color name or other valid Typst color
+    return color_str
   end
 end
 
@@ -111,14 +216,10 @@ local function extract_zebraw_options(attr)
     table.insert(options, 'comment-flag: "' .. zebraw_comment_flag .. '"')
   end
 
-  -- Add comment font styling for mathematical annotations (use theme color)
+  -- Add comment font styling for mathematical annotations (use same color as code)
   if not attr["comment-font-args"] and #highlight_parts > 0 then
-    -- Format color properly for Typst
-    local color_value = zebraw_comment_color
-    if not string.match(color_value, "^rgb") then
-      color_value = 'rgb("' .. color_value .. '")'
-    end
-    table.insert(options, 'comment-font-args: (fill: ' .. color_value .. ', style: "italic")')
+    -- Use default text color (same as code) instead of custom color
+    table.insert(options, 'comment-font-args: (style: "italic")')
   end
 
   -- Line range
@@ -158,11 +259,67 @@ local function extract_zebraw_options(attr)
   return table.concat(options, ", ")
 end
 
+-- Helper function to process YAML-style zebraw comments
+local function process_yaml_comments(yaml_comments)
+  local highlight_parts = {}
+
+  if yaml_comments then
+    -- Handle YAML list format from cell metadata
+    if type(yaml_comments) == "table" then
+      for _, comment in ipairs(yaml_comments) do
+        local comment_str = pandoc.utils.stringify(comment)
+        -- Parse "line_num:comment text" format
+        local line_num, comment_text = comment_str:match("^(%d+):(.+)$")
+        if line_num and comment_text then
+          comment_text = comment_text:gsub("^%s+", "") -- trim leading spaces
+          table.insert(highlight_parts, "(" .. line_num .. ", [" .. comment_text .. "])")
+        end
+      end
+    else
+      -- Handle string format as fallback: "1:comment, 2:another comment"
+      local comment_str = pandoc.utils.stringify(yaml_comments)
+      for line_comment in comment_str:gmatch("([^,]+)") do
+        line_comment = line_comment:gsub("^%s+", ""):gsub("%s+$", "") -- trim whitespace
+        local line_num, comment_text = line_comment:match("^(%d+):(.+)$")
+        if line_num and comment_text then
+          comment_text = comment_text:gsub("^%s+", "") -- trim leading spaces
+          table.insert(highlight_parts, "(" .. line_num .. ", [" .. comment_text .. "])")
+        end
+      end
+    end
+  end
+
+  return highlight_parts
+end
+
 -- Function to process code blocks when zebraw is enabled
 function CodeBlock(el)
   if quarto.doc.is_format("typst") and use_zebraw then
     local code_content = el.text
     local language = el.classes[1] or ""
+
+    -- Check for inline comments in the code
+    local inline_highlight_parts = extract_inline_comments(code_content, zebraw_comment_flag)
+    local has_inline_comments = #inline_highlight_parts > 0
+
+    -- Check for zebraw-comment attribute (cell metadata) as fallback
+    local yaml_comments = el.attr.attributes["zebraw-comment"]
+    local has_yaml_comments = yaml_comments ~= nil
+
+    -- Only process with zebraw if we have comments or specific zebraw attributes
+    if not has_inline_comments and not has_yaml_comments then
+      -- Check if there are any other zebraw-specific attributes that would indicate zebraw usage
+      local has_zebraw_attrs = false
+      for key, _ in pairs(el.attr.attributes) do
+        if key:match("^zebraw%-") or key == "numbering" or key == "highlight-lines" then
+          has_zebraw_attrs = true
+          break
+        end
+      end
+      if not has_zebraw_attrs then
+        return el  -- Return regular code block
+      end
+    end
 
     -- Inject raw block styling override on first zebraw code block
     local styling_override = ""
@@ -170,7 +327,7 @@ function CodeBlock(el)
       styling_override = [[
 // Override Quarto's raw block inset for zebraw - injected by zebraw.lua filter
 #show raw.where(block: true): set block(
-  fill: luma(245),
+  fill: ]] .. zebraw_background_color .. [[,
   width: 100%,
   inset: ]] .. raw_inset .. [[,
   radius: 2pt)
@@ -179,19 +336,193 @@ function CodeBlock(el)
       injected_styling = true
     end
 
-    -- Extract zebraw options from attributes
-    local zebraw_options = extract_zebraw_options(el.attr.attributes)
+    -- Build zebraw options using YAML configuration
+    local options = {}
 
-    -- Build the zebraw code block
-    local zebraw_code = styling_override .. "#zebraw("
-
-    if zebraw_options ~= "" then
-      zebraw_code = zebraw_code .. zebraw_options .. ",\n"
+    -- Numbering
+    if zebraw_numbering then
+      table.insert(options, "numbering: true")
+    else
+      table.insert(options, "numbering: false")
     end
 
-    zebraw_code = zebraw_code .. "```" .. language .. "\n" .. code_content .. "\n```\n)"
+    -- Comment styling
+    table.insert(options, 'comment-font-args: (style: "' .. zebraw_comment_style .. '")')
+
+    -- Colors
+    table.insert(options, 'comment-color: ' .. process_color(zebraw_comment_color))
+    table.insert(options, 'highlight-color: ' .. process_color(zebraw_highlight_color))
+    table.insert(options, 'background-color: ' .. process_color(zebraw_background_color))
+
+    -- Comment flag (use as-is, no escaping needed for comment-flag parameter)
+    table.insert(options, 'comment-flag: "' .. zebraw_comment_flag .. '"')
+
+    -- Handle comments
+    if has_inline_comments then
+      table.insert(options, "highlight-lines: (" .. table.concat(inline_highlight_parts, ", ") .. ")")
+    elseif has_yaml_comments then
+      -- Process YAML-style comments from cell metadata
+      local yaml_highlight_parts = process_yaml_comments(yaml_comments)
+      if #yaml_highlight_parts > 0 then
+        table.insert(options, "highlight-lines: (" .. table.concat(yaml_highlight_parts, ", ") .. ")")
+      end
+    end
+
+    -- Extract other zebraw options from attributes (but skip conflicting ones)
+    local additional_options = extract_zebraw_options(el.attr.attributes)
+    if additional_options ~= "" then
+      -- Only add non-conflicting options
+      if not additional_options:match("numbering:") and
+         not additional_options:match("comment%-font%-args:") and
+         not additional_options:match("comment%-color:") and
+         not additional_options:match("highlight%-color:") and
+         not additional_options:match("background%-color:") and
+         not additional_options:match("comment%-flag:") then
+        table.insert(options, additional_options)
+      end
+    end
+
+    -- Use cleaned code content if we have inline comments
+    local final_code_content = code_content
+    if has_inline_comments then
+      final_code_content = clean_code_content(code_content, zebraw_comment_flag)
+    end
+
+    -- Build the zebraw code block
+    local zebraw_code = styling_override .. "#text(size: " .. zebraw_font_size .. ")[\n"
+    zebraw_code = zebraw_code .. "#zebraw(" .. table.concat(options, ", ") .. ",\n"
+    zebraw_code = zebraw_code .. "```" .. language .. "\n" .. final_code_content .. "\n```\n)"
+    zebraw_code = zebraw_code .. "\n]"
 
     return pandoc.RawBlock('typst', zebraw_code)
+  end
+
+  return el
+end
+
+-- Function to process Div blocks for zebraw comments
+function Div(el)
+  if quarto.doc.is_format("typst") and use_zebraw then
+
+    -- Check if this div has zebraw-comments class
+    if el.classes:includes("zebraw-comments") then
+      -- Find the code block and collect comment text
+      local code_block = nil
+      local comment_lines = {}
+
+      for i, block in ipairs(el.content) do
+        if block.t == "CodeBlock" then
+          code_block = block
+        elseif block.t == "RawBlock" then
+          -- Check if this is already a zebraw block that we should skip
+          if not block.text:match("#zebraw") then
+            -- Treat as a code block if it's not already processed
+            code_block = block
+          end
+        elseif block.t == "Para" then
+          -- Extract comment lines from paragraph content
+          local text = pandoc.utils.stringify(block)
+
+          -- The comments are all in one line, separated by number patterns
+          -- Pattern: "1:comment text 2:another comment 3:third comment"
+          -- We need to split on the pattern where a number follows a space
+
+          -- Use a simpler regex approach to split on \s+\d+: pattern
+          local parts = {}
+          local current_pos = 1
+
+          while true do
+            local next_pos = text:find("%s+%d+:", current_pos + 1)
+            if not next_pos then
+              -- Add the rest of the text as the last part
+              if current_pos <= #text then
+                local part = text:sub(current_pos):gsub("^%s+", ""):gsub("%s+$", "")
+                if part:match("^%d+:") then
+                  table.insert(parts, part)
+                end
+              end
+              break
+            else
+              -- Add the current part
+              local part = text:sub(current_pos, next_pos - 1):gsub("^%s+", ""):gsub("%s+$", "")
+              if part:match("^%d+:") then
+                table.insert(parts, part)
+              end
+              current_pos = next_pos
+            end
+          end
+
+          -- Add all parts to comment_lines
+          for _, part in ipairs(parts) do
+            table.insert(comment_lines, part)
+          end
+        end
+      end
+
+      if code_block then
+        local code_content = code_block.text
+        local language = code_block.classes[1] or ""
+
+        -- Process comment lines into highlight parts
+        local highlight_parts = {}
+        for _, comment_line in ipairs(comment_lines) do
+          local line_num, comment_text = comment_line:match("^(%d+):(.+)$")
+          if line_num and comment_text then
+            comment_text = comment_text:gsub("^%s+", "") -- trim leading spaces
+            table.insert(highlight_parts, "(" .. line_num .. ", [" .. comment_text .. "])")
+          end
+        end
+
+
+        -- Inject raw block styling override on first zebraw code block
+        local styling_override = ""
+        if not injected_styling then
+          styling_override = [=[
+// Override Quarto's raw block inset for zebraw - injected by zebraw.lua filter
+#show raw.where(block: true): set block(
+  fill: ]=] .. zebraw_background_color .. [=[,
+  width: 100%,
+  inset: ]=] .. raw_inset .. [=[,
+  radius: 2pt)
+
+]=]
+          injected_styling = true
+        end
+
+        -- Build zebraw options using same comprehensive set as inline comments
+        local options = {}
+
+        -- Numbering
+        if zebraw_numbering then
+          table.insert(options, "numbering: true")
+        else
+          table.insert(options, "numbering: false")
+        end
+
+        -- Comment styling
+        table.insert(options, 'comment-font-args: (style: "' .. zebraw_comment_style .. '")')
+
+        -- Colors
+        table.insert(options, 'comment-color: ' .. process_color(zebraw_comment_color))
+        table.insert(options, 'highlight-color: ' .. process_color(zebraw_highlight_color))
+        table.insert(options, 'background-color: ' .. process_color(zebraw_background_color))
+
+        -- Comment flag
+        table.insert(options, 'comment-flag: "' .. zebraw_comment_flag .. '"')
+
+        if #highlight_parts > 0 then
+          table.insert(options, "highlight-lines: (" .. table.concat(highlight_parts, ", ") .. ")")
+        end
+
+        -- Build the zebraw code block
+        local zebraw_code = styling_override .. "#text(size: " .. zebraw_font_size .. ")[\n"
+        zebraw_code = zebraw_code .. "#zebraw(" .. table.concat(options, ", ") .. ",\n"
+        zebraw_code = zebraw_code .. "```" .. language .. "\n" .. code_content .. "\n```\n)"
+        zebraw_code = zebraw_code .. "\n]"
+
+        return pandoc.RawBlock('typst', zebraw_code)
+      end
+    end
   end
 
   return el
@@ -200,5 +531,6 @@ end
 -- Return the filter functions
 return {
   { Meta = Meta },
+  { Div = Div },    -- Process Div blocks first to handle zebraw-comments
   { CodeBlock = CodeBlock }
 }

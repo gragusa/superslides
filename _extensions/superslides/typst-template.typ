@@ -20,7 +20,7 @@
 #let new-section-slide(self: none, body)  = touying-slide-wrapper(self => {
   let main-body = {
     set align(left + horizon)
-    set text(size: 3em, fill: self.colors.primary, weight: "bold", font: self.store.font-family-heading)
+    set text(size: 2em, fill: self.colors.primary, weight: "bold", font: self.store.font-family-heading)
     utils.display-current-heading(level: 1)
   }
   self = utils.merge-dicts(
@@ -87,8 +87,8 @@
   font-size: 18pt,
   font-family-heading: ("Roboto"),
   font-family-body: ("Roboto"),
-  font-weight-heading: "light",
-  font-weight-body: "light",
+  font-weight-heading: "regular",
+  font-weight-body: "regular",
   font-weight-title: "light",
   font-weight-subtitle: "light",
   font-size-title: 1.4em,
