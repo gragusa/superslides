@@ -173,7 +173,7 @@
 #import "@preview/fontawesome:0.5.0": *
 #import "@preview/ctheorems:1.1.3": *
 #import "@preview/cades:0.3.0": qr-code
-
+#import "@preview/mitex:0.2.5": *
 // Helper function to handle hex colors and Typst color functions
 #let parse-color(color-str) = {
   if color-str.starts-with("\\#") {
@@ -189,98 +189,6 @@
   }
 }
 
-// Enhanced theorem environment configuration function
-#let setup-theorems(self) = {
-  // Define theorem titles for different languages
-  let theorem-titles = (
-    "it": (
-      "theorem": "Teorema",
-      "proposition": "Proposizione",
-      "lemma": "Lemma",
-      "corollary": "Corollario",
-      "conjecture": "Congettura",
-      "definition": "Definizione",
-      "example": "Esempio",
-      "exercise": "Esercizio",
-      "solution": "Soluzione",
-      "assumption": "Assunzione",
-      "remark": "Osservazione",
-      "proof": "Dimostrazione"
-    ),
-    "en": (
-      "theorem": "Theorem",
-      "proposition": "Proposition",
-      "lemma": "Lemma",
-      "corollary": "Corollary",
-      "conjecture": "Conjecture",
-      "definition": "Definition",
-      "example": "Example",
-      "exercise": "Exercise",
-      "solution": "Solution",
-      "assumption": "Assumption",
-      "remark": "Remark",
-      "proof": "Proof"
-    )
-  )
-
-  // Get colors from YAML configuration
-  let theorem-colors = (
-    "theorem": parse-color(self.store.theorem-color),
-    "proposition": parse-color(self.store.proposition-color),
-    "lemma": parse-color(self.store.lemma-color),
-    "corollary": parse-color(self.store.corollary-color),
-    "conjecture": parse-color(self.store.conjecture-color),
-    "definition": parse-color(self.store.definition-color),
-    "example": parse-color(self.store.example-color),
-    "exercise": parse-color(self.store.exercise-color),
-    "solution": parse-color(self.store.solution-color),
-    "assumption": parse-color(self.store.assumption-color),
-    "remark": parse-color(self.store.remark-color),
-  )
-
-  let titles = theorem-titles.at(self.store.theorem-lang, default: theorem-titles.at("it"))
-  let numbering-setting = if self.store.theorem-numbering { "1.1" } else { none }
-
-  // Choose package and return appropriate setup
-  if self.store.theorem-package == "theorion" {
-    // Theorion setup
-    [
-      #import "@preview/theorion:0.4.0": *
-      #show: show-theorion
-
-      // Define theorem environments for theorion
-      #let theorem = theorem.with(title: titles.at("theorem"))
-      #let proposition = proposition.with(title: titles.at("proposition"))
-      #let lemma = lemma.with(title: titles.at("lemma"))
-      #let corollary = corollary.with(title: titles.at("corollary"))
-      #let conjecture = conjecture.with(title: titles.at("conjecture"))
-      #let definition = definition.with(title: titles.at("definition"))
-      #let example = example.with(title: titles.at("example"))
-      #let exercise = exercise.with(title: titles.at("exercise"))
-      #let assumption = assumption.with(title: titles.at("assumption"))
-      #let remark = remark.with(title: titles.at("remark"))
-      #let proof = proof.with(title: titles.at("proof"))
-    ]
-  } else {
-    // ctheorems setup (default)
-    [
-      #show: thmrules
-
-      #let theorem = thmbox("theorem", titles.at("theorem"), fill: theorem-colors.at("theorem")).with(numbering: numbering-setting)
-      #let proposition = thmbox("proposition", titles.at("proposition"), fill: theorem-colors.at("proposition")).with(numbering: numbering-setting)
-      #let lemma = thmbox("lemma", titles.at("lemma"), fill: theorem-colors.at("lemma")).with(numbering: numbering-setting)
-      #let corollary = thmbox("corollary", titles.at("corollary"), fill: theorem-colors.at("corollary")).with(numbering: numbering-setting)
-      #let conjecture = thmbox("conjecture", titles.at("conjecture"), fill: theorem-colors.at("conjecture")).with(numbering: numbering-setting)
-      #let definition = thmbox("definition", titles.at("definition"), fill: theorem-colors.at("definition")).with(numbering: numbering-setting)
-      #let example = thmbox("example", titles.at("example"), fill: theorem-colors.at("example")).with(numbering: numbering-setting)
-      #let exercise = thmbox("exercise", titles.at("exercise"), fill: theorem-colors.at("exercise")).with(numbering: numbering-setting)
-      #let solution = thmbox("solution", titles.at("solution"), fill: theorem-colors.at("solution")).with(numbering: numbering-setting)
-      #let assumption = thmbox("assumption", titles.at("assumption"), fill: theorem-colors.at("assumption")).with(numbering: numbering-setting)
-      #let remark = thmbox("remark", titles.at("remark"), fill: theorem-colors.at("remark")).with(numbering: numbering-setting)
-      #let proof = thmbox("proof", titles.at("proof"), fill: theorem-colors.at("remark")).with(numbering: none)
-    ]
-  }
-}
 #let new-section-slide(self: none, body)  = touying-slide-wrapper(self => {
   let main-body = {
     set align(left + horizon)
@@ -290,9 +198,16 @@
   self = utils.merge-dicts(
     self,
     config-page(margin: (left: 2em, top: -0.25em)),
-  ) 
+  )
   touying-slide(self: self, main-body)
 })
+
+
+// Fix math after items
+//  See https://github.com/typst/typst/issues/529
+#show math.equation.where(block: true): eq => {
+  block(width: 100%,align(center, $eq$))
+}
 
 #let slide(
   config: (:),
@@ -304,7 +219,7 @@
   // set page
   let header(self) = {
     set align(top)
-    show: components.cell.with(inset: (x: 2em, top: 1.5em))
+    show: components.cell.with(inset: (x: 1.2em, top: 1.0em))
     set text(
       size: 1.4em,
       fill: self.colors.neutral-darkest,
@@ -319,7 +234,7 @@
     set text(fill: self.colors.neutral-darkest, size: .7em)
     utils.call-or-display(self, self.store.footer)
     h(1fr)
-    context utils.slide-counter.display() + " : " + utils.last-slide-number
+    context utils.slide-counter.display() + "/" + utils.last-slide-number
   }
 
   // Set the slide
@@ -351,15 +266,20 @@
   font-size: 18pt,
   font-family-heading: ("Roboto"),
   font-family-body: ("Roboto"),
+  font-family-math: none,
   font-weight-heading: "regular",
   font-weight-body: "regular",
   font-weight-title: "light",
   font-weight-subtitle: "light",
   font-size-title: 1.4em,
   font-size-subtitle: 1em,
-  color-jet: parse-color("#131516"),
-  color-accent: parse-color("#107895"),
-  color-accent2: parse-color("#9a2515"),
+
+  // Simplified color system - only 3 colors needed
+  text-color: parse-color("#131516"),      // Body text color
+  primary-color: parse-color("#107895"),   // Main accent color
+  secondary-color: parse-color("#9a2515"), // Secondary accent color
+  strong-weight: "regular",
+
   raw-font-size: 15pt,  // Code block font size
   raw-inline-size: none,  // Separate size for inline code (if none, uses body font size)
   raw-inset: 8pt,  // Inset for raw code blocks
@@ -396,14 +316,8 @@
   email-color: none,        // Color for email text
   // Language support
   lang: "en",              // Language for last updated text
-  // Showybox customization options
-  // Color settings
-  simplebox-color: none,
-  warningbox-color: none,
-  infobox-color: none,
-  alert-color: none,        // Alert text color (for bold/strong text)
 
-  // Global box settings
+  // Global box settings (no individual colors - generated from primary/secondary)
   box-border-thickness: 1pt,
   box-border-radius: 4pt,
   box-shadow: none,
@@ -415,59 +329,22 @@
   box-spacing-below: 1em,
   box-padding: 8pt,
 
-  // Individual box type overrides
-  simplebox-thickness: none,
-  simplebox-radius: none,
-  warningbox-thickness: none,
-  warningbox-radius: none,
-  infobox-thickness: none,
-  infobox-radius: none,
-  // Theorem system configuration
+  // Theorem system configuration (colors auto-generated from primary-color)
   theorem-package: "ctheorems",  // "ctheorems" or "theorion"
   theorem-lang: "it",
   theorem-numbering: false,
-  theorem-font-size: none,
-  theorem-title-weight: "bold",
-  theorem-body-weight: "regular",
-
-  // Individual theorem type colors
-  theorem-color: "#E9E5F3",
-  theorem-border: none,
-  lemma-color: "#F3E9E5",
-  lemma-border: none,
-  corollary-color: "#F8F0E8",
-  corollary-border: none,
-  proposition-color: "#E5F3E9",
-  proposition-border: none,
-  conjecture-color: "#F3F8F0",
-  conjecture-border: none,
-  definition-color: "#E0EDF4",
-  definition-border: none,
-  example-color: "#F0F8E6",
-  example-border: none,
-  exercise-color: "#E0EDF4",
-  exercise-border: none,
-  solution-color: "#F5F0F8",
-  solution-border: none,
-  remark-color: "#F0F8F5",
-  remark-border: none,
-  assumption-color: "#F5F0F8",
-  assumption-border: none,
-
-  // Global theorem styling
-  theorem-border-thickness: "1pt",
-  theorem-border-radius: "4pt",
-  theorem-title-font-size: "1.1em",
-  theorem-title-font-weight: "bold",
-  theorem-body-font-size: "1.0em",
-  theorem-body-font-weight: "regular",
-  theorem-padding: "8pt",
-  theorem-spacing: "1em",
   ..args,
   body,
 ) = {
-  set text(size: font-size, font: font-family-body, fill: color-jet,
+  set text(size: font-size, font: font-family-body, fill: text-color,
            weight: font-weight-body)
+
+
+if font-family-math != none {
+  show math.equation: set text(font: font-family-math)
+}
+
+
 
   // Configure raw text styling for all code blocks
   show raw.where(block: true): it => {
@@ -482,14 +359,15 @@
     size: if raw-inline-size != none { raw-inline-size } else { font-size }
   )
 
-  // Strong/bold text styling - handled by Touying's alert system when show-strong-with-alert: true
-  // show strong: it => text(
-  //   fill: if alert-color != none { alert-color } else { color-accent2 },
-  //   weight: "bold",
-  //   it.body
-  // )
-  
+  // Strong/bold text styling (uses secondary color)
+  show strong: it => text(
+    fill: secondary-color,
+    weight: strong-weight,
+    it.body
+  )
+
   show: touying-slides.with(
+
     config-page(
       paper: "presentation-" + aspect-ratio,
       margin: (top: 4em, bottom: 1.5em, x: 2em),
@@ -500,16 +378,14 @@
       slide-level: 2,        // ## creates new slides
       section-level: 1,      // # creates section slides
       handout: handout,
-      enable-frozen-states-and-counters: false, // https://github.com/touying-typ/touying/issues/72
+      enable-frozen-states-and-counters: false,
+      // https://github.com/touying-typ/touying/issues/72
       show-hide-set-list-marker-none: true,
-      show-strong-with-alert: true
+      show-strong-with-alert: false
     ),
     config-methods(
       init: (self: none, body) => {
         show link: set text(fill: self.colors.primary)
-
-        // Setup theorems with YAML configuration
-        setup-theorems(self)
 
         // Unordered List with customizable markers and indent
         set list(
@@ -532,30 +408,66 @@
             let result = numbering(format, num)
             text(fill: self.colors.primary, result)
           }
-        ) 
+        )
         // Slide Subtitle
         show heading.where(level: 3): title => {
           set text(
             size: 1.1em,
             fill: self.colors.primary,
             font: font-family-body,
-            weight: "light",
-            style: "italic",
+            weight: "regular",
+            style: "normal",
           )
           block(inset: (top: -0.5em, bottom: 0.25em))[#title]
+        }
+
+        // Level 4 headings - italic instead of bold
+        show heading.where(level: 4): title => {
+          set text(
+            size: 1em,
+            fill: text-color,
+            font: font-family-body,
+            weight: "regular",
+            style: "italic",
+          )
+          block(inset: (top: 0.25em, bottom: 0.25em))[#title]
+        }
+
+        // Table styling - clean design for markdown tables
+        show table: it => {
+          set table(
+            stroke: (x, y) => {
+              // Top border for header row
+              if y == 0 { (top: 2pt + self.colors.primary, bottom: 1pt + self.colors.primary) }
+              // Bottom border for last row
+              else if y == it.rows.len() - 1 { (bottom: 0.5pt + self.colors.primary.lighten(50%)) }
+              // No other borders
+              else { none }
+            },
+            inset: 8pt,
+            fill: (x, y) => {
+              // Header row background
+              if y == 0 { self.colors.primary.lighten(90%) }
+              // Alternating row colors
+              else if calc.odd(y) { self.colors.primary.lighten(97%) }
+              else { white }
+            }
+          )
+
+          block(above: 1em, below: 1em, it)
         }
 
         set bibliography(title: none)
 
         body
       },
-      alert: (self: none, it) => text(fill: if alert-color != none { alert-color } else { self.colors.secondary }, weight: "bold", it),
+      alert: (self: none, it) => text(fill: self.colors.secondary, weight: "bold", it),
     ),
     config-colors(
-      primary: color-accent,
-      secondary: color-accent2,
+      primary: primary-color,
+      secondary: secondary-color,
       neutral-lightest: rgb("#ffffff"),
-      neutral-darkest: color-jet,
+      neutral-darkest: text-color,
     ),
     // save the variables for later use
     config-store(
@@ -577,10 +489,10 @@
       qr-code-size: qr-code-size,
       qr-code-button-color: qr-code-button-color,
       last-updated-text: last-updated-text,
-      simplebox-color: simplebox-color,
-      warningbox-color: warningbox-color,
-      infobox-color: infobox-color,
-      // Enhanced box configuration
+      // Simplified color system
+      primary-color: primary-color,
+      secondary-color: secondary-color,
+      // Box configuration
       box-border-thickness: box-border-thickness,
       box-border-radius: box-border-radius,
       box-shadow: box-shadow,
@@ -591,12 +503,6 @@
       box-spacing-above: box-spacing-above,
       box-spacing-below: box-spacing-below,
       box-padding: box-padding,
-      simplebox-thickness: simplebox-thickness,
-      simplebox-radius: simplebox-radius,
-      warningbox-thickness: warningbox-thickness,
-      warningbox-radius: warningbox-radius,
-      infobox-thickness: infobox-thickness,
-      infobox-radius: infobox-radius,
       title-font: title-font,
       title-size: title-size,
       title-weight: title-weight,
@@ -611,44 +517,10 @@
       affiliation-weight: affiliation-weight,
       email-color: email-color,
       lang: lang,
-      alert-color: alert-color,
-      // Theorem configuration
+      // Theorem configuration (colors auto-generated from primary-color)
       theorem-package: theorem-package,
       theorem-lang: theorem-lang,
       theorem-numbering: theorem-numbering,
-      theorem-font-size: theorem-font-size,
-      theorem-title-weight: theorem-title-weight,
-      theorem-body-weight: theorem-body-weight,
-      theorem-color: theorem-color,
-      theorem-border: theorem-border,
-      lemma-color: lemma-color,
-      lemma-border: lemma-border,
-      corollary-color: corollary-color,
-      corollary-border: corollary-border,
-      proposition-color: proposition-color,
-      proposition-border: proposition-border,
-      conjecture-color: conjecture-color,
-      conjecture-border: conjecture-border,
-      definition-color: definition-color,
-      definition-border: definition-border,
-      example-color: example-color,
-      example-border: example-border,
-      exercise-color: exercise-color,
-      exercise-border: exercise-border,
-      solution-color: solution-color,
-      solution-border: solution-border,
-      remark-color: remark-color,
-      remark-border: remark-border,
-      assumption-color: assumption-color,
-      assumption-border: assumption-border,
-      theorem-border-thickness: theorem-border-thickness,
-      theorem-border-radius: theorem-border-radius,
-      theorem-title-font-size: theorem-title-font-size,
-      theorem-title-font-weight: theorem-title-font-weight,
-      theorem-body-font-size: theorem-body-font-size,
-      theorem-body-font-weight: theorem-body-font-weight,
-      theorem-padding: theorem-padding,
-      theorem-spacing: theorem-spacing,
       ..args,
     ),
   )
@@ -770,17 +642,17 @@
     }
 
     // Date section
-    if info.lecture-date != none {
+    if info.date != none {
       block(
         inset: (bottom: 2em),
         text(
           size: if self.store.date-size != none { self.store.date-size } else { 16pt },
           fill: self.colors.primary,
           weight: "medium",
-          if type(info.lecture-date) == datetime {
-            info.lecture-date.display(self.datetime-format)
+          if type(info.date) == datetime {
+            info.date.display(self.datetime-format)
           } else {
-            info.lecture-date
+            info.date
           }
         )
       )
@@ -933,8 +805,14 @@
 }
 
 #show emph: it => {
-    text(blue, it.body)
+  set text(fill: black, style: "italic")
+  it
 }
+#import "@preview/ctheorems:1.1.3": *
+#show: thmrules
+#let theorem = thmbox("theorem", "Theorem")
+#let lemma = thmbox("lemma", "Lemma")
+#let definition = thmbox("definition", "Definition")
 
 #set page(
   paper: "us-letter",
@@ -963,8 +841,9 @@
       font-size: 24pt,
         font-family-heading: ("Inter",),
         font-family-body: ("Inter",),
-        font-weight-heading: "regular",
+          font-weight-heading: "medium",
         font-weight-body: "regular",
+        strong-weight: "medium",
         raw-font-size: 14pt,
         raw-inline-size: 22pt,
         raw-inset: 8pt,
@@ -975,68 +854,150 @@
         list-marker-2: "◦",
         list-marker-3: "▪",
   
-  // Colors --------------------------------------------------------------------
-      color-jet: parse-color("\#404040"),
-        color-accent: parse-color("\#2836A6"),
-        color-accent2: parse-color("\#004494"),
+  // Simplified 3-color system -------------------------------------------------
+      text-color: parse-color("\#131516"),
+        primary-color: parse-color("\#107895"),
+        secondary-color: parse-color("\#9a2515"),
   
   // Background ----------------------------------------------------------------
       // Title slide ---------------------------------------------------------------
       title-font: "Inter",
-        title-size: 42pt,
+        title-size: 1.6em,
         title-weight: "bold",
         subtitle-font: "Inter",
-        subtitle-size: 30pt,
+        subtitle-size: 1.3em,
         subtitle-weight: "regular",
-        author-size: 20pt,
-        date-size: 18pt,
-              updates-link: "https:\/\/github.com/gragusa/superslides/releases",
+        author-size: 1.0em,
+        date-size: 0.8em,
+        font-weight-title: "light",
+        font-size-title: 1.4em,
+        font-size-subtitle: 1em,
+        updates-link: "https:\/\/github.com/gragusa/superslides/releases",
         affiliation-color: parse-color("\#707070"),
         affiliation-style: "italic",
-          email-color: parse-color("\#CD853F"),
+        affiliation-weight: "regular",
+        email-color: parse-color("\#CD853F"),
         lang: "en",
   
   // Title page customization --------------------------------------------------
-          qr-code-url: "https:\/\/github.com/gragusa/superslides",
+              qr-code-url: "https:\/\/github.com/gragusa/superslides",
         qr-code-title: "View Source",
         qr-code-size: 4cm,
         qr-code-button-color: parse-color("\#404040"),
-    
-  // Showybox customization -----------------------------------------------------
-  // Color settings
-            alert-color: parse-color("\#FF6B35"),
+        last-updated-text: "Last updated:",
   
+  // Showybox customization (colors auto-generated from primary/secondary) ----
   // Border and appearance settings
-      
+      box-border-thickness: 1pt,
+        box-border-radius: 6pt,
+        box-shadow: none,
+  
   // Typography settings
-        
+      box-title-font-size: 1.1em,
+        box-title-font-weight: "bold",
+        box-body-font-size: 1em,
+        box-body-font-weight: "regular",
+  
   // Spacing settings
-      
-  // Individual box type overrides
-            
-  // Theorem configuration -----------------------------------------------------
+      box-spacing-above: 1em,
+        box-spacing-below: 1em,
+        box-padding: 8pt,
+  
+  // Theorem configuration (colors auto-generated from primary-color) ---------
+      theorem-package: "ctheorems",
         theorem-lang: "en",
-          
-  // Individual theorem type colors
-                                            
-  // Global theorem styling
-                )
+        theorem-numbering: true,
+  )
+
+
+
+
+// Dynamic theorem setup based on YAML - colors generated from primary-color
+#import "@preview/ctheorems:1.1.3": *
+#show: thmrules
+
+#import "_extensions/superslides/translations.typ"
+#import "_extensions/superslides/colors.typ"
+// Helper function for simple sequential numbering
+  #let unary(.., last) = last
+
+#let theorem = thmbox(
+  "theorem",
+  translations.variant("theorem"),
+  fill: parse-color("\#107895").lighten(80%)
+).with(
+  numbering: unary
+)
+
+#let lemma = thmbox(
+  "lemma",
+  translations.variant("lemma"),
+  fill: parse-color("\#107895").lighten(80%)
+).with(
+  numbering: unary)
+
+#let proposition = thmbox(
+  "proposition",
+  translations.variant("proposition"),
+  fill: parse-color("\#107895").lighten(80%)
+).with(
+  numbering: unary)
+
+#let corollary = thmbox(
+  "corollary",
+  translations.variant("corollary"),
+  fill: parse-color("\#107895").lighten(80%)
+).with(
+  numbering: unary)
+
+#let definition = thmbox(
+  "definition",
+  translations.variant("definition"),
+  fill: parse-color("\#107895").lighten(90%)
+).with(
+  numbering: unary)
+
+#let example = thmbox(
+  "example",
+  translations.variant("example"),
+  fill: parse-color("\#107895").lighten(90%)
+).with(
+  numbering: unary)
+
+#let assumption = thmbox(
+  "assumption",
+  translations.variant("assumption"),
+  fill: parse-color("\#107895").lighten(90%)
+).with(
+  numbering: unary)
+
+
+#set table(
+  stroke: none,
+  // fill: (x, y) =>
+  //   if calc.odd(x) and y>0 { luma(240) }
+  //   else { white },
+  row-gutter: 0.0em,
+  inset: (right: 1.5em),
+)
+
+#show table.cell: set text(size: 0.8em)
+#show table.cell.where(y: 0): strong
 
 #title-slide(
   title: [Superslides Template],
   subtitle: [Super features demo],
   authors: (
                     ( name: [Giuseppe Ragusa],
-            affiliation: [Luiss University],
+            affiliation: [Sapienza University of Rome],
             email: [],
             orcid: []),
             ),
   date: [2025-09-26],
-  lecture-date: [September 26, 2025],
+  update-date: [October 1, 2025],
   web: [],
   icon: []
 )
-
 #import "@preview/colorful-boxes:1.4.3": *
 #let bluebox(body) = {
   outline-colorbox(
@@ -1060,43 +1021,54 @@ frame: (
 <introduction>
 #showybox(
   below: 1em,
-  sep: (
-    thickness: 8pt
+  body_style: (
+    weight: "regular",
+    size: 1em
   ),
   above: 1em,
   frame: (
-    border-color: green,
-    title-color: green.lighten(30%),
-    body-color: green.lighten(95%),
-    radius: 4pt,
-    thickness: 1pt
+    border-color: rgb("#107895"),
+    title-color: rgb("#107895").darken(10%),
+    body-color: rgb("#107895").lighten(90%),
+    footer-color: rgb("#107895").lighten(80%),
+    thickness: 1pt,
+    radius: 6pt
   ),
-  body_style: (
-    color: green.darken(20%),
-    weight: "regular"
+  sep: (
+    thickness: 8pt
   ),
   title_style: (
-    weight: "bold"
+    weight: "bold",
+    size: 1.1em
   ),
+  shadow: none,
 )[
 Welcome to #strong[Superslides];! This template demonstrates:
 
 - Enhanced Typst presentations with Touying
 - Professional title slides with interactive elements
 - Advanced code blocks with zebraw integration
-- Complete customization through YAML parameters
+- Simple 3-color customization system
+
+$ Y_t = A_1 Y_(t - 1) + E_t arrow.r integral f (x) d x $
 
 ]
+== Math
+<math>
+$ Y_i = X_i beta + u_i \, quad i = 1 \, dots.h \, n $
+
 == Features Overview
 <features-overview>
-#strong[Key capabilities:]
-
+=== Key capabilities
+<key-capabilities>
 - 🎨 Professional title slides with left-aligned layout
 - 🔗 Interactive QR codes and clickable links
 - 📝 Enhanced code blocks with mathematical annotations
-- 🎯 40+ YAML parameters for customization
+- 🎯 Simple 3-color palette system
 - 🌐 Multi-language support (English/Italian)
 
+==== Note: This is a fourth level header `====`
+<note-this-is-a-fourth-level-header>
 == Typography
 <typography>
 Standard markdown formatting works as expected:
@@ -1110,14 +1082,49 @@ Standard markdown formatting works as expected:
 
 == Code Blocks
 <code-blocks>
-Superslides supports standard code blocks with proper syntax highlighting and customizable formatting.
-
+#block[
 ```r
 plot(rnorm(10))
 ```
 
-#box(image("template_files/figure-typst/unnamed-chunk-1-1.svg"))
+]
+#grid(
+columns: (1fr), gutter: 1em, rows: 1,
+  rect(stroke: none, width: 100%)[
+#align(center)[#box(image("template_files/figure-typst/unnamed-chunk-1-1.svg"))]
+],
+)
+== 
+<section>
+#block[
+```python
+import matplotlib.pyplot as plt
+plt.plot([1,23,2,4])
+plt.show()
+plt.plot([8,65,23,90])
+plt.show()
+```
 
+]
+#grid(
+columns: (1fr, 1fr), gutter: 1em, rows: 1,
+  rect(stroke: none, width: 100%)[
+#figure(image("template_files/figure-typst/unnamed-chunk-2-1.svg", width: 100.0%),
+  caption: [
+    Line Plot 1
+  ]
+)
+
+],
+  rect(stroke: none, width: 100%)[
+#figure(image("template_files/figure-typst/unnamed-chunk-2-2.svg", width: 100.0%),
+  caption: [
+    Line Plot 2
+  ]
+)
+
+],
+)
 == Code Block Configuration
 <code-block-configuration>
 You can control code block appearance through YAML parameters:
@@ -1179,16 +1186,225 @@ end
 <inline-code>
 You can also use `inline code` within text. The font size is controlled by the `raw-inline-size` parameter.
 
+= Table
+<table>
+== Table using R
+<table-using-r>
+```r
+library(tinytable)
+## fontsize is in em
+tt(head(iris))|> style_tt(fontsize=0.8) |> theme_striped()
+```
+
+#figure([
+#show figure: set block(breakable: true)
+
+#block[ // start block
+
+  #let style-dict = (
+    // tinytable style-dict after
+    "0_0": 0, "2_0": 0, "4_0": 0, "6_0": 0, "0_1": 0, "2_1": 0, "4_1": 0, "6_1": 0, "0_2": 0, "2_2": 0, "4_2": 0, "6_2": 0, "0_3": 0, "2_3": 0, "4_3": 0, "6_3": 0, "0_4": 0, "2_4": 0, "4_4": 0, "6_4": 0, "1_0": 1, "3_0": 1, "5_0": 1, "1_1": 1, "3_1": 1, "5_1": 1, "1_2": 1, "3_2": 1, "5_2": 1, "1_3": 1, "3_3": 1, "5_3": 1, "1_4": 1, "3_4": 1, "5_4": 1
+  )
+
+  #let style-array = ( 
+    // tinytable cell style after
+    (fontsize: 0.8em,),
+    (fontsize: 0.8em, background: rgb("#ededed"),),
+  )
+
+  // Helper function to get cell style
+  #let get-style(x, y) = {
+    let key = str(y) + "_" + str(x)
+    if key in style-dict { style-array.at(style-dict.at(key)) } else { none }
+  }
+
+  // tinytable align-default-array before
+  #let align-default-array = ( left, left, left, left, left, ) // tinytable align-default-array here
+  #show table.cell: it => {
+    if style-array.len() == 0 { return it }
+    
+    let style = get-style(it.x, it.y)
+    if style == none { return it }
+    
+    let tmp = it
+    if ("fontsize" in style) { tmp = text(size: style.fontsize, tmp) }
+    if ("color" in style) { tmp = text(fill: style.color, tmp) }
+    if ("indent" in style) { tmp = pad(left: style.indent, tmp) }
+    if ("underline" in style) { tmp = underline(tmp) }
+    if ("italic" in style) { tmp = emph(tmp) }
+    if ("bold" in style) { tmp = strong(tmp) }
+    if ("mono" in style) { tmp = math.mono(tmp) }
+    if ("strikeout" in style) { tmp = strike(tmp) }
+    tmp
+  }
+
+  #align(center, [
+
+  #table( // tinytable table start
+    columns: (auto, auto, auto, auto, auto),
+    stroke: none,
+    rows: auto,
+    align: (x, y) => {
+      let style = get-style(x, y)
+      if style != none and "align" in style { style.align } else { left }
+    },
+    fill: (x, y) => {
+      let style = get-style(x, y)
+      if style != none and "background" in style { style.background }
+    },
+ table.hline(y: 1, start: 0, end: 5, stroke: 0.05em + black),
+ table.hline(y: 7, start: 0, end: 5, stroke: 0.1em + black),
+ table.hline(y: 0, start: 0, end: 5, stroke: 0.1em + black),
+ table.hline(y: 7, start: 0, end: 5, stroke: 0.1em + rgb("#d3d8dc")),
+ table.hline(y: 0, start: 0, end: 5, stroke: 0.1em + rgb("#d3d8dc")), table.hline(y: 1, start: 0, end: 5, stroke: 0.1em + rgb("#d3d8dc")),
+    // tinytable lines before
+
+    // tinytable header start
+    table.header(
+      repeat: true,
+[Sepal.Length], [Sepal.Width], [Petal.Length], [Petal.Width], [Species],
+    ),
+    // tinytable header end
+
+    // tinytable cell content after
+[5.1], [3.5], [1.4], [0.2], [setosa],
+[4.9], [3.0], [1.4], [0.2], [setosa],
+[4.7], [3.2], [1.3], [0.2], [setosa],
+[4.6], [3.1], [1.5], [0.2], [setosa],
+[5.0], [3.6], [1.4], [0.2], [setosa],
+[5.4], [3.9], [1.7], [0.4], [setosa],
+
+    // tinytable footer after
+
+  ) // end table
+
+  ]) // end align
+
+] // end block
+], caption: figure.caption(
+position: bottom, 
+[
+First few rows of the iris dataset.
+]), 
+kind: "quarto-float-tbl", 
+supplement: "Table", 
+)
+<tbl-iris>
+
+
+== Table using R with math
+<table-using-r-with-math>
+#block[
+```r
+library(tinytable)
+
+theme_mitex <- function(x, ...) {
+    fn <- function(table) {
+        if (isTRUE(table@output == "typst")) {
+          table@table_string <- gsub("\\$(.*?)\\$", "#mitex(`\\1`)", table@table_string)
+        }
+        return(table)
+    }
+    x <- style_tt(x, finalize = fn)
+    x <- theme_striped(x)
+    return(x)
+}
+
+options(tinytable_html_mathjax = TRUE)
+options(tinytable_tt_theme = theme_mitex)
+```
+
+]
+```r
+data.frame(Math = c("$\\alpha$", "$a_{it}$", "$e^{i\\pi} + 1 = 0$")) |>
+  tt()
+```
+
+#show figure: set block(breakable: true)
+
+#block[ // start block
+
+  #let style-dict = (
+    // tinytable style-dict after
+    "1_0": 0, "3_0": 0
+  )
+
+  #let style-array = ( 
+    // tinytable cell style after
+    (background: rgb("#ededed"),),
+  )
+
+  // Helper function to get cell style
+  #let get-style(x, y) = {
+    let key = str(y) + "_" + str(x)
+    if key in style-dict { style-array.at(style-dict.at(key)) } else { none }
+  }
+
+  // tinytable align-default-array before
+  #let align-default-array = ( left, ) // tinytable align-default-array here
+  #show table.cell: it => {
+    if style-array.len() == 0 { return it }
+    
+    let style = get-style(it.x, it.y)
+    if style == none { return it }
+    
+    let tmp = it
+    if ("fontsize" in style) { tmp = text(size: style.fontsize, tmp) }
+    if ("color" in style) { tmp = text(fill: style.color, tmp) }
+    if ("indent" in style) { tmp = pad(left: style.indent, tmp) }
+    if ("underline" in style) { tmp = underline(tmp) }
+    if ("italic" in style) { tmp = emph(tmp) }
+    if ("bold" in style) { tmp = strong(tmp) }
+    if ("mono" in style) { tmp = math.mono(tmp) }
+    if ("strikeout" in style) { tmp = strike(tmp) }
+    tmp
+  }
+
+  #align(center, [
+
+  #table( // tinytable table start
+    columns: (auto),
+    stroke: none,
+    rows: auto,
+    align: (x, y) => {
+      let style = get-style(x, y)
+      if style != none and "align" in style { style.align } else { left }
+    },
+    fill: (x, y) => {
+      let style = get-style(x, y)
+      if style != none and "background" in style { style.background }
+    },
+ table.hline(y: 4, start: 0, end: 1, stroke: 0.1em + rgb("#d3d8dc")),
+ table.hline(y: 0, start: 0, end: 1, stroke: 0.1em + rgb("#d3d8dc")), table.hline(y: 1, start: 0, end: 1, stroke: 0.1em + rgb("#d3d8dc")),
+    // tinytable lines before
+
+    // tinytable header start
+    table.header(
+      repeat: true,
+[Math],
+    ),
+    // tinytable header end
+
+    // tinytable cell content after
+[#mitex(`\alpha`)],
+[#mitex(`a_{it}`)],
+[#mitex(`e^{i\pi} + 1 = 0`)],
+
+    // tinytable footer after
+
+  ) // end table
+
+  ]) // end align
+
+] // end block
 = Box and Theorem Systems
 <box-and-theorem-systems>
 == Current Showybox System
 <current-showybox-system>
-Superslides supports three types of showyboxes via the `::: {.classname}` syntax:
+Superslides supports two types of showyboxes via the `::: {.classname}` syntax, with colors automatically generated from your primary and secondary colors:
 
 == Simplebox
 <simplebox>
-#block[
-#block[
 #strong[Code:]
 
 ```markdown
@@ -1199,42 +1415,38 @@ with blue styling.
 :::
 ```
 
-]
-#block[
 #strong[Result:]
 
 #showybox(
   title: "Simple Information",
   below: 1em,
-  sep: (
-    thickness: 8pt
+  body_style: (
+    weight: "regular",
+    size: 1em
   ),
   above: 1em,
   frame: (
-    border-color: blue.lighten(80%),
-    title-color: blue.lighten(30%),
-    body-color: blue.lighten(96%),
-    footer-color: blue.lighten(80%),
+    border-color: rgb("#107895"),
+    title-color: rgb("#107895").darken(10%),
+    body-color: rgb("#107895").lighten(90%),
+    footer-color: rgb("#107895").lighten(80%),
     thickness: 1pt,
-    radius: 4pt
+    radius: 6pt
   ),
-  body_style: (
-    weight: "regular"
+  sep: (
+    thickness: 8pt
   ),
   title_style: (
-    weight: "bold"
+    weight: "bold",
+    size: 1.1em
   ),
+  shadow: none,
 )[
 This is a simple information box with blue styling.
 
 ]
-]
 == 
-<section>
-#block[
-#block[
-#strong[Code:]
-
+<section-1>
 ```
 ::: {.warningbox}
 ### Warning
@@ -1243,430 +1455,222 @@ red styling for alerts.
 :::
 ```
 
-]
-#block[
-#strong[Result:]
-
 #showybox(
   title: "Warning",
   below: 1em,
-  sep: (
-    thickness: 8pt
+  body_style: (
+    weight: "regular",
+    size: 1em
   ),
   above: 1em,
   frame: (
-    border-color: red,
-    title-color: red.lighten(30%),
-    body-color: red.lighten(95%),
-    thickness: 2pt,
-    radius: 4pt
+    border-color: rgb("#9a2515"),
+    title-color: rgb("#9a2515").darken(10%),
+    body-color: rgb("#9a2515").lighten(90%),
+    thickness: 1pt,
+    radius: 6pt
   ),
-  body_style: (
-    weight: "regular"
+  sep: (
+    thickness: 8pt
   ),
   title_style: (
     color: white,
-    weight: "bold"
+    weight: "bold",
+    size: 1.1em
   ),
+  shadow: none,
 )[
 This is a warning box with red styling for alerts.
 
 ]
-]
-== 
-<section-1>
-#block[
-#block[
-#strong[Code:]
+= Theorem System
+<theorem-system>
+Superslides provides a comprehensive theorem system using Quarto's native syntax with beautiful styling.
 
+== Configuration
+<configuration>
+The theorem system is configured in the YAML header:
+
+```yaml
+theorem-package: "ctheorems"      # Package to use
+theorem-lang: "en"                # Language: "en" or "it"
+theorem-numbering: true           # Sequential numbering (1, 2, 3...)
+# Colors automatically generated from primary-color
+```
+
+== Basic Theorem
+<basic-theorem>
+=== Quarto Syntax
+<quarto-syntax>
 ```markdown
-::: {.infobox}
-## Information
-This is an info box with
-green styling.
+::: {#thm-main}
+### Fundamental Theorem
+Every positive integer can be written as a sum of distinct powers of 2.
 :::
 ```
 
-]
-#block[
-#strong[Result:]
+=== Result
+<result>
+#theorem("Fundamental Theorem")[
+Every positive integer can be written as a sum of distinct powers of 2.
 
-#showybox(
-  title: "Information",
-  below: 1em,
-  sep: (
-    thickness: 8pt
-  ),
-  above: 1em,
-  frame: (
-    border-color: green,
-    title-color: green.lighten(30%),
-    body-color: green.lighten(95%),
-    radius: 4pt,
-    thickness: 1pt
-  ),
-  body_style: (
-    color: green.darken(20%),
-    weight: "regular"
-  ),
-  title_style: (
-    weight: "bold"
-  ),
-)[
-This is an info box with green styling.
-
-]
-]
-= Theorem-like env
-<theorem-like-env>
-== Theorem
-<theorem>
-#block[
-#block[
-#strong[Code:]
-
-```typst
-#theorem[
-This is a theorem with
-Italian "Teorema" title.
-]
-```
-
-]
-#block[
-#strong[Result:]
-
-#theorem[
-This is a theorem with Italian "Teorema" title.
-]
-]
-== Proposition
-<proposition>
-#block[
-#block[
-#strong[Code:]
-
-```typst
-#proposition[
-This is a proposition with
-Italian "Proposizione" title.
-]
-```
-
-]
-#block[
-#strong[Result:]
-
-#proposition[
-This is a proposition with Italian "Proposizione" title.
-]
-]
+] <thm-main>
 == Lemma
 <lemma>
-#block[
-#block[
-#strong[Code:]
-
-```typst
-#lemma[
-This is a lemma with
-Italian "Lemma" title.
-]
+=== Quarto Syntax:
+<quarto-syntax-1>
+```markdown
+::: {#lem-binary}
+### Binary Representation
+Any positive integer has a unique binary representation.
+:::
 ```
 
-]
-#block[
-#strong[Result:]
+=== Result
+<result-1>
+#lemma("Binary Representation")[
+Any positive integer has a unique binary representation.
 
-#lemma[
-This is a lemma with Italian "Lemma" title.
-]
-]
-== Corollary
-<corollary>
-#block[
-#block[
-#strong[Code:]
-
-```typst
-#corollary[
-This is a corollary with
-Italian "Corollario" title.
-]
+] <lem-binary>
+== Assumption
+<assumption>
+=== Quarto Syntax
+<quarto-syntax-2>
+```markdown
+::: {#finite .assumption}
+### Finiteness
+We assume all sets under consideration are finite.
+:::
 ```
 
-]
-#block[
-#strong[Result:]
+=== Result
+<result-2>
+#assumption("Finiteness")[
+We assume all sets under consideration are finite.
 
-#corollary[
-This is a corollary with Italian "Corollario" title.
-]
-]
-== Conjecture
-<conjecture>
-#block[
-#block[
-#strong[Code:]
-
-```typst
-#conjecture[
-This is a conjecture with
-Italian "Congettura" title.
-]
-```
-
-]
-#block[
-#strong[Result:]
-
-#conjecture[
-This is a conjecture with Italian "Congettura" title.
-]
-]
+] <finite>
 == Definition
 <definition>
-#block[
-#block[
-#strong[Code:]
+=== Quarto Syntax
+<quarto-syntax-3>
+```markdown
+::: {#def-group}
+### Group
+A group is a set G with an operation * that satisfies:
 
-```typst
-#definition[
-This is a definition with
-Italian "Definizione" title.
-]
+- Closure
+- Associativity
+- Identity element
+- Inverse elements
+:::
 ```
 
-]
-#block[
-#strong[Result:]
+=== Result
+<result-3>
+#definition("Group")[
+A group is a set G with an operation \* that satisfies:
 
-#definition[
-This is a definition with Italian "Definizione" title.
-]
-]
-== Example
-<example>
-#block[
-#block[
-#strong[Code:]
+- Closure
+- Associativity
+- Identity element
+- Inverse elements
 
-```typst
-#example[
-This is an example with
-Italian "Esempio" title.
-]
+] <def-group>
+== Cross-References
+<cross-references>
+Theorems use Quarto's crossref system with `@label`:
+
+```markdown
+The proof follows from @lem-binary to establish @thm-main.
 ```
 
-]
-#block[
-#strong[Result:]
+#strong[Result:] The proof follows from #ref(<lem-binary>, supplement: [Lemma]) to establish #ref(<thm-main>, supplement: [Theorem]).
 
-#example[
-This is an example with Italian "Esempio" title.
-]
-]
-== Exercise
-<exercise>
-#block[
-#block[
-#strong[Code:]
+For assumptions, use raw Typst syntax `#ref(<label>)`:
 
-```typst
-#exercise[
-This is an exercise with
-Italian "Esercizio" title.
-]
+```markdown
+Under `#ref(<finite>)`{=typst}, the proof follows from @lem-binary.
 ```
 
-]
-#block[
-#strong[Result:]
+#strong[Result:] Under #ref(<finite>), the proof follows from #ref(<lem-binary>, supplement: [Lemma]).
 
-#exercise[
-This is an exercise with Italian "Esercizio" title.
-]
-]
-== Assumptions
-<assumptions>
-#block[
-#block[
-#strong[Code:]
+== 
+<section-2>
+#v(-3em)
 
-```typst
-#assumption[
-This is an assumption with
-Italian "Assunzione" title.
-]
-```
+Quarto theorem types plus Assumption are supported:
 
-]
-#block[
-#strong[Result:]
-
-#assumption[
-This is an assumption with Italian "Assunzione" title.
-]
-]
-== Remark
-<remark>
-#block[
-#block[
-#strong[Code:]
-
-```typst
-#remark[
-This is a remark with
-Italian "Osservazione" title.
-]
-```
-
-]
-#block[
-#strong[Result:]
-
-#remark[
-This is a remark with Italian "Osservazione" title.
-]
-]
-== Proof
-<proof>
-#grid(
-columns: (1fr, 1fr), gutter: 1em, rows: 1,
-  rect(stroke: none, width: 100%)[
-#strong[Code:]
-
-```typst
-#proof[
-This is a proof with
-Italian "Dimostrazione" title.
-]
-```
-
-],
-  rect(stroke: none, width: 100%)[
-#strong[Result:]
-
-#proof[
-This is a proof with Italian "Dimostrazione" title.
-]
-],
+#table(
+  columns: 3,
+  align: (auto,auto,auto,),
+  table.header([Type], [Environment], [Reference],),
+  table.hline(),
+  [Theorem], [`::: {#thm-label}`], [`@thm-label`],
+  [Lemma], [`::: {#lem-label}`], [`@lem-label`],
+  [Corollary], [`::: {#cor-label}`], [`@cor-label`],
+  [Proposition], [`::: {#prp-label}`], [`@prp-label`],
+  [Conjecture], [`::: {#cnj-label}`], [`@cnj-label`],
+  [Definition], [`::: {#def-label}`], [`@def-label`],
+  [Example], [`::: {#exm-label}`], [`@exm-label`],
+  [Exercise], [`::: {#exr-label}`], [`@exr-label`],
+  [Solution], [`::: {#sol-label}`], [`@sol-label`],
+  [Remark], [`::: {#rem-label}`], [`@rem-label`],
+  [Assumption], [`::: {#label .assumption}`], [`#ref(<label>)`],
 )
 = YAML Configuration System
 <yaml-configuration-system>
-== Theorem Language Configuration
-<theorem-language-configuration>
-The theorem system now supports YAML configuration with language switching:
+== 
+<section-3>
+#v(-2em)
+
+#strong[Superslides uses a minimal color system with just 3 base colors]
 
 ```yaml
-theorem-lang: "en"          # "en" or "it"
-theorem-numbering: false    # Enable numbering
+# Colors (only 3!)
+text-color: "#131516"       # Main text color
+primary-color: "#107895"    # Primary accent (used for boxes, theorems)
+secondary-color: "#9a2515"  # Secondary accent (used for warnings)
 ```
 
-#strong[Current setting];: `theorem-lang: "en"` (English titles)
+#strong[How it works:]
 
-=== Div Syntax Support
-<div-syntax-support>
-You can now use the div syntax for theorems, just like showyboxes:
+- #strong[Boxes];: Automatically generated from primary (simplebox) and secondary (warningbox)
+- #strong[Theorems];: All theorem environments use variations of primary-color
+- #strong[Text];: Strong emphasis uses secondary-color
 
-#grid(
-columns: (1fr, 1fr), gutter: 1em, rows: 1,
-  rect(stroke: none, width: 100%)[
-#strong[Code:]
-
-```markdown
-::: {.theorem}
-### Prime Number Theorem
-There are infinitely many prime numbers.
-:::
+== Theorem Configuration
+<theorem-configuration>
+```yaml
+theorem-package: "ctheorems"     # Package selection
+theorem-lang: "en"               # Language: "en" or "it"
+theorem-numbering: true          # Sequential numbering (1, 2, 3...)
 ```
 
-],
-  rect(stroke: none, width: 100%)[
-#strong[Result:]
+All theorem colors are automatically generated from `primary-color` with different lightness levels:
 
-#block[
-=== Prime Number Theorem
-<prime-number-theorem>
-There are infinitely many prime numbers.
+- Theorem: `primary-color.lighten(90%)`
+- Lemma: `primary-color.lighten(90%)`
+- Assumption: `primary-color.lighten(90%)`
 
-]
-],
-)
 == Global Box Configuration
 <global-box-configuration>
-You can set default styling for all box types using these YAML parameters:
+Customize box appearance using these YAML parameters:
 
 ```yaml
 # Global settings (affect all box types)
-box-border-thickness: 2pt        # Border thickness
-box-border-radius: 6pt           # Corner radius
-box-shadow: "3pt 3pt 8pt gray"   # Drop shadow
-box-title-font-size: 1.2em      # Title font size
+box-border-thickness: 1pt        # Border thickness
+box-border-radius: 4pt           # Corner radius
+box-shadow: none                 # Drop shadow (or "3pt 3pt 8pt gray")
+box-title-font-size: 1.0em      # Title font size
 box-title-font-weight: "bold"   # Title weight
 box-body-font-size: 1.0em       # Body font size
 box-body-font-weight: "regular" # Body weight
-box-spacing-above: 1.5em        # Space above
-box-spacing-below: 1.5em        # Space below
-box-padding: 12pt               # Internal padding
+box-spacing-above: 1em          # Space above
+box-spacing-below: 1em          # Space below
+box-padding: 8pt                # Internal padding
 ```
 
-== Individual Box Type Overrides
-<individual-box-type-overrides>
-#grid(
-columns: (1fr, 1fr), gutter: 1em, rows: 1,
-  rect(stroke: none, width: 100%)[
-#strong[YAML Configuration:]
-
-```yaml
-# Override specific box types
-simplebox-color: "#E8F4FD"
-simplebox-thickness: 1pt
-simplebox-radius: 8pt
-
-warningbox-color: "#FFF3CD"
-warningbox-thickness: 3pt
-warningbox-radius: 4pt
-
-infobox-color: "#D4EDDA"
-infobox-thickness: 2pt
-infobox-radius: 6pt
-```
-
-],
-  rect(stroke: none, width: 100%)[
-#strong[Enhanced Styling:]
-
-Individual box types can override global settings for precise control. This allows different visual hierarchies and emphasis levels across your presentation.
-
-#strong[Typography Control:] - Title and body font sizes - Font weight customization - Consistent spacing control
-
-],
-)
-== Advanced Styling Examples
-<advanced-styling-examples>
-The enhanced system supports sophisticated styling combinations while maintaining the simple `::: {.boxtype}` syntax for content creation.
-
-== Remaining Tasks
-<remaining-tasks>
-+ #strong[Div syntax support] - `::: {.theorem}` syntax for theorems
-+ #strong[Color coordination] - Better brand integration
-+ #strong[Dynamic box themes] - Preset style combinations
-
+#text-scale-tiny(
+)[
+These settings apply globally to both simplebox and warningbox, maintaining visual consistency.
 ]
-]
-]
-]
-]
-]
-]
-]
-]
-]
-]
-]
-]
-
-
-
-

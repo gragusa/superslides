@@ -3,165 +3,51 @@ title: "Superslides Template"
 subtitle: "Super features demo"
 authors:
   - name: "Giuseppe Ragusa"
-    affiliation: "Luiss University"
+    affiliation: "Sapienza University of Rome"
 date: "2025-09-26"
-lecture-date: "September 26, 2025"
-
+update-date: "October 1, 2025"
+format:
+    superslides-typst:
+        fig-width: 9
+        fig-height: 6
 editor:
   render-on-save: true
-# Note: This document uses the _quarto.yml configuration
-# You can override any setting here if needed
-
-# Example of overriding some settings for this specific document
-format:
-  superslides-typst:
-    keep-typ: true
-    #===================================================================
-    # TYPOGRAPHY SETTINGS
-    #===================================================================
-    fontsize: 24pt                    # Base font size
-    mainfont: "Inter"                # Body text font
-    sansfont: "Inter"                # Heading font
-    font-weight-heading: "regular"    # Heading weight: light, regular, bold
-    font-weight-body: "regular"       # Body weight: light, regular, bold
-    # handout: true                   # Generate handout version (removes animations)
-
-    # Title slide typography
-    title-font: "Inter"              # Title font family
-    title-size: 42pt                  # Title font size
-    title-weight: "bold"              # Title font weight
-    # font-size-title: 2.0em          # Alternative title size (relative to base)
-    # font-weight-title: "bold"       # Alternative title weight
-    subtitle-font: "Inter"           # Subtitle font family
-    subtitle-size: 30pt               # Subtitle font size
-    subtitle-weight: "regular"        # Subtitle font weight
-    # font-size-subtitle: 1.2em       # Alternative subtitle size (relative to base)
-    author-size: 20pt                 # Author font size
-    date-size: 18pt                   # Date font size
-
-    #===================================================================
-    # COLOR SCHEME (3-COLOR SYSTEM)
-    #===================================================================
-    jet: "#404040"                  # Main text color (dark blue-gray)
-    accent: "#2836A6"               # Primary accent (sea green) - headings, links, buttons
-    accent2: "#004494"              # Secondary accent (peru) - highlights, warnings
-
-    # Author styling colors
-    affiliation-color: "#707070"    # Affiliation text color
-    affiliation-style: "italic"       # Affiliation style: normal, italic
-    # affiliation-weight: "regular"   # Affiliation text weight: light, regular, bold
-    email-color: "#CD853F"          # Email link color
-
-    #===================================================================
-    # CODE BLOCK CONFIGURATION
-    #===================================================================
-    # Standard code blocks
-    raw-font-size: 14pt               # Code block font size
-    raw-inline-size: 22pt             # Inline code font size
-    raw-inset: 8pt
-                        # Code block padding (controls line spacing!)
-      
-
-    #===================================================================
-    # LIST CUSTOMIZATION
-    #===================================================================
-    list-indent: 0.6em                  # List indentation
-    list-marker-1: "•"                # Level 1 bullet
-    list-marker-2: "◦"                # Level 2 bullet
-    list-marker-3: "▪"                # Level 3 bullet
-
-    #===================================================================
-    # INTERACTIVE ELEMENTS
-    #===================================================================
-    # QR Code
-    qr-code-url: "https://github.com/gragusa/superslides"
-    qr-code-title: "View Source"      # Button text
-    qr-code-size: 4cm                 # QR code size (can use cm, pt, em)
-    qr-code-button-color: "#404040"   # Button color
-
-    # Updates functionality
-    updates-link: "https://github.com/gragusa/superslides/releases"
-    # last-updated-text: "Last updated:"  # Custom text for last updated label
-
-    #===================================================================
-    # LAYOUT & BRANDING
-    #===================================================================
-    # Background
-    # background-color: "#FFFFFF"     # Slide background color
-    # background-image: "bg.png"      # Background image path
-
-    # Title page customization
-    # logo-path: "logo.png"           # Organization logo
-    title-compact: false              # Compact title layout
-
-    #===================================================================
-    # LANGUAGE & LOCALIZATION
-    #===================================================================
-    lang: "en"                        # Interface language: "en" or "it"
-
-    #===================================================================
-    # THEOREM CONFIGURATION
-    #===================================================================
-    theorem-lang: "en"                # Theorem language: "en" or "it"
-    theorem-numbering: false          # Enable theorem numbering
-    # theorem-font-size: 1.0em        # Theorem font size
-    # theorem-title-weight: "bold"    # Theorem title weight
-    # theorem-body-weight: "regular"  # Theorem body weight
-
-    #===================================================================
-    # ADVANCED BOX CUSTOMIZATION
-    #===================================================================
-    # Global box styling (applies to all box types unless overridden)
-    # box-border-thickness: 1pt        # Default border thickness
-    # box-border-radius: 4pt           # Default border radius
-    # box-shadow: "5pt 5pt 10pt gray"  # Box shadow (none for no shadow)
-    # box-title-font-size: 1.1em      # Title font size
-    # box-title-font-weight: "bold"   # Title font weight
-    # box-body-font-size: 1.0em       # Body text font size
-    # box-body-font-weight: "regular" # Body text font weight
-    # box-spacing-above: 1em          # Space above boxes
-    # box-spacing-below: 1em          # Space below boxes
-    # box-padding: 8pt                # Internal padding
-
-    # Box type colors
-    # simplebox-color: "#EEF4FF"      # Simple box background color
-    # warningbox-color: "#FFF6E0"     # Warning box background color
-    # infobox-color: "#D1ECF1"        # Info box background color
-
-    # Individual box type overrides (overrides global settings)
-    # simplebox-thickness: 1pt        # Override thickness for simple boxes
-    # simplebox-radius: 6pt           # Override radius for simple boxes
-    # warningbox-thickness: 3pt       # Override thickness for warning boxes
-    # warningbox-radius: 2pt          # Override radius for warning boxes
-    # infobox-thickness: 1.5pt        # Override thickness for info boxes
-    # infobox-radius: 8pt             # Override radius for info boxes
-
-    # Alert/strong text color
-    alert-color: "#FF6B35"            # Color for bold/strong text and alerts
 ---
 
 # Getting Started
 
 ## Introduction
 
-::: {.infobox}
+::: {.simplebox}
 Welcome to **Superslides**! This template demonstrates:
 
 - Enhanced Typst presentations with Touying
 - Professional title slides with interactive elements
 - Advanced code blocks with zebraw integration
-- Complete customization through YAML parameters
+- Simple 3-color customization system
+
+$$
+Y_t = A_1 Y_{t-1} + E_t \to \int f(x) dx
+$$
 :::
+
+## Math
+
+$$
+Y_i = X_i\beta + u_i, \quad i=1,\ldots,n
+$$
 
 ## Features Overview
 
-**Key capabilities:**
+### Key capabilities
 
 - 🎨 Professional title slides with left-aligned layout
 - 🔗 Interactive QR codes and clickable links
 - 📝 Enhanced code blocks with mathematical annotations
-- 🎯 40+ YAML parameters for customization
+- 🎯 Simple 3-color palette system
 - 🌐 Multi-language support (English/Italian)
+
+#### Note: This is a fourth level header `====`
 
 ## Typography
 
@@ -176,10 +62,26 @@ Standard markdown formatting works as expected:
 
 ## Code Blocks
 
-Superslides supports standard code blocks with proper syntax highlighting and customizable formatting.
-
 ```{r}
+#| fig-align: "center"
+#| layout-ncol: 2
 plot(rnorm(10))
+```
+
+##
+
+```{python}
+#| layout-ncol: 2
+#| fig-cap:
+#|   - "Line Plot 1"
+#|   - "Line Plot 2"
+
+import matplotlib.pyplot as plt
+plt.plot([1,23,2,4])
+plt.show()
+
+plt.plot([8,65,23,90])
+plt.show()
 ```
 ## Code Block Configuration
 
@@ -242,17 +144,55 @@ end
 
 You can also use `inline code` within text. The font size is controlled by the `raw-inline-size` parameter.
 
+# Table
+
+## Table using R
+
+
+```{r}
+#| label: tbl-iris
+#| tbl-cap: First few rows of the iris dataset.
+#| tbl-cap-location: bottom
+library(tinytable)
+## fontsize is in em
+tt(head(iris))|> style_tt(fontsize=0.8) |> theme_striped()
+```
+## Table using R with math
+
+```{r}
+library(tinytable)
+
+theme_mitex <- function(x, ...) {
+    fn <- function(table) {
+        if (isTRUE(table@output == "typst")) {
+          table@table_string <- gsub("\\$(.*?)\\$", "#mitex(`\\1`)", table@table_string)
+        }
+        return(table)
+    }
+    x <- style_tt(x, finalize = fn)
+    x <- theme_striped(x)
+    return(x)
+}
+
+options(tinytable_html_mathjax = TRUE)
+options(tinytable_tt_theme = theme_mitex)
+```
+
+```{r}
+data.frame(Math = c("$\\alpha$", "$a_{it}$", "$e^{i\\pi} + 1 = 0$")) |>
+  tt()
+```
+
+
 # Box and Theorem Systems
 
 ## Current Showybox System
 
-Superslides supports three types of showyboxes via the `::: {.classname}` syntax:
+Superslides supports two types of showyboxes via the `::: {.classname}` syntax, with colors automatically generated from your primary and secondary colors:
 
 ## Simplebox
 
-::: {layout-ncol=2}
 
-::: {.column}
 **Code:**
 ```markdown
 ::: {.simplebox}
@@ -261,23 +201,15 @@ This is a simple information box
 with blue styling.
 :::
 ```
-:::
 
-::: {.column}
 **Result:**
 
 ::: {.simplebox}
 ## Simple Information
 This is a simple information box with blue styling.
 :::
-:::
 
-## 
-
-::: {layout-ncol=2}
-
-::: {.column}
-**Code:**
+##
 
 ```
 ::: {.warningbox}
@@ -286,361 +218,218 @@ This is a warning box with
 red styling for alerts.
 :::
 ```
-:::
-
-::: {.column}
-**Result:**
 
 ::: {.warningbox}
 ### Warning
 This is a warning box with red styling for alerts.
 :::
 
-:::
+# Theorem System
 
-## 
 
-::: {layout-ncol=2}
+Superslides provides a comprehensive theorem system using Quarto's native syntax with beautiful styling.
 
-::: {.column}
-**Code:**
+## Configuration
+
+The theorem system is configured in the YAML header:
+
+```yaml
+theorem-package: "ctheorems"      # Package to use
+theorem-lang: "en"                # Language: "en" or "it"
+theorem-numbering: true           # Sequential numbering (1, 2, 3...)
+# Colors automatically generated from primary-color
+```
+
+## Basic Theorem
+
+
+### Quarto Syntax
 
 ```markdown
-::: {.infobox}
-## Information
-This is an info box with
-green styling.
+::: {#thm-main}
+### Fundamental Theorem
+Every positive integer can be written as a sum of distinct powers of 2.
 :::
 ```
-:::
 
-::: {.column}
-**Result:**
 
-::: {.infobox}
-## Information
-This is an info box with green styling.
-:::
+### Result
 
+::: {#thm-main}
+### Fundamental Theorem
+Every positive integer can be written as a sum of distinct powers of 2.
 :::
 
 
-
-# Theorem-like env
-
-
-## Theorem
-
-::: {layout-ncol=2}
-
-::: {.column}
-**Code:**
-```typst
-#theorem[
-This is a theorem with
-Italian "Teorema" title.
-]
-```
-:::
-
-::: {.column}
-**Result:**
-
-#theorem[
-This is a theorem with Italian "Teorema" title.
-]
-
-:::
-
-## Proposition
-
-::: {layout-ncol=2}
-
-::: {.column}
-**Code:**
-```typst
-#proposition[
-This is a proposition with
-Italian "Proposizione" title.
-]
-```
-:::
-
-::: {.column}
-**Result:**
-#proposition[
-This is a proposition with Italian "Proposizione" title.
-]
-:::
 
 ## Lemma
 
-::: {layout-ncol=2}
 
-::: {.column}
-**Code:**
-```typst
-#lemma[
-This is a lemma with
-Italian "Lemma" title.
-]
+
+
+### Quarto Syntax:
+```markdown
+::: {#lem-binary}
+### Binary Representation
+Any positive integer has a unique binary representation.
+:::
 ```
+
+### Result
+
+::: {#lem-binary}
+### Binary Representation
+Any positive integer has a unique binary representation.
 :::
 
-::: {.column}
-**Result:**
-#lemma[
-This is a lemma with Italian "Lemma" title.
-]
+
+
+## Assumption
+
+
+### Quarto Syntax
+
+```markdown
+::: {#finite .assumption}
+### Finiteness
+We assume all sets under consideration are finite.
 :::
-
-## Corollary
-
-::: {layout-ncol=2}
-
-::: {.column}
-**Code:**
-```typst
-#corollary[
-This is a corollary with
-Italian "Corollario" title.
-]
 ```
+
+### Result
+
+::: {#finite .assumption}
+### Finiteness
+We assume all sets under consideration are finite.
 :::
-
-::: {.column}
-**Result:**
-#corollary[
-This is a corollary with Italian "Corollario" title.
-]
-:::
-
-## Conjecture
-
-::: {layout-ncol=2}
-
-::: {.column}
-**Code:**
-```typst
-#conjecture[
-This is a conjecture with
-Italian "Congettura" title.
-]
-```
-:::
-
-::: {.column}
-**Result:**
-#conjecture[
-This is a conjecture with Italian "Congettura" title.
-]
-:::
-
 
 ## Definition
 
-::: {layout-ncol=2}
 
-::: {.column}
-**Code:**
-```typst
-#definition[
-This is a definition with
-Italian "Definizione" title.
-]
+### Quarto Syntax
+
+```markdown
+::: {#def-group}
+### Group
+A group is a set G with an operation * that satisfies:
+
+- Closure
+- Associativity
+- Identity element
+- Inverse elements
+:::
 ```
+
+
+### Result
+
+::: {#def-group}
+### Group
+A group is a set G with an operation * that satisfies:
+
+- Closure
+- Associativity
+- Identity element
+- Inverse elements
 :::
 
-::: {.column}
-**Result:**
-#definition[
-This is a definition with Italian "Definizione" title.
-]
-:::
 
-## Example
 
-::: {layout-ncol=2}
+## Cross-References
 
-::: {.column}
-**Code:**
-```typst
-#example[
-This is an example with
-Italian "Esempio" title.
-]
+Theorems use Quarto's crossref system with `@label`:
+
+```markdown
+The proof follows from @lem-binary to establish @thm-main.
 ```
-:::
 
-::: {.column}
-**Result:**
-#example[
-This is an example with Italian "Esempio" title.
-]
-:::
+**Result:** The proof follows from @lem-binary to establish @thm-main.
 
-## Exercise
+For assumptions, use raw Typst syntax `#ref(<label>)`:
 
-::: {layout-ncol=2}
-
-::: {.column}
-**Code:**
-```typst
-#exercise[
-This is an exercise with
-Italian "Esercizio" title.
-]
+```markdown
+Under `#ref(<finite>)`{=typst}, the proof follows from @lem-binary.
 ```
-:::
 
-::: {.column}
-**Result:**
-#exercise[
-This is an exercise with Italian "Esercizio" title.
-]
-:::
+**Result:** Under `#ref(<finite>)`{=typst}, the proof follows from @lem-binary.
+
+##
+
+{{< v -3em >}}
+
+Quarto theorem types plus Assumption are supported:
 
 
-
-## Assumptions
-
-::: {layout-ncol=2}
-
-::: {.column}
-**Code:**
-```typst
-#assumption[
-This is an assumption with
-Italian "Assunzione" title.
-]
-```
-:::
-
-::: {.column}
-**Result:**
-#assumption[
-This is an assumption with Italian "Assunzione" title.
-]
-:::
-
-## Remark
-
-::: {layout-ncol=2}
-
-::: {.column}
-**Code:**
-```typst
-#remark[
-This is a remark with
-Italian "Osservazione" title.
-]
-```
-:::
-
-::: {.column}
-**Result:**
-#remark[
-This is a remark with Italian "Osservazione" title.
-]
-:::
-
-## Proof
-
-::: {layout-ncol=2}
-
-::: {.column}
-**Code:**
-```typst
-#proof[
-This is a proof with
-Italian "Dimostrazione" title.
-]
-```
-:::
-
-::: {.column}
-**Result:**
-#proof[
-This is a proof with Italian "Dimostrazione" title.
-]
-:::
-
-:::
+| Type | Environment | Reference |
+|------|-------------|-----------|
+| Theorem | `::: {#thm-label}` | `@thm-label` |
+| Lemma | `::: {#lem-label}` | `@lem-label` |
+| Corollary | `::: {#cor-label}` | `@cor-label` |
+| Proposition | `::: {#prp-label}` | `@prp-label` |
+| Conjecture | `::: {#cnj-label}` | `@cnj-label` |
+| Definition | `::: {#def-label}` | `@def-label` |
+| Example | `::: {#exm-label}` | `@exm-label` |
+| Exercise | `::: {#exr-label}` | `@exr-label` |
+| Solution | `::: {#sol-label}` | `@sol-label` |
+| Remark | `::: {#rem-label}` | `@rem-label` |
+| Assumption | `::: {#label .assumption}` | `#ref(<label>)` |
 
 # YAML Configuration System
 
+##
 
-## Theorem Language Configuration
+{{< v -2em >}}
 
-The theorem system now supports YAML configuration with language switching:
+**Superslides uses a minimal color system with just 3 base colors**
 
 ```yaml
-theorem-lang: "en"          # "en" or "it"
-theorem-numbering: false    # Enable numbering
+# Colors (only 3!)
+text-color: "#131516"       # Main text color
+primary-color: "#107895"    # Primary accent (used for boxes, theorems)
+secondary-color: "#9a2515"  # Secondary accent (used for warnings)
 ```
 
-**Current setting**: `theorem-lang: "en"` (English titles)
+**How it works:**
+
+- **Boxes**: Automatically generated from primary (simplebox) and secondary (warningbox)
+- **Theorems**: All theorem environments use variations of primary-color
+- **Text**: Strong emphasis uses secondary-color
+
+## Theorem Configuration
+
+
+```yaml
+theorem-package: "ctheorems"     # Package selection
+theorem-lang: "en"               # Language: "en" or "it"
+theorem-numbering: true          # Sequential numbering (1, 2, 3...)
+```
+
+All theorem colors are automatically generated from `primary-color` with different lightness levels:
+
+- Theorem: `primary-color.lighten(90%)`
+- Lemma: `primary-color.lighten(90%)`
+- Assumption: `primary-color.lighten(90%)`
 
 ## Global Box Configuration
 
-You can set default styling for all box types using these YAML parameters:
+Customize box appearance using these YAML parameters:
 
 ```yaml
 # Global settings (affect all box types)
-box-border-thickness: 2pt        # Border thickness
-box-border-radius: 6pt           # Corner radius
-box-shadow: "3pt 3pt 8pt gray"   # Drop shadow
-box-title-font-size: 1.2em      # Title font size
+box-border-thickness: 1pt        # Border thickness
+box-border-radius: 4pt           # Corner radius
+box-shadow: none                 # Drop shadow (or "3pt 3pt 8pt gray")
+box-title-font-size: 1.0em      # Title font size
 box-title-font-weight: "bold"   # Title weight
 box-body-font-size: 1.0em       # Body font size
 box-body-font-weight: "regular" # Body weight
-box-spacing-above: 1.5em        # Space above
-box-spacing-below: 1.5em        # Space below
-box-padding: 12pt               # Internal padding
+box-spacing-above: 1em          # Space above
+box-spacing-below: 1em          # Space below
+box-padding: 8pt                # Internal padding
 ```
 
-## Individual Box Type Overrides
-
-::: {layout-ncol=2}
-
-::: {.column}
-**YAML Configuration:**
-```yaml
-# Override specific box types
-simplebox-color: "#E8F4FD"
-simplebox-thickness: 1pt
-simplebox-radius: 8pt
-
-warningbox-color: "#FFF3CD"
-warningbox-thickness: 3pt
-warningbox-radius: 4pt
-
-infobox-color: "#D4EDDA"
-infobox-thickness: 2pt
-infobox-radius: 6pt
-```
+::: {.tiny}
+These settings apply globally to both simplebox and warningbox, maintaining visual consistency.
 :::
 
-::: {.column}
-**Enhanced Styling:**
-
-Individual box types can override global settings for precise control. This allows different visual hierarchies and emphasis levels across your presentation.
-
-**Typography Control:**
-- Title and body font sizes
-- Font weight customization
-- Consistent spacing control
-:::
-
-::::
-
-## Advanced Styling Examples
-
-The enhanced system supports sophisticated styling combinations while maintaining the simple `::: {.boxtype}` syntax for content creation.
-
-## Remaining Tasks
-
-1. **Div syntax support** - `::: {.theorem}` syntax for theorems
-2. **Color coordination** - Better brand integration
-3. **Dynamic box themes** - Preset style combinations
 

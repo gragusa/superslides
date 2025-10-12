@@ -11,14 +11,45 @@ local zebraw_background_color = "luma(245)"
 local raw_inset = "(top: 2pt, bottom: 2pt)"
 local injected_styling = false
 
+local function get_option(meta, key)
+  if meta[key] ~= nil then
+    return meta[key]
+  end
+  if meta.format and meta.format["superslides-typst"] and meta.format["superslides-typst"][key] ~= nil then
+    return meta.format["superslides-typst"][key]
+  end
+  return nil
+end
+
+local function meta_to_bool(value)
+  if value == nil then
+    return nil
+  end
+  if type(value) == "boolean" then
+    return value
+  end
+  local str = pandoc.utils.stringify(value)
+  if str == "true" then
+    return true
+  elseif str == "false" then
+    return false
+  end
+  return nil
+end
+
 -- Function to read metadata and check if zebraw is enabled
 function Meta(meta)
   if quarto.doc.is_format("typst") then
-    use_zebraw = meta['use-zebraw'] and meta['use-zebraw']
+    local use_zebraw_meta = get_option(meta, 'use-zebraw')
+    local use_zebraw_value = meta_to_bool(use_zebraw_meta)
+    if use_zebraw_value ~= nil then
+      use_zebraw = use_zebraw_value
+    end
 
     -- Read zebraw configuration from YAML
-    if meta['zebraw-font-size'] then
-      local val_str = pandoc.utils.stringify(meta['zebraw-font-size'])
+    local zebraw_font_size_meta = get_option(meta, 'zebraw-font-size')
+    if zebraw_font_size_meta then
+      local val_str = pandoc.utils.stringify(zebraw_font_size_meta)
       -- Add 'pt' suffix if not present
       if not string.match(val_str, "pt$") and not string.match(val_str, "em$") then
         val_str = val_str .. "pt"
@@ -26,34 +57,41 @@ function Meta(meta)
       zebraw_font_size = val_str
     end
 
-
-    if meta['zebraw-comment-flag'] then
-      zebraw_comment_flag = pandoc.utils.stringify(meta['zebraw-comment-flag'])
+    local zebraw_comment_flag_meta = get_option(meta, 'zebraw-comment-flag')
+    if zebraw_comment_flag_meta then
+      zebraw_comment_flag = pandoc.utils.stringify(zebraw_comment_flag_meta)
     end
 
-    if meta['zebraw-comment-color'] then
-      zebraw_comment_color = pandoc.utils.stringify(meta['zebraw-comment-color'])
+    local zebraw_comment_color_meta = get_option(meta, 'zebraw-comment-color')
+    if zebraw_comment_color_meta then
+      zebraw_comment_color = pandoc.utils.stringify(zebraw_comment_color_meta)
     end
 
-    if meta['zebraw-comment-style'] then
-      zebraw_comment_style = pandoc.utils.stringify(meta['zebraw-comment-style'])
+    local zebraw_comment_style_meta = get_option(meta, 'zebraw-comment-style')
+    if zebraw_comment_style_meta then
+      zebraw_comment_style = pandoc.utils.stringify(zebraw_comment_style_meta)
     end
 
-    if meta['zebraw-numbering'] then
-      zebraw_numbering = meta['zebraw-numbering'] and meta['zebraw-numbering']
+    local zebraw_numbering_meta = get_option(meta, 'zebraw-numbering')
+    local zebraw_numbering_value = meta_to_bool(zebraw_numbering_meta)
+    if zebraw_numbering_value ~= nil then
+      zebraw_numbering = zebraw_numbering_value
     end
 
-    if meta['zebraw-highlight-color'] then
-      zebraw_highlight_color = pandoc.utils.stringify(meta['zebraw-highlight-color'])
+    local zebraw_highlight_color_meta = get_option(meta, 'zebraw-highlight-color')
+    if zebraw_highlight_color_meta then
+      zebraw_highlight_color = pandoc.utils.stringify(zebraw_highlight_color_meta)
     end
 
-    if meta['zebraw-background-color'] then
-      zebraw_background_color = pandoc.utils.stringify(meta['zebraw-background-color'])
+    local zebraw_background_color_meta = get_option(meta, 'zebraw-background-color')
+    if zebraw_background_color_meta then
+      zebraw_background_color = pandoc.utils.stringify(zebraw_background_color_meta)
     end
 
-    if meta['raw-inset'] then
+    local raw_inset_meta = get_option(meta, 'raw-inset')
+    if raw_inset_meta then
       -- Simple format: raw-inset: 2 or raw-inset: 2pt
-      local val_str = pandoc.utils.stringify(meta['raw-inset'])
+      local val_str = pandoc.utils.stringify(raw_inset_meta)
       if not string.match(val_str, "pt$") and not string.match(val_str, "em$") then
         val_str = val_str .. "pt"
       end

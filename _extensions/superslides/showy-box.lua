@@ -6,21 +6,31 @@
 -- Helper function to properly format values for Typst
 local function formatValue(value)
     print("DEBUG: formatValue input: '" .. value .. "'")
-    
+
     -- Clean up escaped characters first
     local clean_value = value:gsub("\\%%", "%%"):gsub("\\%(", "("):gsub("\\%)", ")")
-    
-    -- Pattern: object.method(args) - already formatted
-    if clean_value:match("^%s*([%a_][%w_]*)%.([%a_][%w_]*)%((.-)%)%s*$") then
+
+    -- Check for rgb() expressions with method calls like rgb("#color").lighten(30%)
+    if clean_value:match("^%s*rgb%b()%.%a+%b()%s*$") then
+        print("DEBUG: RGB with method call: " .. clean_value)
+        return clean_value
+    end
+
+    -- Check for simple rgb() expressions like rgb("#color")
+    if clean_value:match("^%s*rgb%b()%s*$") then
+        print("DEBUG: Simple RGB: " .. clean_value)
+        return clean_value
+    end
+
+    -- Pattern: identifier.method(args) - already formatted (e.g., blue.lighten(30%))
+    if clean_value:match("^%s*[%a_][%w_]*%.%a+%b()%s*$") then
         print("DEBUG: Already has parentheses: " .. clean_value)
         return clean_value
     end
-    
-    -- Pattern: object.methodNUM% - needs parentheses
-    -- This is the tricky case: we need to separate method name from number
-    local obj, method_and_num = clean_value:match("^%s*([%a_][%w_]*)%.([%a_][%w_]*%d+%%)%s*$")
+
+    -- Pattern: identifier.methodNUM% - needs parentheses (e.g., blue.lighten30%)
+    local obj, method_and_num = clean_value:match("^%s*([%a_][%w_]*)%.([%a_]+%d+%%)%s*$")
     if obj and method_and_num then
-        -- Now separate the method name from the number
         local method, num = method_and_num:match("^([%a_]+)(%d+%%)$")
         if method and num then
             local result = obj .. "." .. method .. "(" .. num .. ")"
@@ -28,20 +38,22 @@ local function formatValue(value)
             return result
         end
     end
-    
+
     -- Check if it's a spacing value (like "1em 1em") - should not be quoted
     if clean_value:match("^%d+[%a]+%s+%d+[%a]+$") then
         print("DEBUG: Spacing value, returning as-is: " .. clean_value)
         return clean_value
     end
 
-    -- Check if it's a number, measurement, command, or RGB expression
+    -- Check if it's a number, measurement, or hex color
     if tonumber(clean_value) or
-       clean_value:match("^%d+[%a]+$") or
-       clean_value:match("^#") or
-       clean_value:match("^rgb%b()") or                    -- rgb() functions
-       clean_value:match("rgb%b\"\"%.") then               -- rgb("color").method() patterns
+       clean_value:match("^%d+%.?%d*[%a]+$") or  -- Matches "1pt", "1.5em", etc.
+       clean_value:match("^#") then
         print("DEBUG: Returning as-is: " .. clean_value)
+        return clean_value
+    -- Special case: literal values that should not be quoted
+    elseif clean_value == "none" or clean_value == "auto" or clean_value == "true" or clean_value == "false" then
+        print("DEBUG: Literal value, returning as-is: " .. clean_value)
         return clean_value
     -- Special case: known font weight values that need quoting
     elseif clean_value == "bold" or clean_value == "regular" or clean_value == "light" or
@@ -93,8 +105,10 @@ local function parseAttributeValue(value)
             local char = value:sub(i, i)
             if char == "(" then
                 parens = parens + 1
+                current = current .. char
             elseif char == ")" then
                 parens = parens - 1
+                current = current .. char
             elseif char == "," and parens == 0 then
                 table.insert(items, current:match("^%s*(.-)%s*$"))
                 current = ""
@@ -199,7 +213,7 @@ local function extractFooter(content)
     return footer, newContent
 end
 
--- Define presets for different box types (will be updated with custom colors)
+-- Define presets for different box types (will be updated with primary/secondary colors)
 local box_presets = {
     simplebox = {
         frame = "border-color: blue.lighten(80%), title-color: blue.lighten(30%), body-color: blue.lighten(96%), footer-color: blue.lighten(80%), thickness: 1pt"
@@ -207,14 +221,10 @@ local box_presets = {
     warningbox = {
         frame = "border-color: red, title-color: red.lighten(30%), body-color: red.lighten(95%), thickness: 2pt",
         ["title-style"] = "color: white"
-    },
-    infobox = {
-        frame = "border-color: green, title-color: green.lighten(30%), body-color: green.lighten(95%)",
-        ["body-style"] = "color: green.darken(20%)"
     }
 }
 
--- Function to update box presets with custom colors and settings from metadata
+-- Function to update box presets with primary/secondary colors from metadata
 local function updateBoxPresets(meta)
     -- Helper function to get parameter value with fallback
     local function getParam(param_name, default_value)
@@ -222,6 +232,33 @@ local function updateBoxPresets(meta)
             return pandoc.utils.stringify(meta[param_name])
         end
         return default_value
+    end
+
+    -- Helper function to convert color value to Typst format
+    local function processColor(color_str)
+        -- If it's already a function call (rgb, parse-color, etc.), use as-is
+        if color_str:match("^%s*[%a_][%w_]*%b()") then
+            return color_str
+        -- If it's a hex color, wrap in rgb()
+        elseif color_str:match("^%s*#") then
+            return 'rgb("' .. color_str .. '")'
+        -- Otherwise assume it's a color name like "blue", "red", etc.
+        else
+            return color_str
+        end
+    end
+
+    -- Get the two base colors (primary and secondary)
+    local primaryColor = "blue"
+    if meta["primary-color"] then
+        local color = pandoc.utils.stringify(meta["primary-color"])
+        primaryColor = processColor(color)
+    end
+
+    local secondaryColor = "red"
+    if meta["secondary-color"] then
+        local color = pandoc.utils.stringify(meta["secondary-color"])
+        secondaryColor = processColor(color)
     end
 
     -- Global box settings
@@ -238,17 +275,8 @@ local function updateBoxPresets(meta)
     local bodyFontSize = meta["box-body-font-size"] and pandoc.utils.stringify(meta["box-body-font-size"]) or nil
     local bodyFontWeight = getParam("box-body-font-weight", "regular")
 
-    -- Update simplebox
-    local simpleColor = "blue"
-    if meta["simplebox-color"] then
-        local color = pandoc.utils.stringify(meta["simplebox-color"])
-        simpleColor = "rgb(\"" .. color .. "\")"
-    end
-
-    local simpleThickness = getParam("simplebox-thickness", globalThickness)
-    local simpleRadius = getParam("simplebox-radius", globalRadius)
-
-    box_presets.simplebox.frame = "border-color: " .. simpleColor .. ".lighten(80%), title-color: " .. simpleColor .. ".lighten(30%), body-color: " .. simpleColor .. ".lighten(96%), footer-color: " .. simpleColor .. ".lighten(80%), thickness: " .. simpleThickness .. ", radius: " .. simpleRadius
+    -- Update simplebox (uses primary color)
+    box_presets.simplebox.frame = "border-color: " .. primaryColor .. ", title-color: " .. primaryColor .. ".darken(10%), body-color: " .. primaryColor .. ".lighten(90%), footer-color: " .. primaryColor .. ".lighten(80%), thickness: " .. globalThickness .. ", radius: " .. globalRadius
 
     if globalShadow then
         box_presets.simplebox.shadow = globalShadow
@@ -271,17 +299,9 @@ local function updateBoxPresets(meta)
     end
     box_presets.simplebox["body-style"] = bodyStyle
 
-    -- Update warningbox
-    local warningColor = "red"
-    if meta["warningbox-color"] then
-        local color = pandoc.utils.stringify(meta["warningbox-color"])
-        warningColor = "rgb(\"" .. color .. "\")"
-    end
+    -- Update warningbox (uses secondary color)
+    box_presets.warningbox.frame = "border-color: " .. secondaryColor .. ", title-color: " .. secondaryColor .. ".darken(10%), body-color: " .. secondaryColor .. ".lighten(90%), thickness: " .. globalThickness .. ", radius: " .. globalRadius
 
-    local warningThickness = getParam("warningbox-thickness", "2pt")
-    local warningRadius = getParam("warningbox-radius", globalRadius)
-
-    box_presets.warningbox.frame = "border-color: " .. warningColor .. ", title-color: " .. warningColor .. ".lighten(30%), body-color: " .. warningColor .. ".lighten(95%), thickness: " .. warningThickness .. ", radius: " .. warningRadius
     if globalShadow then
         box_presets.warningbox.shadow = globalShadow
     end
@@ -289,29 +309,9 @@ local function updateBoxPresets(meta)
     box_presets.warningbox.below = globalSpacingBelow
     box_presets.warningbox.sep = "thickness: " .. globalPadding
 
-    -- Override title style for warning (keep white title)
+    -- Override title style for warning (keep white title for contrast)
     box_presets.warningbox["title-style"] = "color: white, weight: " .. titleFontWeight .. (titleFontSize and (", size: " .. titleFontSize) or "")
     box_presets.warningbox["body-style"] = "weight: " .. bodyFontWeight .. (bodyFontSize and (", size: " .. bodyFontSize) or "")
-
-    -- Update infobox
-    local infoColor = "green"
-    if meta["infobox-color"] then
-        local color = pandoc.utils.stringify(meta["infobox-color"])
-        infoColor = "rgb(\"" .. color .. "\")"
-    end
-
-    local infoThickness = getParam("infobox-thickness", globalThickness)
-    local infoRadius = getParam("infobox-radius", globalRadius)
-
-    box_presets.infobox.frame = "border-color: " .. infoColor .. ", title-color: " .. infoColor .. ".lighten(30%), body-color: " .. infoColor .. ".lighten(95%), radius: " .. infoRadius .. ", thickness: " .. infoThickness
-    if globalShadow then
-        box_presets.infobox.shadow = globalShadow
-    end
-    box_presets.infobox.above = globalSpacingAbove
-    box_presets.infobox.below = globalSpacingBelow
-    box_presets.infobox.sep = "thickness: " .. globalPadding
-    box_presets.infobox["title-style"] = "weight: " .. titleFontWeight .. (titleFontSize and (", size: " .. titleFontSize) or "")
-    box_presets.infobox["body-style"] = "color: " .. infoColor .. ".darken(20%), weight: " .. bodyFontWeight .. (bodyFontSize and (", size: " .. bodyFontSize) or "")
 end
 
 -- Main function to process showybox divs

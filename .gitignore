@@ -28,3 +28,10 @@ Thumbs.db
 
 /.quarto/
 **/*.quarto_ipynb
+
+template_files/*
+template_files/
+
+template.pdf
+template.typ
+unnamed**

@@ -12,6 +12,8 @@ contributes:
         - incremental.lua
         - typst-function.lua
         - showy-box.lua
+        - theorem-box.lua
+        - assumption-filter.lua
         - revealjs.lua
       template-partials:
         - typst-template.typ

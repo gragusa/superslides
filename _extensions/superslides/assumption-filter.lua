@@ -18,20 +18,23 @@ local function post_process_typst(doc)
             local text = el.text
             if text:match("quarto%-float%-ass") then
                 quarto.log.output("DEBUG: Found assumption figure in raw block")
-                quarto.log.output("DEBUG: Original text: " .. text:sub(1, 300))
+                quarto.log.output("DEBUG: Original text: " .. text:sub(1, 500))
 
-                -- Replace assumption figures with theorem calls
+                -- Updated pattern to match current output format
+                -- Matches: #figure([=== Title\n<id>\n], caption: figure.caption(...))\n<label>
                 local converted = text:gsub(
-                    "#figure%(%[\n?=== ([^\n]+)\n<[^>]+>\n%], caption: figure%.caption%(\nposition: [^,]+, \n%[\n([^%]]+)\n%]%), \nkind: \"quarto%-float%-ass\", \nsupplement: \"Assumption\", \n%)\n<([^>]+)>",
-                    function(title, caption, label)
-                        quarto.log.output("DEBUG: Converting assumption - Title: " .. title .. ", Label: " .. label)
-                        return "#assumption[*" .. title .. "*\n\n" .. caption .. "] <" .. label .. ">"
+                    "#figure%(%[%s*===%s*([^\n]+)%s*\n<[^>]+>%s*%], caption: figure%.caption%([^)]+,%s*%[%s*([^%]]+)%s*%]%),%s*kind: \"quarto%-float%-ass\",%s*supplement: \"Assumption\",%s*%)%s*<([^>]+)>",
+                    function(title, content, label)
+                        quarto.log.output("DEBUG: Converting assumption - Title: '" .. title .. "', Label: '" .. label .. "'")
+                        return "#assumption(\"" .. title .. "\")[" .. content .. "] <" .. label .. ">"
                     end
                 )
 
                 if converted ~= text then
                     quarto.log.output("DEBUG: Successfully converted assumption!")
                     return pandoc.RawBlock('typst', converted)
+                else
+                    quarto.log.output("DEBUG: Pattern did not match, no conversion")
                 end
             end
         end

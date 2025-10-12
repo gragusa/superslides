@@ -2,7 +2,7 @@
 #import "@preview/fontawesome:0.5.0": *
 #import "@preview/ctheorems:1.1.3": *
 #import "@preview/cades:0.3.0": qr-code
-
+#import "@preview/mitex:0.2.5": *
 // Helper function to handle hex colors and Typst color functions
 #let parse-color(color-str) = {
   if color-str.starts-with("\\#") {
@@ -18,67 +18,6 @@
   }
 }
 
-// Enhanced theorem environment configuration function
-#let setup-theorems(self) = {
-  // Define theorem titles for different languages
-  let theorem-titles = (
-    "it": (
-      "theorem": "Teorema",
-      "proposition": "Proposizione",
-      "lemma": "Lemma",
-      "corollary": "Corollario",
-      "conjecture": "Congettura",
-      "definition": "Definizione",
-      "example": "Esempio",
-      "exercise": "Esercizio",
-      "solution": "Soluzione",
-      "assumption": "Assunzione",
-      "remark": "Osservazione",
-      "proof": "Dimostrazione"
-    ),
-    "en": (
-      "theorem": "Theorem",
-      "proposition": "Proposition",
-      "lemma": "Lemma",
-      "corollary": "Corollary",
-      "conjecture": "Conjecture",
-      "definition": "Definition",
-      "example": "Example",
-      "exercise": "Exercise",
-      "solution": "Solution",
-      "assumption": "Assumption",
-      "remark": "Remark",
-      "proof": "Proof"
-    )
-  )
-
-  // Get colors from YAML configuration
-  let theorem-colors = (
-    "theorem": parse-color(self.store.theorem-color),
-    "proposition": parse-color(self.store.proposition-color),
-    "lemma": parse-color(self.store.lemma-color),
-    "corollary": parse-color(self.store.corollary-color),
-    "conjecture": parse-color(self.store.conjecture-color),
-    "definition": parse-color(self.store.definition-color),
-    "example": parse-color(self.store.example-color),
-    "exercise": parse-color(self.store.exercise-color),
-    "solution": parse-color(self.store.solution-color),
-    "assumption": parse-color(self.store.assumption-color),
-    "remark": parse-color(self.store.remark-color),
-  )
-
-  let titles = theorem-titles.at(self.store.theorem-lang, default: theorem-titles.at("it"))
-  let numbering-setting = if self.store.theorem-numbering { "1.1" } else { none }
-
-  // Choose package and setup globally accessible theorem functions
-  if self.store.theorem-package == "theorion" {
-    // Theorion setup - not implemented yet
-    none
-  } else {
-    // ctheorems setup (default) - this needs to be in include-before-body
-    none
-  }
-}
 #let new-section-slide(self: none, body)  = touying-slide-wrapper(self => {
   let main-body = {
     set align(left + horizon)
@@ -88,9 +27,16 @@
   self = utils.merge-dicts(
     self,
     config-page(margin: (left: 2em, top: -0.25em)),
-  ) 
+  )
   touying-slide(self: self, main-body)
 })
+
+
+// Fix math after items
+//  See https://github.com/typst/typst/issues/529
+#show math.equation.where(block: true): eq => {
+  block(width: 100%,align(center, $$eq$$))
+}
 
 #let slide(
   config: (:),
@@ -102,7 +48,7 @@
   // set page
   let header(self) = {
     set align(top)
-    show: components.cell.with(inset: (x: 2em, top: 1.5em))
+    show: components.cell.with(inset: (x: 1.2em, top: 1.0em))
     set text(
       size: 1.4em,
       fill: self.colors.neutral-darkest,
@@ -117,7 +63,7 @@
     set text(fill: self.colors.neutral-darkest, size: .7em)
     utils.call-or-display(self, self.store.footer)
     h(1fr)
-    context utils.slide-counter.display() + " : " + utils.last-slide-number
+    context utils.slide-counter.display() + "/" + utils.last-slide-number
   }
 
   // Set the slide
@@ -149,15 +95,20 @@
   font-size: 18pt,
   font-family-heading: ("Roboto"),
   font-family-body: ("Roboto"),
+  font-family-math: none,
   font-weight-heading: "regular",
   font-weight-body: "regular",
   font-weight-title: "light",
   font-weight-subtitle: "light",
   font-size-title: 1.4em,
   font-size-subtitle: 1em,
-  color-jet: parse-color("#131516"),
-  color-accent: parse-color("#107895"),
-  color-accent2: parse-color("#9a2515"),
+
+  // Simplified color system - only 3 colors needed
+  text-color: parse-color("#131516"),      // Body text color
+  primary-color: parse-color("#107895"),   // Main accent color
+  secondary-color: parse-color("#9a2515"), // Secondary accent color
+  strong-weight: "regular",
+
   raw-font-size: 15pt,  // Code block font size
   raw-inline-size: none,  // Separate size for inline code (if none, uses body font size)
   raw-inset: 8pt,  // Inset for raw code blocks
@@ -194,14 +145,8 @@
   email-color: none,        // Color for email text
   // Language support
   lang: "en",              // Language for last updated text
-  // Showybox customization options
-  // Color settings
-  simplebox-color: none,
-  warningbox-color: none,
-  infobox-color: none,
-  alert-color: none,        // Alert text color (for bold/strong text)
 
-  // Global box settings
+  // Global box settings (no individual colors - generated from primary/secondary)
   box-border-thickness: 1pt,
   box-border-radius: 4pt,
   box-shadow: none,
@@ -213,59 +158,22 @@
   box-spacing-below: 1em,
   box-padding: 8pt,
 
-  // Individual box type overrides
-  simplebox-thickness: none,
-  simplebox-radius: none,
-  warningbox-thickness: none,
-  warningbox-radius: none,
-  infobox-thickness: none,
-  infobox-radius: none,
-  // Theorem system configuration
+  // Theorem system configuration (colors auto-generated from primary-color)
   theorem-package: "ctheorems",  // "ctheorems" or "theorion"
   theorem-lang: "it",
   theorem-numbering: false,
-  theorem-font-size: none,
-  theorem-title-weight: "bold",
-  theorem-body-weight: "regular",
-
-  // Individual theorem type colors
-  theorem-color: "#E9E5F3",
-  theorem-border: none,
-  lemma-color: "#F3E9E5",
-  lemma-border: none,
-  corollary-color: "#F8F0E8",
-  corollary-border: none,
-  proposition-color: "#E5F3E9",
-  proposition-border: none,
-  conjecture-color: "#F3F8F0",
-  conjecture-border: none,
-  definition-color: "#E0EDF4",
-  definition-border: none,
-  example-color: "#F0F8E6",
-  example-border: none,
-  exercise-color: "#E0EDF4",
-  exercise-border: none,
-  solution-color: "#F5F0F8",
-  solution-border: none,
-  remark-color: "#F0F8F5",
-  remark-border: none,
-  assumption-color: "#F5F0F8",
-  assumption-border: none,
-
-  // Global theorem styling
-  theorem-border-thickness: "1pt",
-  theorem-border-radius: "4pt",
-  theorem-title-font-size: "1.1em",
-  theorem-title-font-weight: "bold",
-  theorem-body-font-size: "1.0em",
-  theorem-body-font-weight: "regular",
-  theorem-padding: "8pt",
-  theorem-spacing: "1em",
   ..args,
   body,
 ) = {
-  set text(size: font-size, font: font-family-body, fill: color-jet,
+  set text(size: font-size, font: font-family-body, fill: text-color,
            weight: font-weight-body)
+
+
+if font-family-math != none {
+  show math.equation: set text(font: font-family-math)
+}
+
+
 
   // Configure raw text styling for all code blocks
   show raw.where(block: true): it => {
@@ -280,14 +188,15 @@
     size: if raw-inline-size != none { raw-inline-size } else { font-size }
   )
 
-  // Strong/bold text styling - handled by Touying's alert system when show-strong-with-alert: true
-  // show strong: it => text(
-  //   fill: if alert-color != none { alert-color } else { color-accent2 },
-  //   weight: "bold",
-  //   it.body
-  // )
-  
+  // Strong/bold text styling (uses secondary color)
+  show strong: it => text(
+    fill: secondary-color,
+    weight: strong-weight,
+    it.body
+  )
+
   show: touying-slides.with(
+
     config-page(
       paper: "presentation-" + aspect-ratio,
       margin: (top: 4em, bottom: 1.5em, x: 2em),
@@ -298,9 +207,10 @@
       slide-level: 2,        // ## creates new slides
       section-level: 1,      // # creates section slides
       handout: handout,
-      enable-frozen-states-and-counters: false, // https://github.com/touying-typ/touying/issues/72
+      enable-frozen-states-and-counters: false,
+      // https://github.com/touying-typ/touying/issues/72
       show-hide-set-list-marker-none: true,
-      show-strong-with-alert: true
+      show-strong-with-alert: false
     ),
     config-methods(
       init: (self: none, body) => {
@@ -327,30 +237,66 @@
             let result = numbering(format, num)
             text(fill: self.colors.primary, result)
           }
-        ) 
+        )
         // Slide Subtitle
         show heading.where(level: 3): title => {
           set text(
             size: 1.1em,
             fill: self.colors.primary,
             font: font-family-body,
-            weight: "light",
-            style: "italic",
+            weight: "regular",
+            style: "normal",
           )
           block(inset: (top: -0.5em, bottom: 0.25em))[#title]
+        }
+
+        // Level 4 headings - italic instead of bold
+        show heading.where(level: 4): title => {
+          set text(
+            size: 1em,
+            fill: text-color,
+            font: font-family-body,
+            weight: "regular",
+            style: "italic",
+          )
+          block(inset: (top: 0.25em, bottom: 0.25em))[#title]
+        }
+
+        // Table styling - clean design for markdown tables
+        show table: it => {
+          set table(
+            stroke: (x, y) => {
+              // Top border for header row
+              if y == 0 { (top: 2pt + self.colors.primary, bottom: 1pt + self.colors.primary) }
+              // Bottom border for last row
+              else if y == it.rows.len() - 1 { (bottom: 0.5pt + self.colors.primary.lighten(50%)) }
+              // No other borders
+              else { none }
+            },
+            inset: 8pt,
+            fill: (x, y) => {
+              // Header row background
+              if y == 0 { self.colors.primary.lighten(90%) }
+              // Alternating row colors
+              else if calc.odd(y) { self.colors.primary.lighten(97%) }
+              else { white }
+            }
+          )
+
+          block(above: 1em, below: 1em, it)
         }
 
         set bibliography(title: none)
 
         body
       },
-      alert: (self: none, it) => text(fill: if alert-color != none { alert-color } else { self.colors.secondary }, weight: "bold", it),
+      alert: (self: none, it) => text(fill: self.colors.secondary, weight: "bold", it),
     ),
     config-colors(
-      primary: color-accent,
-      secondary: color-accent2,
+      primary: primary-color,
+      secondary: secondary-color,
       neutral-lightest: rgb("#ffffff"),
-      neutral-darkest: color-jet,
+      neutral-darkest: text-color,
     ),
     // save the variables for later use
     config-store(
@@ -372,10 +318,10 @@
       qr-code-size: qr-code-size,
       qr-code-button-color: qr-code-button-color,
       last-updated-text: last-updated-text,
-      simplebox-color: simplebox-color,
-      warningbox-color: warningbox-color,
-      infobox-color: infobox-color,
-      // Enhanced box configuration
+      // Simplified color system
+      primary-color: primary-color,
+      secondary-color: secondary-color,
+      // Box configuration
       box-border-thickness: box-border-thickness,
       box-border-radius: box-border-radius,
       box-shadow: box-shadow,
@@ -386,12 +332,6 @@
       box-spacing-above: box-spacing-above,
       box-spacing-below: box-spacing-below,
       box-padding: box-padding,
-      simplebox-thickness: simplebox-thickness,
-      simplebox-radius: simplebox-radius,
-      warningbox-thickness: warningbox-thickness,
-      warningbox-radius: warningbox-radius,
-      infobox-thickness: infobox-thickness,
-      infobox-radius: infobox-radius,
       title-font: title-font,
       title-size: title-size,
       title-weight: title-weight,
@@ -406,44 +346,10 @@
       affiliation-weight: affiliation-weight,
       email-color: email-color,
       lang: lang,
-      alert-color: alert-color,
-      // Theorem configuration
+      // Theorem configuration (colors auto-generated from primary-color)
       theorem-package: theorem-package,
       theorem-lang: theorem-lang,
       theorem-numbering: theorem-numbering,
-      theorem-font-size: theorem-font-size,
-      theorem-title-weight: theorem-title-weight,
-      theorem-body-weight: theorem-body-weight,
-      theorem-color: theorem-color,
-      theorem-border: theorem-border,
-      lemma-color: lemma-color,
-      lemma-border: lemma-border,
-      corollary-color: corollary-color,
-      corollary-border: corollary-border,
-      proposition-color: proposition-color,
-      proposition-border: proposition-border,
-      conjecture-color: conjecture-color,
-      conjecture-border: conjecture-border,
-      definition-color: definition-color,
-      definition-border: definition-border,
-      example-color: example-color,
-      example-border: example-border,
-      exercise-color: exercise-color,
-      exercise-border: exercise-border,
-      solution-color: solution-color,
-      solution-border: solution-border,
-      remark-color: remark-color,
-      remark-border: remark-border,
-      assumption-color: assumption-color,
-      assumption-border: assumption-border,
-      theorem-border-thickness: theorem-border-thickness,
-      theorem-border-radius: theorem-border-radius,
-      theorem-title-font-size: theorem-title-font-size,
-      theorem-title-font-weight: theorem-title-font-weight,
-      theorem-body-font-size: theorem-body-font-size,
-      theorem-body-font-weight: theorem-body-font-weight,
-      theorem-padding: theorem-padding,
-      theorem-spacing: theorem-spacing,
       ..args,
     ),
   )
@@ -565,17 +471,17 @@
     }
 
     // Date section
-    if info.lecture-date != none {
+    if info.date != none {
       block(
         inset: (bottom: 2em),
         text(
           size: if self.store.date-size != none { self.store.date-size } else { 16pt },
           fill: self.colors.primary,
           weight: "medium",
-          if type(info.lecture-date) == datetime {
-            info.lecture-date.display(self.datetime-format)
+          if type(info.date) == datetime {
+            info.date.display(self.datetime-format)
           } else {
-            info.lecture-date
+            info.date
           }
         )
       )
@@ -728,5 +634,6 @@
 }
 
 #show emph: it => {
-    text(blue, it.body)
+  set text(fill: black, style: "italic")
+  it
 }

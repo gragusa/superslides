@@ -52,17 +52,17 @@ local function processTheoremDiv(el)
     -- Extract title if present (from heading)
     local title, content = extractTitle(el.content)
 
+    -- Get label from div identifier
+    local label = el.identifier and el.identifier ~= "" and el.identifier or nil
+
     -- Start building the Typst output
     local blocks = pandoc.List()
 
-    -- Create the theorem function call
-    blocks:insert(pandoc.RawBlock('typst', '#' .. theorem_type .. '['))
-
-    -- Add title if present as the first line
+    -- Create the theorem function call with title as parameter
     if title then
-        blocks:insert(pandoc.RawBlock('typst', '*' .. title .. '*'))
-        blocks:insert(pandoc.RawBlock('typst', ''))
-        blocks:insert(pandoc.RawBlock('typst', ''))
+        blocks:insert(pandoc.RawBlock('typst', '#' .. theorem_type .. '("' .. title .. '")['))
+    else
+        blocks:insert(pandoc.RawBlock('typst', '#' .. theorem_type .. '['))
     end
 
     -- Process content
@@ -71,8 +71,12 @@ local function processTheoremDiv(el)
         blocks:extend(content)
     end
 
-    -- Close the theorem
-    blocks:insert(pandoc.RawBlock('typst', ']'))
+    -- Close the theorem with label if present
+    if label then
+        blocks:insert(pandoc.RawBlock('typst', '] <' .. label .. '>'))
+    else
+        blocks:insert(pandoc.RawBlock('typst', ']'))
+    end
 
     return blocks
 end
