@@ -128,6 +128,7 @@
   qr-code-size: 5cm,  // Size of QR code on title page
   qr-code-button-color: none,  // Color for QR code button (defaults to accent color)
   last-updated-text: "Versione:",
+  date-updated: none,  // Date for last updated text (if none, hides it)
   // Custom title slide typography
   title-font: none,     // Custom title font (if none, uses font-family-heading)
   title-size: 36pt,     // Title font size
@@ -318,6 +319,7 @@ if font-family-math != none {
       qr-code-size: qr-code-size,
       qr-code-button-color: qr-code-button-color,
       last-updated-text: last-updated-text,
+      date-updated: date-updated,
       // Simplified color system
       primary-color: primary-color,
       secondary-color: secondary-color,
@@ -361,6 +363,7 @@ if font-family-math != none {
   ..args,
 ) = touying-slide-wrapper(self => {
   let info = self.info + args.named()
+  let last-updated = info.at("date-updated", default: info.at("update-date", default: none))
 
   let body = {
     set align(left + top)
@@ -375,7 +378,7 @@ if font-family-math != none {
 
     // Title - Left aligned, all caps, customizable font
     block(
-      inset: (bottom: 0.1em),
+      inset: (bottom: 0.0em),
       text(
         size: if self.store.title-size != none { self.store.title-size } else { 36pt },
         fill: self.colors.neutral-darkest,
@@ -388,9 +391,9 @@ if font-family-math != none {
     // Subtitle - Left aligned underneath title
     if info.subtitle != none {
       block(
-        inset: (bottom: 2em),
+        inset: (top: -0.3em, bottom: 1.5em),
         text(
-          size: if self.store.subtitle-size != none { self.store.subtitle-size } else { 24pt },
+          size: if self.store.subtitle-size != none { self.store.subtitle-size } else { 0.8em },
           fill: self.colors.neutral-darkest,
           weight: if self.store.subtitle-weight != none { self.store.subtitle-weight } else { "regular" },
           font: if self.store.subtitle-font != none { (self.store.subtitle-font,) } else { self.store.font-family-body },
@@ -432,7 +435,7 @@ if font-family-math != none {
             if author.affiliation != none {
               linebreak()
               text(
-                size: 16pt,
+                size: 0.75em,
                 fill: if self.store.affiliation-color != none { self.store.affiliation-color } else { self.colors.primary },
                 style: if self.store.affiliation-style != none { self.store.affiliation-style } else { "italic" },
                 weight: if self.store.affiliation-weight != none { self.store.affiliation-weight } else { "regular" },
@@ -473,16 +476,16 @@ if font-family-math != none {
     // Date section
     if info.date != none {
       block(
-        inset: (bottom: 2em),
+        inset: (bottom: 1em),
         text(
-          size: if self.store.date-size != none { self.store.date-size } else { 16pt },
-          fill: self.colors.primary,
-          weight: "medium",
-          if type(info.date) == datetime {
-            info.date.display(self.datetime-format)
-          } else {
+          size: if self.store.date-size != none { self.store.date-size } else { 0.5em },
+          fill: self.colors.neutral-darkest,
+          weight: "regular",
+          //if type(info.date) == datetime {
+          //  info.date.display(self.datetime-format)
+          //} else {
             info.date
-          }
+          //}
         )
       )
     }
@@ -494,14 +497,14 @@ if font-family-math != none {
     place(
       left + bottom,
       dx: 0pt,
-      dy: 0pt,
+      dy: 30pt,
       // Last updated as button with link (if provided) - left side
-      if info.date != none {
+      if last-updated != none {
         // Language-aware last updated text
         let last-updated-text = if self.store.lang == "it" {
           "Aggiornato al:"
         } else {
-          "Last updated:"
+          "Updated:"
         }
 
         block[
@@ -510,20 +513,25 @@ if font-family-math != none {
               #box(
                 inset: 8pt,
                 radius: 4pt,
-                fill: self.colors.primary,
+                fill: luma(210),
                 text(
-                  size: 12pt,
-                  fill: white,
-                  weight: "medium"
-                )[#last-updated-text #info.date]
+                  size: 0.5em,
+                  fill: luma(90),
+                  weight: "regular"
+                )[#last-updated-text #last-updated]
               )
             ]
           } else {
-            text(
-              size: 12pt,
-              fill: self.colors.primary,
-              style: "italic"
-            )[#last-updated-text #info.date]
+            box(
+                inset: 8pt,
+                radius: 4pt,
+                fill: luma(210),
+                text(
+                  size: 0.5em,
+                  fill: luma(90),
+                  weight: "regular"
+                )[#last-updated-text #last-updated]
+              )[#last-updated-text #last-updated]
           }
         ]
       }
@@ -531,8 +539,8 @@ if font-family-math != none {
 
     place(
       right + bottom,
-      dx: 0pt,
-      dy: 0pt,
+      dx: 30pt,
+      dy: 30pt,
       // QR Code in bottom right corner
       if self.store.qr-code-url != none {
         align(center)[

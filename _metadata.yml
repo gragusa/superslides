@@ -10,7 +10,7 @@ format:
     fontsize: 24pt
     mainfont: "Inter"
     sansfont: "Inter"
-    font-family-heading: null
+    font-family-heading: "Oswald"
     font-family-body: null
     font-weight-heading: "medium"
     font-weight-body: "regular"
@@ -19,16 +19,16 @@ format:
 
     # Title slide typography (direct)
     title-font: "Inter"
-    title-size: 1.6em
+    title-size: 1.4em
     title-weight: "bold"
     subtitle-font: "Inter"
-    subtitle-size: 1.3em
+    subtitle-size: 1.2em
     subtitle-weight: "regular"
     author-size: 1.0em
     date-size: 0.8em
 
     # Title slide typography (relative overrides)
-    font-size-title: 1.4em
+    font-size-title: 1.3em
     font-weight-title: "light"
     font-size-subtitle: 1em
     font-weight-subtitle: "light"
@@ -61,7 +61,7 @@ format:
     qr-code-button-color: "#404040"
     last-updated-text: "Last updated:"
     updates-link: "https://github.com/gragusa/superslides/releases"
-
+    date-updated: null
     # Language
     lang: "en"
 
@@ -72,7 +72,7 @@ format:
     list-marker-3: "▪"
 
     # Code blocks
-    raw-font-size: 14pt
+    raw-font-size: 18pt
     raw-inline-size: 22pt
     raw-inset: 8pt
 

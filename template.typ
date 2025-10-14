@@ -132,9 +132,9 @@
   }
 
   let new_title_block = block_with_new_content(
-    old_title_block, 
+    old_title_block,
     block_with_new_content(
-      old_title_block.body, 
+      old_title_block.body,
       old_title_block.body.body.children.at(0) +
       old_title_block.body.body.children.at(1) +
       new_title))
@@ -147,23 +147,23 @@
 // 2023-10-09: #fa-icon("fa-info") is not working, so we'll eval "#fa-info()" instead
 #let callout(body: [], title: "Callout", background_color: rgb("#dddddd"), icon: none, icon_color: black, body_background_color: white) = {
   block(
-    breakable: false, 
-    fill: background_color, 
-    stroke: (paint: icon_color, thickness: 0.5pt, cap: "round"), 
-    width: 100%, 
+    breakable: false,
+    fill: background_color,
+    stroke: (paint: icon_color, thickness: 0.5pt, cap: "round"),
+    width: 100%,
     radius: 2pt,
     block(
       inset: 1pt,
-      width: 100%, 
-      below: 0pt, 
+      width: 100%,
+      below: 0pt,
       block(
-        fill: background_color, 
-        width: 100%, 
+        fill: background_color,
+        width: 100%,
         inset: 8pt)[#text(icon_color, weight: 900)[#icon] #title]) +
       if(body != []){
         block(
-          inset: 1pt, 
-          width: 100%, 
+          inset: 1pt,
+          width: 100%,
           block(fill: body_background_color, width: 100%, inset: 8pt, body))
       }
     )
@@ -299,6 +299,7 @@
   qr-code-size: 5cm,  // Size of QR code on title page
   qr-code-button-color: none,  // Color for QR code button (defaults to accent color)
   last-updated-text: "Versione:",
+  date-updated: none,  // Date for last updated text (if none, hides it)
   // Custom title slide typography
   title-font: none,     // Custom title font (if none, uses font-family-heading)
   title-size: 36pt,     // Title font size
@@ -489,6 +490,7 @@ if font-family-math != none {
       qr-code-size: qr-code-size,
       qr-code-button-color: qr-code-button-color,
       last-updated-text: last-updated-text,
+      date-updated: date-updated,
       // Simplified color system
       primary-color: primary-color,
       secondary-color: secondary-color,
@@ -532,6 +534,7 @@ if font-family-math != none {
   ..args,
 ) = touying-slide-wrapper(self => {
   let info = self.info + args.named()
+  let last-updated = info.at("date-updated", default: info.at("update-date", default: none))
 
   let body = {
     set align(left + top)
@@ -546,7 +549,7 @@ if font-family-math != none {
 
     // Title - Left aligned, all caps, customizable font
     block(
-      inset: (bottom: 0.1em),
+      inset: (bottom: 0.0em),
       text(
         size: if self.store.title-size != none { self.store.title-size } else { 36pt },
         fill: self.colors.neutral-darkest,
@@ -559,9 +562,9 @@ if font-family-math != none {
     // Subtitle - Left aligned underneath title
     if info.subtitle != none {
       block(
-        inset: (bottom: 2em),
+        inset: (top: -0.3em, bottom: 1.5em),
         text(
-          size: if self.store.subtitle-size != none { self.store.subtitle-size } else { 24pt },
+          size: if self.store.subtitle-size != none { self.store.subtitle-size } else { 0.8em },
           fill: self.colors.neutral-darkest,
           weight: if self.store.subtitle-weight != none { self.store.subtitle-weight } else { "regular" },
           font: if self.store.subtitle-font != none { (self.store.subtitle-font,) } else { self.store.font-family-body },
@@ -603,7 +606,7 @@ if font-family-math != none {
             if author.affiliation != none {
               linebreak()
               text(
-                size: 16pt,
+                size: 0.75em,
                 fill: if self.store.affiliation-color != none { self.store.affiliation-color } else { self.colors.primary },
                 style: if self.store.affiliation-style != none { self.store.affiliation-style } else { "italic" },
                 weight: if self.store.affiliation-weight != none { self.store.affiliation-weight } else { "regular" },
@@ -644,16 +647,16 @@ if font-family-math != none {
     // Date section
     if info.date != none {
       block(
-        inset: (bottom: 2em),
+        inset: (bottom: 1em),
         text(
-          size: if self.store.date-size != none { self.store.date-size } else { 16pt },
-          fill: self.colors.primary,
-          weight: "medium",
-          if type(info.date) == datetime {
-            info.date.display(self.datetime-format)
-          } else {
+          size: if self.store.date-size != none { self.store.date-size } else { 0.5em },
+          fill: self.colors.neutral-darkest,
+          weight: "regular",
+          //if type(info.date) == datetime {
+          //  info.date.display(self.datetime-format)
+          //} else {
             info.date
-          }
+          //}
         )
       )
     }
@@ -665,14 +668,14 @@ if font-family-math != none {
     place(
       left + bottom,
       dx: 0pt,
-      dy: 0pt,
+      dy: 30pt,
       // Last updated as button with link (if provided) - left side
-      if info.date != none {
+      if last-updated != none {
         // Language-aware last updated text
         let last-updated-text = if self.store.lang == "it" {
           "Aggiornato al:"
         } else {
-          "Last updated:"
+          "Updated:"
         }
 
         block[
@@ -681,20 +684,25 @@ if font-family-math != none {
               #box(
                 inset: 8pt,
                 radius: 4pt,
-                fill: self.colors.primary,
+                fill: luma(210),
                 text(
-                  size: 12pt,
-                  fill: white,
-                  weight: "medium"
-                )[#last-updated-text #info.date]
+                  size: 0.5em,
+                  fill: luma(90),
+                  weight: "regular"
+                )[#last-updated-text #last-updated]
               )
             ]
           } else {
-            text(
-              size: 12pt,
-              fill: self.colors.primary,
-              style: "italic"
-            )[#last-updated-text #info.date]
+            box(
+                inset: 8pt,
+                radius: 4pt,
+                fill: luma(210),
+                text(
+                  size: 0.5em,
+                  fill: luma(90),
+                  weight: "regular"
+                )[#last-updated-text #last-updated]
+              )[#last-updated-text #last-updated]
           }
         ]
       }
@@ -702,8 +710,8 @@ if font-family-math != none {
 
     place(
       right + bottom,
-      dx: 0pt,
-      dy: 0pt,
+      dx: 30pt,
+      dy: 30pt,
       // QR Code in bottom right corner
       if self.store.qr-code-url != none {
         align(center)[
@@ -844,33 +852,33 @@ if font-family-math != none {
           font-weight-heading: "medium",
         font-weight-body: "regular",
         strong-weight: "medium",
-        raw-font-size: 14pt,
+        raw-font-size: 18pt,
         raw-inline-size: 22pt,
         raw-inset: 8pt,
-  
+
   // List customization --------------------------------------------------------
       list-indent: 0.6em,
         list-marker-1: "•",
         list-marker-2: "◦",
         list-marker-3: "▪",
-  
+
   // Simplified 3-color system -------------------------------------------------
       text-color: parse-color("\#131516"),
         primary-color: parse-color("\#107895"),
         secondary-color: parse-color("\#9a2515"),
-  
+
   // Background ----------------------------------------------------------------
       // Title slide ---------------------------------------------------------------
       title-font: "Inter",
-        title-size: 1.6em,
+        title-size: 1.4em,
         title-weight: "bold",
         subtitle-font: "Inter",
-        subtitle-size: 1.3em,
+        subtitle-size: 1.2em,
         subtitle-weight: "regular",
         author-size: 1.0em,
         date-size: 0.8em,
         font-weight-title: "light",
-        font-size-title: 1.4em,
+        font-size-title: 1.3em,
         font-size-subtitle: 1em,
         updates-link: "https:\/\/github.com/gragusa/superslides/releases",
         affiliation-color: parse-color("\#707070"),
@@ -878,31 +886,31 @@ if font-family-math != none {
         affiliation-weight: "regular",
         email-color: parse-color("\#CD853F"),
         lang: "en",
-  
+
   // Title page customization --------------------------------------------------
               qr-code-url: "https:\/\/github.com/gragusa/superslides",
         qr-code-title: "View Source",
         qr-code-size: 4cm,
         qr-code-button-color: parse-color("\#404040"),
         last-updated-text: "Last updated:",
-  
+
   // Showybox customization (colors auto-generated from primary/secondary) ----
   // Border and appearance settings
       box-border-thickness: 1pt,
         box-border-radius: 6pt,
         box-shadow: none,
-  
+
   // Typography settings
       box-title-font-size: 1.1em,
         box-title-font-weight: "bold",
         box-body-font-size: 1em,
         box-body-font-weight: "regular",
-  
+
   // Spacing settings
       box-spacing-above: 1em,
         box-spacing-below: 1em,
         box-padding: 8pt,
-  
+
   // Theorem configuration (colors auto-generated from primary-color) ---------
       theorem-package: "ctheorems",
         theorem-lang: "en",
@@ -993,8 +1001,10 @@ if font-family-math != none {
             email: [],
             orcid: []),
             ),
-  date: [2025-09-26],
-  update-date: [October 1, 2025],
+  date: [Sunday, October 12, 2025],
+  date-updated: [
+    October 1, 2025
+  ],
   web: [],
   icon: []
 )
@@ -1020,12 +1030,7 @@ frame: (
 == Introduction
 <introduction>
 #showybox(
-  below: 1em,
-  body_style: (
-    weight: "regular",
-    size: 1em
-  ),
-  above: 1em,
+  shadow: none,
   frame: (
     border-color: rgb("#107895"),
     title-color: rgb("#107895").darken(10%),
@@ -1034,6 +1039,7 @@ frame: (
     thickness: 1pt,
     radius: 6pt
   ),
+  above: 1em,
   sep: (
     thickness: 8pt
   ),
@@ -1041,7 +1047,11 @@ frame: (
     weight: "bold",
     size: 1.1em
   ),
-  shadow: none,
+  below: 1em,
+  body_style: (
+    weight: "regular",
+    size: 1em
+  ),
 )[
 Welcome to #strong[Superslides];! This template demonstrates:
 
@@ -1094,7 +1104,7 @@ columns: (1fr), gutter: 1em, rows: 1,
 #align(center)[#box(image("template_files/figure-typst/unnamed-chunk-1-1.svg"))]
 ],
 )
-== 
+==
 <section>
 #block[
 ```python
@@ -1206,7 +1216,7 @@ tt(head(iris))|> style_tt(fontsize=0.8) |> theme_striped()
     "0_0": 0, "2_0": 0, "4_0": 0, "6_0": 0, "0_1": 0, "2_1": 0, "4_1": 0, "6_1": 0, "0_2": 0, "2_2": 0, "4_2": 0, "6_2": 0, "0_3": 0, "2_3": 0, "4_3": 0, "6_3": 0, "0_4": 0, "2_4": 0, "4_4": 0, "6_4": 0, "1_0": 1, "3_0": 1, "5_0": 1, "1_1": 1, "3_1": 1, "5_1": 1, "1_2": 1, "3_2": 1, "5_2": 1, "1_3": 1, "3_3": 1, "5_3": 1, "1_4": 1, "3_4": 1, "5_4": 1
   )
 
-  #let style-array = ( 
+  #let style-array = (
     // tinytable cell style after
     (fontsize: 0.8em,),
     (fontsize: 0.8em, background: rgb("#ededed"),),
@@ -1222,10 +1232,10 @@ tt(head(iris))|> style_tt(fontsize=0.8) |> theme_striped()
   #let align-default-array = ( left, left, left, left, left, ) // tinytable align-default-array here
   #show table.cell: it => {
     if style-array.len() == 0 { return it }
-    
+
     let style = get-style(it.x, it.y)
     if style == none { return it }
-    
+
     let tmp = it
     if ("fontsize" in style) { tmp = text(size: style.fontsize, tmp) }
     if ("color" in style) { tmp = text(fill: style.color, tmp) }
@@ -1282,12 +1292,12 @@ tt(head(iris))|> style_tt(fontsize=0.8) |> theme_striped()
 
 ] // end block
 ], caption: figure.caption(
-position: bottom, 
+position: bottom,
 [
 First few rows of the iris dataset.
-]), 
-kind: "quarto-float-tbl", 
-supplement: "Table", 
+]),
+kind: "quarto-float-tbl",
+supplement: "Table",
 )
 <tbl-iris>
 
@@ -1329,7 +1339,7 @@ data.frame(Math = c("$\\alpha$", "$a_{it}$", "$e^{i\\pi} + 1 = 0$")) |>
     "1_0": 0, "3_0": 0
   )
 
-  #let style-array = ( 
+  #let style-array = (
     // tinytable cell style after
     (background: rgb("#ededed"),),
   )
@@ -1344,10 +1354,10 @@ data.frame(Math = c("$\\alpha$", "$a_{it}$", "$e^{i\\pi} + 1 = 0$")) |>
   #let align-default-array = ( left, ) // tinytable align-default-array here
   #show table.cell: it => {
     if style-array.len() == 0 { return it }
-    
+
     let style = get-style(it.x, it.y)
     if style == none { return it }
-    
+
     let tmp = it
     if ("fontsize" in style) { tmp = text(size: style.fontsize, tmp) }
     if ("color" in style) { tmp = text(fill: style.color, tmp) }
@@ -1419,20 +1429,16 @@ with blue styling.
 
 #showybox(
   title: "Simple Information",
-  below: 1em,
-  body_style: (
-    weight: "regular",
-    size: 1em
-  ),
-  above: 1em,
+  shadow: none,
   frame: (
     border-color: rgb("#107895"),
-    title-color: rgb("#107895").darken(10%),
+    title-color: rgb("#9c274c").lighten(20%),
     body-color: rgb("#107895").lighten(90%),
     footer-color: rgb("#107895").lighten(80%),
     thickness: 1pt,
     radius: 6pt
   ),
+  above: 1em,
   sep: (
     thickness: 8pt
   ),
@@ -1440,12 +1446,16 @@ with blue styling.
     weight: "bold",
     size: 1.1em
   ),
-  shadow: none,
+  below: 1em,
+  body_style: (
+    weight: "regular",
+    size: 1em
+  ),
 )[
 This is a simple information box with blue styling.
 
 ]
-== 
+==
 <section-1>
 ```
 ::: {.warningbox}
@@ -1457,12 +1467,7 @@ red styling for alerts.
 
 #showybox(
   title: "Warning",
-  below: 1em,
-  body_style: (
-    weight: "regular",
-    size: 1em
-  ),
-  above: 1em,
+  shadow: none,
   frame: (
     border-color: rgb("#9a2515"),
     title-color: rgb("#9a2515").darken(10%),
@@ -1470,6 +1475,7 @@ red styling for alerts.
     thickness: 1pt,
     radius: 6pt
   ),
+  above: 1em,
   sep: (
     thickness: 8pt
   ),
@@ -1478,7 +1484,11 @@ red styling for alerts.
     weight: "bold",
     size: 1.1em
   ),
-  shadow: none,
+  below: 1em,
+  body_style: (
+    weight: "regular",
+    size: 1em
+  ),
 )[
 This is a warning box with red styling for alerts.
 
@@ -1594,7 +1604,7 @@ Under `#ref(<finite>)`{=typst}, the proof follows from @lem-binary.
 
 #strong[Result:] Under #ref(<finite>), the proof follows from #ref(<lem-binary>, supplement: [Lemma]).
 
-== 
+==
 <section-2>
 #v(-3em)
 
@@ -1619,7 +1629,7 @@ Quarto theorem types plus Assumption are supported:
 )
 = YAML Configuration System
 <yaml-configuration-system>
-== 
+==
 <section-3>
 #v(-2em)
 

@@ -4,8 +4,9 @@ subtitle: "Super features demo"
 authors:
   - name: "Giuseppe Ragusa"
     affiliation: "Sapienza University of Rome"
-date: "2025-09-26"
-update-date: "October 1, 2025"
+date: "Rome, 12 October 2025"
+date-format: full
+date-updated: "October 1, 2025"
 format:
     superslides-typst:
         fig-width: 9

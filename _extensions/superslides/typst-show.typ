@@ -332,7 +332,9 @@ $endif$
     $endfor$
   ),
   date: [$date$],
-  update-date: [$update-date$],
+  date-updated: [
+    $if(date-updated)$$date-updated$$else$$update-date$$endif$
+  ],
   web: [$web$],
   icon: [$icon$]
 )
