@@ -4,6 +4,11 @@ subtitle: "Super features demo"
 authors:
   - name: "Giuseppe Ragusa"
     affiliation: "Sapienza University of Rome"
+    orcid: 0000-0002-6964-6278
+    email: "giuseppe.ragusa@gmail.com"
+  - name: "Giuseppe Ragusa"
+    affiliation: "Sapienza University of Rome"
+    email: "giuseppe.ragusa@gmail.com"
 date: "Rome, 12 October 2025"
 date-format: full
 date-updated: "October 1, 2025"
@@ -386,7 +391,7 @@ Quarto theorem types plus Assumption are supported:
 ```yaml
 # Colors (only 3!)
 text-color: "#131516"       # Main text color
-primary-color: "#107895"    # Primary accent (used for boxes, theorems)
+primary-color: "#333399"    # Primary accent (used for boxes, theorems)
 secondary-color: "#9a2515"  # Secondary accent (used for warnings)
 ```
 

@@ -1,0 +1,95 @@
+#format:
+  #superslides-typst:
+    #keep-typ: true
+    #handout: false
+    #theorem-package: "ctheorems"
+    # #     # Color palette
+    # text-color: "#131516"
+    # primary-color: "#333399"
+    # secondary-color: "#9a2515"
+    # last-updated-text: "Updated:"
+    # updates-link: "https://github.com/gragusa/superslides/releases"
+#     # Global typography
+#     fontsize: 24pt
+#     mainfont: "Roboto"
+
+
+
+#     font-weight-body: "regular"
+#     font-family-heading: "Oswald"
+#     font-weight-heading: "medium"
+
+#     strong-weight: "medium"
+
+#     # Title slide typography
+#     font-size-title: 1.5em
+#     font-weight-title: "light"
+
+#     font-size-subtitle: 1em
+#     font-weight-subtitle: "light"
+
+#     font-size-author: 0.9em
+#     font-weight-author: "regular"
+
+#     font-size-affiliation: 0.5em
+#     font-weight-affiliation: "regular"
+#     font-color-affiliation: red
+
+
+
+#     email-color: "#CD853F"
+
+#     font-size-date: 0.8em
+#     font-weight-date: "regular"
+#     text-color-date: "#040404"
+
+#     # Color palette
+#     text-color: "#131516"
+#     primary-color: "#333399"
+#     secondary-color: "#9a2515"
+
+#     # QR code / metadata
+#     qr-code-url: "https://github.com/gragusa/superslides"
+#     qr-code-title: "Download"
+#     qr-code-size: 4cm
+#     qr-code-button-color: "#404040"
+#     last-updated-text: "Updated:"
+#     updates-link: "https://github.com/gragusa/superslides/releases"
+
+#     # Lists
+#     list-indent: 0.6em
+#     list-marker-1: "•"
+#     list-marker-2: "◦"
+#     list-marker-3: "▪"
+
+#     # Code blocks
+#     raw-font-size: 18pt
+#     raw-inline-size: 22pt
+#     raw-inset: 8pt
+
+#     # Zebraw enhanced code
+#     use-zebraw: false
+#     zebraw-font-size: 12pt
+#     zebraw-comment-flag: "##"
+#     zebraw-comment-color: "2E8B57"
+#     zebraw-comment-style: "italic"
+#     zebraw-numbering: true
+#     zebraw-highlight-color: "luma(245)"
+#     zebraw-background-color: "luma(245)"
+
+#     # Box styling
+#     box-border-thickness: 1pt
+#     box-border-radius: 6pt
+#     box-shadow: none
+#     box-title-font-size: 1.1em
+#     box-title-font-weight: "bold"
+#     box-body-font-size: 1em
+#     box-body-font-weight: "regular"
+#     box-spacing-above: 1em
+#     box-spacing-below: 1em
+#     box-padding: 8pt
+
+#     # Theorem configuration
+#     theorem-package: "ctheorems"
+#     theorem-lang: "en"
+#     theorem-numbering: true
