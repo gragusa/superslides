@@ -1,7 +1,36 @@
 -- columns.lua
 -- Filter to handle column layouts in Typst slides
 -- Converts Quarto column divs to Typst grid structures
--- Supports background colors via bg="#hexcolor" attribute
+-- Supports background colors via bg="#hexcolor" attribute or bg="variable-name"
+
+-- Store metadata for variable resolution
+local metadata = {}
+
+-- Capture metadata from document
+local function readMetadata(meta)
+  metadata = meta
+end
+
+-- Resolve color value - either direct hex or variable reference
+local function resolveColor(color_value)
+  if not color_value then
+    return nil
+  end
+
+  -- If it starts with #, treat as direct hex color
+  if color_value:match("^#") then
+    return color_value
+  end
+
+  -- Otherwise, try to resolve as variable from metadata
+  local var_value = metadata[color_value]
+  if var_value then
+    return pandoc.utils.stringify(var_value)
+  end
+
+  -- If not found in metadata, return original value
+  return color_value
+end
 
 -- Process divs with .columns class and nested .column divs
 local function processColumns(el)
@@ -56,8 +85,10 @@ local function processColumns(el)
 
       -- Apply background color if specified
       if bg_color then
+        -- Resolve color (supports both hex colors and variable references)
+        local resolved_color = resolveColor(bg_color)
         -- Wrap content in a block with fill color
-        content = "#block(fill: rgb(\"" .. bg_color .. "\"), width: 100%, inset: 0.5em, radius: 0pt)[" .. content .. "]"
+        content = "#block(fill: rgb(\"" .. resolved_color .. "\"), width: 100%, inset: 0.5em, radius: 0pt)[" .. content .. "]"
       end
 
       -- Wrap content in brackets for Typst
@@ -97,7 +128,10 @@ local function processColumns(el)
   return { pandoc.RawBlock("typst", result) }
 end
 
--- Return the filter
+-- Return the filter with two passes:
+-- First pass: capture metadata
+-- Second pass: process column divs
 return {
+  { Meta = readMetadata },
   { Div = processColumns }
 }
