@@ -20,6 +20,10 @@ editor:
   render-on-save: true
 ---
 
+```{r}
+#| include: false
+Sys.setenv(RETICULATE_PYTHON = "~/.pyenv/shims/python3")
+```
 # Getting Started
 
 ## Introduction
