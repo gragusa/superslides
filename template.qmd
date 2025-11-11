@@ -20,6 +20,10 @@ editor:
   render-on-save: true
 ---
 
+```{r}
+#| include: false
+Sys.setenv(RETICULATE_PYTHON = "~/.pyenv/shims/python3")
+```
 # Getting Started
 
 ## Introduction
@@ -379,6 +383,140 @@ Quarto theorem types plus Assumption are supported:
 | Solution | `::: {#sol-label}` | `@sol-label` |
 | Remark | `::: {#rem-label}` | `@rem-label` |
 | Assumption | `::: {#label .assumption}` | `#ref(<label>)` |
+
+# Columns
+
+Superslides supports multi-column layouts with flexible widths, alignment, and background colors.
+
+## Basic Two-Column Layout
+
+:::: {.columns}
+::: {.column width="40%"}
+**Left Column (40%)**
+
+This is the left column with 40% width. You can include any markdown content here:
+
+- Lists
+- Text
+- Images
+- Code
+:::
+
+::: {.column width="60%"}
+**Right Column (60%)**
+
+This is the right column with 60% width.
+
+You can have different amounts of content in each column.
+
+$$
+\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
+$$
+:::
+::::
+
+## Columns with Background Colors
+
+:::: {.columns}
+::: {.column width="50%" bg="#e8f4f8"}
+**Light Blue Background**
+
+Content with a light blue background using direct hex color: `bg="#e8f4f8"`
+
+This is useful for highlighting specific content or creating visual separation.
+:::
+
+::: {.column width="50%" bg="#fff5e6"}
+**Light Orange Background**
+
+Content with a light orange background using `bg="#fff5e6"`
+
+Different columns can have different background colors.
+:::
+::::
+
+## Columns with Height and Background
+
+:::: {.columns}
+::: {.column width="50%" bg="#e8f4f8" height="12cm"}
+**Fixed Height Column**
+
+This column has a fixed height of 12cm using `height="12cm"`
+
+The background color extends to fill the entire height, creating a nice visual effect that extends toward the end of the slide.
+:::
+
+::: {.column width="50%" bg="#fff5e6" height="12cm"}
+**Matching Height**
+
+Both columns have the same height, creating a uniform appearance.
+
+You can use various units:
+- `height="12cm"` (centimeters)
+- `height="15em"` (em units)
+- `height="200pt"` (points)
+:::
+::::
+
+## Columns with Alignment
+
+:::: {.columns align=top}
+::: {.column width="50%" align=center bg="#f0f0f0"}
+**Centered Content**
+
+This content is centered within the column using `align=center`
+:::
+
+::: {.column width="50%" align=left}
+**Left-Aligned Content**
+
+- This content is left-aligned
+- Default alignment is left
+- You can also use `align=right`
+:::
+::::
+
+## Fixed Width Columns
+
+:::: {.columns align=center totalwidth=25em}
+::: {.column width="40%" bg="#e6f3ff"}
+**Constrained Width**
+
+These columns use `totalwidth=25em` to constrain the entire block width.
+:::
+
+::: {.column width="60%" bg="#fff0f5"}
+**Centered Block**
+
+The entire column block is centered on the slide.
+:::
+::::
+
+## Using YAML Variables for Colors
+
+You can define colors in your YAML frontmatter and reference them:
+
+```yaml
+---
+primary-bg: "#e8f4f8"
+secondary-bg: "#fff5e6"
+---
+```
+
+Then use them in columns:
+
+```markdown
+:::: {.columns}
+::: {.column width="50%" bg="primary-bg"}
+Content using primary-bg variable
+:::
+::: {.column width="50%" bg="secondary-bg"}
+Content using secondary-bg variable
+:::
+::::
+```
+
+This allows for consistent theming across your presentation.
 
 # YAML Configuration System
 
