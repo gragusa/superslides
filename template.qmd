@@ -435,6 +435,29 @@ Different columns can have different background colors.
 :::
 ::::
 
+## Columns with Height and Background
+
+:::: {.columns}
+::: {.column width="50%" bg="#e8f4f8" height="12cm"}
+**Fixed Height Column**
+
+This column has a fixed height of 12cm using `height="12cm"`
+
+The background color extends to fill the entire height, creating a nice visual effect that extends toward the end of the slide.
+:::
+
+::: {.column width="50%" bg="#fff5e6" height="12cm"}
+**Matching Height**
+
+Both columns have the same height, creating a uniform appearance.
+
+You can use various units:
+- `height="12cm"` (centimeters)
+- `height="15em"` (em units)
+- `height="200pt"` (points)
+:::
+::::
+
 ## Columns with Alignment
 
 :::: {.columns align=top}

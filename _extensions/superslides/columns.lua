@@ -2,6 +2,7 @@
 -- Filter to handle column layouts in Typst slides
 -- Converts Quarto column divs to Typst grid structures
 -- Supports background colors via bg="#hexcolor" attribute or bg="variable-name"
+-- Supports height specification via height="15cm" or height="100%" attribute
 
 -- Store metadata for variable resolution
 local metadata = {}
@@ -78,6 +79,9 @@ local function processColumns(el)
       -- Extract background color if specified
       local bg_color = block.attributes["bg"]
 
+      -- Extract height if specified
+      local height = block.attributes["height"]
+
       -- Convert column content to Typst
       local content = pandoc.write(pandoc.Pandoc(block.content), "typst")
       -- Trim trailing whitespace
@@ -87,8 +91,20 @@ local function processColumns(el)
       if bg_color then
         -- Resolve color (supports both hex colors and variable references)
         local resolved_color = resolveColor(bg_color)
+
+        -- Build block parameters
+        local block_params = "fill: rgb(\"" .. resolved_color .. "\"), width: 100%, inset: 0.5em, radius: 0pt"
+
+        -- Add height if specified
+        if height then
+          block_params = block_params .. ", height: " .. height
+        end
+
         -- Wrap content in a block with fill color
-        content = "#block(fill: rgb(\"" .. resolved_color .. "\"), width: 100%, inset: 0.5em, radius: 0pt)[" .. content .. "]"
+        content = "#block(" .. block_params .. ")[" .. content .. "]"
+      elseif height then
+        -- Height specified without background color
+        content = "#block(width: 100%, height: " .. height .. ", inset: 0.5em)[" .. content .. "]"
       end
 
       -- Wrap content in brackets for Typst
