@@ -1,6 +1,7 @@
 -- columns.lua
 -- Filter to handle column layouts in Typst slides
 -- Converts Quarto column divs to Typst grid structures
+-- Supports background colors via bg="#hexcolor" attribute
 
 -- Process divs with .columns class and nested .column divs
 local function processColumns(el)
@@ -45,10 +46,19 @@ local function processColumns(el)
       local align_inner = block.attributes["align"] or "left"
       table.insert(column_aligns, align_inner)
 
+      -- Extract background color if specified
+      local bg_color = block.attributes["bg"]
+
       -- Convert column content to Typst
       local content = pandoc.write(pandoc.Pandoc(block.content), "typst")
       -- Trim trailing whitespace
       content = content:gsub("%s+$", "")
+
+      -- Apply background color if specified
+      if bg_color then
+        -- Wrap content in a block with fill color
+        content = "#block(fill: rgb(\"" .. bg_color .. "\"), width: 100%, inset: 0.5em, radius: 0pt)[" .. content .. "]"
+      end
 
       -- Wrap content in brackets for Typst
       table.insert(column_contents, "[" .. content .. "]")
