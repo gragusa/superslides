@@ -198,7 +198,7 @@
     font-color-affiliation: parse-color("$brand.superslides.affiliation.color$"),
   $endif$
   $if(font-color-heading)$
-    font-color-heading: parse-color("$font-color-heading$")
+    font-color-heading: parse-color("$font-color-heading$"),
   $elseif(brand.superslides.heading.color)$
     font-color-heading: parse-color("$brand.superslides.heading.color$"),
   $else$
@@ -339,8 +339,8 @@
 #import "@preview/ctheorems:1.1.3": *
 #show: thmrules
 
-#import "_extensions/superslides/translations.typ"
-#import "_extensions/superslides/colors.typ"
+#import "_extensions/superslides/gragusa/translations.typ"
+#import "_extensions/superslides/gragusa/colors.typ"
 #let superslides-primary = parse-color("$if(primary-color)$$primary-color$$elseif(brand.color.primary)$$brand.color.primary$$else$#333399$endif$")
 // Helper function for simple sequential numbering
 $if(theorem-numbering)$
