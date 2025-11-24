@@ -339,8 +339,8 @@
 #import "@preview/ctheorems:1.1.3": *
 #show: thmrules
 
-#import "_extensions/superslides/gragusa/translations.typ"
-#import "_extensions/superslides/gragusa/colors.typ"
+#import "_extensions/gragusa/superslides/translations.typ"
+#import "_extensions/gragusa/superslides/colors.typ"
 #let superslides-primary = parse-color("$if(primary-color)$$primary-color$$elseif(brand.color.primary)$$brand.color.primary$$else$#333399$endif$")
 // Helper function for simple sequential numbering
 $if(theorem-numbering)$
