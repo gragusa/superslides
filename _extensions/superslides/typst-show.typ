@@ -338,9 +338,8 @@
 
 #import "@preview/ctheorems:1.1.3": *
 #show: thmrules
-
-#import "_extensions/superslides/translations.typ"
-#import "_extensions/superslides/colors.typ"
+#import "_extensions/gragusa/superslides/translations.typ"
+#import "_extensions/gragusa/superslides/colors.typ"
 #let superslides-primary = parse-color("$if(primary-color)$$primary-color$$elseif(brand.color.primary)$$brand.color.primary$$else$#333399$endif$")
 
 // Theorem environments with proper numbering and cross-references
