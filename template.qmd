@@ -518,6 +518,43 @@ Content using secondary-bg variable
 
 This allows for consistent theming across your presentation.
 
+## Full-Height Columns
+
+Use `fullheight="true"` on the columns container to make column backgrounds extend to the bottom of the slide:
+
+:::: {.columns fullheight="true"}
+::: {.column width="40%" bg="#e8f4f8"}
+**Left Column**
+
+This background extends to the bottom of the slide content area.
+
+- Great for split layouts
+- Creates visual separation
+- Professional appearance
+:::
+
+::: {.column width="60%" bg="#fff5e6"}
+**Right Column**
+
+Both columns have the same full height, regardless of content length.
+
+The background fills the remaining vertical space on the slide.
+:::
+::::
+
+**Syntax:**
+
+```markdown
+:::: {.columns fullheight="true"}
+::: {.column width="40%" bg="#e8f4f8"}
+Left content
+:::
+::: {.column width="60%" bg="#fff5e6"}
+Right content
+:::
+::::
+```
+
 # YAML Configuration System
 
 ##
