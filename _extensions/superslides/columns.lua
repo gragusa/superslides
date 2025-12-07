@@ -3,6 +3,7 @@
 -- Converts Quarto column divs to Typst grid structures
 -- Supports background colors via bg="#hexcolor" attribute or bg="variable-name"
 -- Supports height specification via height="15cm" or height="100%" attribute
+-- Supports fullheight="true" for columns that extend to slide bottom
 
 -- Store metadata for variable resolution
 local metadata = {}
@@ -46,11 +47,13 @@ local function processColumns(el)
   -- Extract attributes from outer .columns div
   local align_outer = el.attributes["align"]
   local total_width = el.attributes["totalwidth"]
+  local fullheight = el.attributes["fullheight"] == "true"
 
   -- Arrays to store column data
   local column_fractions = {}
   local column_contents = {}
   local column_aligns = {}
+  local column_backgrounds = {}  -- Track backgrounds for fullheight mode
 
   -- Process each child div looking for .column class
   for _, block in ipairs(el.content) do
@@ -87,28 +90,34 @@ local function processColumns(el)
       -- Trim trailing whitespace
       content = content:gsub("%s+$", "")
 
-      -- Apply background color if specified
-      if bg_color then
-        -- Resolve color (supports both hex colors and variable references)
-        local resolved_color = resolveColor(bg_color)
+      if fullheight then
+        -- Fullheight mode: store raw content and background separately
+        table.insert(column_backgrounds, bg_color and resolveColor(bg_color) or nil)
+        table.insert(column_contents, content)
+      else
+        -- Standard mode: apply background/height inline (existing behavior)
+        if bg_color then
+          -- Resolve color (supports both hex colors and variable references)
+          local resolved_color = resolveColor(bg_color)
 
-        -- Build block parameters
-        local block_params = "fill: rgb(\"" .. resolved_color .. "\"), width: 100%, inset: 0.5em, radius: 0pt"
+          -- Build block parameters
+          local block_params = "fill: rgb(\"" .. resolved_color .. "\"), width: 100%, inset: 0.5em, radius: 0pt"
 
-        -- Add height if specified
-        if height then
-          block_params = block_params .. ", height: " .. height
+          -- Add height if specified
+          if height then
+            block_params = block_params .. ", height: " .. height
+          end
+
+          -- Wrap content in a block with fill color
+          content = "#block(" .. block_params .. ")[" .. content .. "]"
+        elseif height then
+          -- Height specified without background color
+          content = "#block(width: 100%, height: " .. height .. ", inset: 0.5em)[" .. content .. "]"
         end
 
-        -- Wrap content in a block with fill color
-        content = "#block(" .. block_params .. ")[" .. content .. "]"
-      elseif height then
-        -- Height specified without background color
-        content = "#block(width: 100%, height: " .. height .. ", inset: 0.5em)[" .. content .. "]"
+        -- Wrap content in brackets for Typst
+        table.insert(column_contents, "[" .. content .. "]")
       end
-
-      -- Wrap content in brackets for Typst
-      table.insert(column_contents, "[" .. content .. "]")
     end
   end
 
@@ -117,16 +126,47 @@ local function processColumns(el)
     return nil
   end
 
-  -- Build the Typst grid structure
-  local grid_parts = {}
-  table.insert(grid_parts, "#grid(")
-  table.insert(grid_parts, "  columns: (" .. table.concat(column_fractions, ", ") .. "),")
-  table.insert(grid_parts, "  gutter: 1em,")
-  table.insert(grid_parts, "  align: (" .. table.concat(column_aligns, ", ") .. "),")
-  table.insert(grid_parts, "  " .. table.concat(column_contents, ",\n  "))
-  table.insert(grid_parts, ")")
+  local result
 
-  local result = table.concat(grid_parts, "\n")
+  if fullheight then
+    -- Fullheight mode: use layout() to measure remaining space
+    local cell_parts = {}
+    for i, content in ipairs(column_contents) do
+      local bg = column_backgrounds[i]
+      if bg then
+        -- Wrap content in a block that fills the cell with background color
+        local wrapped = "#block(width: 100%, height: 100%, fill: rgb(\"" .. bg .. "\"), inset: 0.5em)[" .. content .. "]"
+        table.insert(cell_parts, "[" .. wrapped .. "]")
+      else
+        table.insert(cell_parts, "[" .. content .. "]")
+      end
+    end
+
+    local grid_parts = {}
+    -- Use layout() context to get remaining height
+    table.insert(grid_parts, "#layout(size => {")
+    table.insert(grid_parts, "  grid(")
+    table.insert(grid_parts, "    columns: (" .. table.concat(column_fractions, ", ") .. "),")
+    table.insert(grid_parts, "    rows: (size.height,),")
+    table.insert(grid_parts, "    gutter: 1em,")
+    table.insert(grid_parts, "    align: (" .. table.concat(column_aligns, ", ") .. "),")
+    table.insert(grid_parts, "    " .. table.concat(cell_parts, ",\n    "))
+    table.insert(grid_parts, "  )")
+    table.insert(grid_parts, "})")
+
+    result = table.concat(grid_parts, "\n")
+  else
+    -- Standard mode: existing behavior
+    local grid_parts = {}
+    table.insert(grid_parts, "#grid(")
+    table.insert(grid_parts, "  columns: (" .. table.concat(column_fractions, ", ") .. "),")
+    table.insert(grid_parts, "  gutter: 1em,")
+    table.insert(grid_parts, "  align: (" .. table.concat(column_aligns, ", ") .. "),")
+    table.insert(grid_parts, "  " .. table.concat(column_contents, ",\n  "))
+    table.insert(grid_parts, ")")
+
+    result = table.concat(grid_parts, "\n")
+  end
 
   -- Apply optional outer wrappers
 
