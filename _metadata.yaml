@@ -278,7 +278,7 @@ theorem-lang: "en"
 # Enable sequential numbering for theorems
 # Set to true for numbered theorems (1, 2, 3...)
 # Set to false for unnumbered theorems
-theorem-numbering: false
+theorem-numbering: true
 
 # -----------------------------------------------------------------------------
 # Column Variables (for use with column backgrounds)
