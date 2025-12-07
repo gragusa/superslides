@@ -339,65 +339,106 @@
 #import "@preview/ctheorems:1.1.3": *
 #show: thmrules
 
-#import "_extensions/gragusa/superslides/translations.typ"
-#import "_extensions/gragusa/superslides/colors.typ"
+#import "_extensions/superslides/translations.typ"
+#import "_extensions/superslides/colors.typ"
 #let superslides-primary = parse-color("$if(primary-color)$$primary-color$$elseif(brand.color.primary)$$brand.color.primary$$else$#333399$endif$")
-// Helper function for simple sequential numbering
-$if(theorem-numbering)$
-  #let unary(.., last) = last
-$else$
-  #let unary(.., last) = none
-$endif$
 
+// Theorem environments with proper numbering and cross-references
+// Each type has its own counter (simple sequential: 1, 2, 3...)
+// base: none gives global counting without section prefixes
+$if(theorem-numbering)$
 #let theorem = thmbox(
   "theorem",
   translations.variant("theorem"),
-  fill: superslides-primary.lighten(80%)
-).with(
-  numbering: unary
+  fill: superslides-primary.lighten(80%),
+  base: none
 )
 
 #let lemma = thmbox(
   "lemma",
   translations.variant("lemma"),
+  fill: superslides-primary.lighten(80%),
+  base: none
+)
+
+#let proposition = thmbox(
+  "proposition",
+  translations.variant("proposition"),
+  fill: superslides-primary.lighten(80%),
+  base: none
+)
+
+#let corollary = thmbox(
+  "corollary",
+  translations.variant("corollary"),
+  fill: superslides-primary.lighten(80%),
+  base: none
+)
+
+#let definition = thmbox(
+  "definition",
+  translations.variant("definition"),
+  fill: superslides-primary.lighten(90%),
+  base: none
+)
+
+#let example = thmbox(
+  "example",
+  translations.variant("example"),
+  fill: superslides-primary.lighten(90%),
+  base: none
+)
+
+#let assumption = thmbox(
+  "assumption",
+  translations.variant("assumption"),
+  fill: superslides-primary.lighten(90%),
+  base: none
+)
+$else$
+// Unnumbered theorem environments
+#let theorem = thmbox(
+  "theorem",
+  translations.variant("theorem"),
   fill: superslides-primary.lighten(80%)
-).with(
-  numbering: unary)
+).with(numbering: none)
+
+#let lemma = thmbox(
+  "lemma",
+  translations.variant("lemma"),
+  fill: superslides-primary.lighten(80%)
+).with(numbering: none)
 
 #let proposition = thmbox(
   "proposition",
   translations.variant("proposition"),
   fill: superslides-primary.lighten(80%)
-).with(
-  numbering: unary)
+).with(numbering: none)
 
 #let corollary = thmbox(
   "corollary",
   translations.variant("corollary"),
   fill: superslides-primary.lighten(80%)
-).with(
-  numbering: unary)
+).with(numbering: none)
 
 #let definition = thmbox(
   "definition",
   translations.variant("definition"),
   fill: superslides-primary.lighten(90%)
-).with(
-  numbering: unary)
+).with(numbering: none)
 
 #let example = thmbox(
   "example",
   translations.variant("example"),
   fill: superslides-primary.lighten(90%)
-).with(
-  numbering: unary)
+).with(numbering: none)
 
 #let assumption = thmbox(
   "assumption",
   translations.variant("assumption"),
   fill: superslides-primary.lighten(90%)
-).with(
-  numbering: unary)
+).with(numbering: none)
+$endif$
 
 
 
