@@ -205,7 +205,7 @@
   // Theorem system configuration (colors auto-generated from primary-color)
   theorem-package: "ctheorems",  // "ctheorems" or "theorion"
   theorem-lang: "en",  // "en" or "it"
-  theorem-numbering: false,
+  theorem-numbering: true,
   ..args,
   body,
 ) = {
