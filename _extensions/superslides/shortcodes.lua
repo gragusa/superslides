@@ -11,7 +11,7 @@ function meanwhile()
 end
 
 function v(args)
-    return pandoc.RawInline('typst', '#v(' .. args[1] .. ')')
+    return pandoc.RawBlock('typst', '#v(' .. args[1] .. ')')
 end
 
 function button(args, kwargs, meta)
