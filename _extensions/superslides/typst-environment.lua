@@ -13,9 +13,16 @@ local classCommands = pandoc.MetaMap({
     ["alert"] = "alert",
     ["fg"] = "fg",
     ["bg"] = "bg",
-    ["button"] = "button",    
+    ["button"] = "button",
     ["only"] = "only",
     ["uncover"] = "uncover",
+    -- Font size classes (for inline spans)
+    ["tiny"] = "text-scale-tiny",
+    ["small"] = "text-scale-small",
+    ["smaller"] = "text-scale-smaller",
+    ["large"] = "text-scale-large",
+    ["larger"] = "text-scale-larger",
+    ["huge"] = "text-scale-huge",
 })
 
 -- helper that identifies arrays
