@@ -613,4 +613,66 @@ box-padding: 8pt                # Internal padding
 These settings apply globally to both simplebox and warningbox, maintaining visual consistency.
 :::
 
+# Text Sizing
+
+## Font Size Classes
+
+Superslides supports font size classes for both block (Div) and inline (Span) content.
+
+### Block Syntax
+
+```markdown
+::: {.small}
+This entire block is rendered in small text.
+:::
+```
+
+**Result:**
+
+::: {.small}
+This entire block is rendered in small text.
+:::
+
+### Inline Syntax
+
+```markdown
+Normal text with [small inline text]{.small} in the middle.
+```
+
+**Result:**
+
+Normal text with [small inline text]{.small} in the middle.
+
+## Available Size Classes
+
+| Class | Size | Example |
+|-------|------|---------|
+| `.tiny` | 0.6em | [Tiny text]{.tiny} |
+| `.small` | 0.8em | [Small text]{.small} |
+| `.smaller` | 0.8em | [Smaller text]{.smaller} |
+| `.large` | 1.2em | [Large text]{.large} |
+| `.larger` | 1.2em | [Larger text]{.larger} |
+| `.huge` | 1.5em | [Huge text]{.huge} |
+
+# Vertical Spacing
+
+## The `v` Shortcode
+
+Use `{{</* v <amount> */>}}` to add vertical space between elements.
+
+```markdown
+First paragraph.
+
+{{</* v 2em */>}}
+
+Second paragraph with 2em space above.
+```
+
+**Result:**
+
+First paragraph.
+
+{{< v 2em >}}
+
+Second paragraph with 2em space above.
 
