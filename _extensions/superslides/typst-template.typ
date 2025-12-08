@@ -38,6 +38,8 @@
   block(width: 100%,align(center, $$eq$$))
 }
 
+#show math.equation.where(block: false): it => math.display(it)
+
 #let slide(
   title: auto,
   config: (:),
