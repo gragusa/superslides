@@ -290,3 +290,11 @@ theorem-numbering: true
 #
 # Then use in markdown:
 # ::: {.column width="50%" bg="primary-bg"}
+
+emph-color: "#333399"      # Same as primary-color, or any color
+emph-weight: "medium"       # Weight for _emphasis_
+bold-emph-weight: "bold"    # Weight for **_bold emphasis_**
+
+emph-style: "normal"   # No italic for emphasis
+# or
+# emph-style: "italic"   # Default - italic for emphasis
