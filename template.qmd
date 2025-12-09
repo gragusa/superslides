@@ -676,3 +676,10 @@ First paragraph.
 
 Second paragraph with 2em space above.
 
+## Equation numbering
+
+$$
+  e = mc^2
+$$ {#eq-einstain}
+
+@eq-einstain is an important equation.
