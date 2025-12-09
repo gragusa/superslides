@@ -633,7 +633,7 @@ This entire block is rendered in small text.
 This entire block is rendered in small text.
 :::
 
-### Inline Syntax
+## Inline Syntax
 
 ```markdown
 Normal text with [small inline text]{.small} in the middle.
@@ -643,7 +643,7 @@ Normal text with [small inline text]{.small} in the middle.
 
 Normal text with [small inline text]{.small} in the middle.
 
-## Available Size Classes
+### Available Size Classes
 
 | Class | Size | Example |
 |-------|------|---------|

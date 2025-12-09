@@ -168,6 +168,14 @@
   secondary-color: parse-color("#c8102e"), // Secondary accent color
   strong-weight: "regular",
 
+  // Emphasis styling (italic text via _text_)
+  emph-color: none,  // Color for emphasis (defaults to text-color if none)
+  emph-weight: "medium",  // Weight for emphasis
+  emph-style: "italic",  // Style for emphasis ("italic" or "normal")
+
+  // Bold-emphasis styling (bold italic via **_text_** or _**text**_)
+  bold-emph-weight: "bold",  // Weight for bold emphasis (defaults to "bold")
+
   raw-font-size: 1em,  // Code block font size
   raw-inline-size: 0.9em,  // Separate size for inline code (if none, uses body font size)
   raw-inset: 8pt,  // Inset for raw code blocks
@@ -238,6 +246,26 @@ if font-family-math != none {
     weight: strong-weight,
     it.body
   )
+
+  // Emphasis styling (italic text via _text_)
+  // Uses emph-color (defaults to text-color) with medium weight
+  // Bold-emphasis (_**text**_ or **_text_**) uses bold-emph-weight
+  let emph-fill = if emph-color != none { emph-color } else { text-color }
+  show emph: it => {
+    // Override strong when nested inside emphasis for bold-emphasis
+    show strong: inner => text(
+      fill: emph-fill,
+      style: emph-style,
+      weight: bold-emph-weight,
+      inner.body
+    )
+    text(
+      fill: emph-fill,
+      style: emph-style,
+      weight: emph-weight,
+      it.body
+    )
+  }
 
   show: touying-slides.with(
 
@@ -726,7 +754,3 @@ if font-family-math != none {
   body
 }
 
-#show emph: it => {
-  set text(fill: black, style: "italic")
-  it
-}

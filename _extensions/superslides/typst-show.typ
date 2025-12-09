@@ -54,6 +54,18 @@
   $if(strong-weight)$
     strong-weight: "$strong-weight$",
   $endif$
+  $if(emph-color)$
+    emph-color: parse-color("$emph-color$"),
+  $endif$
+  $if(emph-weight)$
+    emph-weight: "$emph-weight$",
+  $endif$
+  $if(emph-style)$
+    emph-style: "$emph-style$",
+  $endif$
+  $if(bold-emph-weight)$
+    bold-emph-weight: "$bold-emph-weight$",
+  $endif$
   $if(raw-font-size)$
     raw-font-size: $raw-font-size$,
   $endif$
@@ -338,8 +350,35 @@
 
 #import "@preview/ctheorems:1.1.3": *
 #show: thmrules
-#import "_extensions/gragusa/superslides/translations.typ"
-#import "_extensions/gragusa/superslides/colors.typ"
+
+// Inline translations (avoids path issues between dev and installed extension)
+#let translations-variants = (
+  "theorem": ("en": "Theorem", "ca": "Teorema", "de": "Satz", "fr": "Théorème", "es": "Teorema", "it": "Teorema"),
+  "assumption": ("en": "Assumption", "ca": "Hipòtesi", "de": "Annahme", "fr": "Hypothèse", "es": "Hipótesis", "it": "Assunzione"),
+  "proposition": ("en": "Proposition", "ca": "Proposició", "de": "Proposition", "fr": "Proposition", "es": "Proposición", "it": "Proposizione"),
+  "lemma": ("en": "Lemma", "ca": "Lema", "de": "Lemma", "fr": "Lemme", "es": "Lema", "it": "Lemma"),
+  "corollary": ("en": "Corollary", "ca": "Coroŀlari", "de": "Korollar", "fr": "Corollaire", "es": "Corolario", "it": "Corollario"),
+  "definition": ("en": "Definition", "ca": "Definició", "de": "Definition", "fr": "Définition", "es": "Definición", "it": "Definizione"),
+  "example": ("en": "Example", "ca": "Exemple", "de": "Beispiel", "fr": "Exemple", "es": "Ejemplo", "it": "Esempio"),
+  "remark": ("en": "Remark", "ca": "Observació", "de": "Bemerkung", "fr": "Remarque", "es": "Observación", "it": "Osservazione"),
+  "note": ("en": "Note", "ca": "Nota", "de": "Notiz", "fr": "Note", "es": "Nota", "it": "Nota"),
+  "exercise": ("en": "Exercise", "ca": "Exercici", "de": "Übung", "fr": "Exercice", "es": "Ejercicio", "it": "Esercizio"),
+  "algorithm": ("en": "Algorithm", "ca": "Algorisme", "de": "Algorithmus", "fr": "Algorithme", "es": "Algoritmo", "it": "Algoritmo"),
+  "claim": ("en": "Claim", "ca": "Afirmació", "de": "Behauptung", "fr": "Assertion", "es": "Afirmación", "it": "Affermazione"),
+  "axiom": ("en": "Axiom", "ca": "Axioma", "de": "Axiom", "fr": "Axiome", "es": "Axioma", "it": "Assioma"),
+  "proof": ("en": "Proof", "ca": "Demostració", "de": "Beweis", "fr": "Démonstration", "es": "Demostración", "it": "Dimostrazione"),
+  "proof-of": ("en": "Proof of", "ca": "Demostració del", "de": "Beweis von", "fr": "Démonstration du", "es": "Demostración del", "it": "Dimostrazione di"),
+)
+
+#let translations-variant(key) = {
+  let lang-dict = translations-variants.at(key, default: key)
+  return if type(lang-dict) == str {
+    lang-dict
+  } else {
+    context lang-dict.at(text.lang, default: lang-dict.at("en", default: key))
+  }
+}
+
 #let superslides-primary = parse-color("$if(primary-color)$$primary-color$$elseif(brand.color.primary)$$brand.color.primary$$else$#333399$endif$")
 
 // Theorem environments with proper numbering and cross-references
@@ -348,49 +387,49 @@
 $if(theorem-numbering)$
 #let theorem = thmbox(
   "theorem",
-  translations.variant("theorem"),
+  translations-variant("theorem"),
   fill: superslides-primary.lighten(80%),
   base: none
 )
 
 #let lemma = thmbox(
   "lemma",
-  translations.variant("lemma"),
+  translations-variant("lemma"),
   fill: superslides-primary.lighten(80%),
   base: none
 )
 
 #let proposition = thmbox(
   "proposition",
-  translations.variant("proposition"),
+  translations-variant("proposition"),
   fill: superslides-primary.lighten(80%),
   base: none
 )
 
 #let corollary = thmbox(
   "corollary",
-  translations.variant("corollary"),
+  translations-variant("corollary"),
   fill: superslides-primary.lighten(80%),
   base: none
 )
 
 #let definition = thmbox(
   "definition",
-  translations.variant("definition"),
+  translations-variant("definition"),
   fill: superslides-primary.lighten(90%),
   base: none
 )
 
 #let example = thmbox(
   "example",
-  translations.variant("example"),
+  translations-variant("example"),
   fill: superslides-primary.lighten(90%),
   base: none
 )
 
 #let assumption = thmbox(
   "assumption",
-  translations.variant("assumption"),
+  translations-variant("assumption"),
   fill: superslides-primary.lighten(90%),
   base: none
 )
@@ -398,43 +437,43 @@ $else$
 // Unnumbered theorem environments
 #let theorem = thmbox(
   "theorem",
-  translations.variant("theorem"),
+  translations-variant("theorem"),
   fill: superslides-primary.lighten(80%)
 ).with(numbering: none)
 
 #let lemma = thmbox(
   "lemma",
-  translations.variant("lemma"),
+  translations-variant("lemma"),
   fill: superslides-primary.lighten(80%)
 ).with(numbering: none)
 
 #let proposition = thmbox(
   "proposition",
-  translations.variant("proposition"),
+  translations-variant("proposition"),
   fill: superslides-primary.lighten(80%)
 ).with(numbering: none)
 
 #let corollary = thmbox(
   "corollary",
-  translations.variant("corollary"),
+  translations-variant("corollary"),
   fill: superslides-primary.lighten(80%)
 ).with(numbering: none)
 
 #let definition = thmbox(
   "definition",
-  translations.variant("definition"),
+  translations-variant("definition"),
   fill: superslides-primary.lighten(90%)
 ).with(numbering: none)
 
 #let example = thmbox(
   "example",
-  translations.variant("example"),
+  translations-variant("example"),
   fill: superslides-primary.lighten(90%)
 ).with(numbering: none)
 
 #let assumption = thmbox(
   "assumption",
-  translations.variant("assumption"),
+  translations-variant("assumption"),
   fill: superslides-primary.lighten(90%)
 ).with(numbering: none)
 $endif$
