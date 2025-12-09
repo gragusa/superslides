@@ -340,9 +340,28 @@ A group is a set G with an operation * that satisfies:
 - Closure
 - Associativity
 - Identity element
-- Inverse elements
 :::
 
+@def-group is cool.
+
+##
+
+```markdown
+::: {#exr-group}
+### Exercise
+This is an exercise
+:::
+```
+
+
+### Result
+
+::: {#exr-group}
+### Exercise
+This is an exercise
+:::
+
+@exr-group is cool.
 
 
 ## Cross-References

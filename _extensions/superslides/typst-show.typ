@@ -365,6 +365,8 @@
   "exercise": ("en": "Exercise", "ca": "Exercici", "de": "Übung", "fr": "Exercice", "es": "Ejercicio", "it": "Esercizio"),
   "algorithm": ("en": "Algorithm", "ca": "Algorisme", "de": "Algorithmus", "fr": "Algorithme", "es": "Algoritmo", "it": "Algoritmo"),
   "claim": ("en": "Claim", "ca": "Afirmació", "de": "Behauptung", "fr": "Assertion", "es": "Afirmación", "it": "Affermazione"),
+  "conjecture": ("en": "Conjecture", "ca": "Conjectura", "de": "Vermutung", "fr": "Conjecture", "es": "Conjetura", "it": "Congettura"),
+  "solution": ("en": "Solution", "ca": "Solució", "de": "Lösung", "fr": "Solution", "es": "Solución", "it": "Soluzione"),
   "axiom": ("en": "Axiom", "ca": "Axioma", "de": "Axiom", "fr": "Axiome", "es": "Axioma", "it": "Assioma"),
   "proof": ("en": "Proof", "ca": "Demostració", "de": "Beweis", "fr": "Démonstration", "es": "Demostración", "it": "Dimostrazione"),
   "proof-of": ("en": "Proof of", "ca": "Demostració del", "de": "Beweis von", "fr": "Démonstration du", "es": "Demostración del", "it": "Dimostrazione di"),
@@ -433,6 +435,34 @@ $if(theorem-numbering)$
   fill: superslides-primary.lighten(90%),
   base: none
 )
+
+#let exercise = thmbox(
+  "exercise",
+  translations-variant("exercise"),
+  fill: superslides-primary.lighten(90%),
+  base: none
+)
+
+#let remark = thmbox(
+  "remark",
+  translations-variant("remark"),
+  fill: superslides-primary.lighten(95%),
+  base: none
+)
+
+#let conjecture = thmbox(
+  "conjecture",
+  translations-variant("conjecture"),
+  fill: superslides-primary.lighten(80%),
+  base: none
+)
+
+#let solution = thmbox(
+  "solution",
+  translations-variant("solution"),
+  fill: superslides-primary.lighten(95%),
+  base: none
+)
 $else$
 // Unnumbered theorem environments
 #let theorem = thmbox(
@@ -475,6 +505,30 @@ $else$
   "assumption",
   translations-variant("assumption"),
   fill: superslides-primary.lighten(90%)
+).with(numbering: none)
+
+#let exercise = thmbox(
+  "exercise",
+  translations-variant("exercise"),
+  fill: superslides-primary.lighten(90%)
+).with(numbering: none)
+
+#let remark = thmbox(
+  "remark",
+  translations-variant("remark"),
+  fill: superslides-primary.lighten(95%)
+).with(numbering: none)
+
+#let conjecture = thmbox(
+  "conjecture",
+  translations-variant("conjecture"),
+  fill: superslides-primary.lighten(80%)
+).with(numbering: none)
+
+#let solution = thmbox(
+  "solution",
+  translations-variant("solution"),
+  fill: superslides-primary.lighten(95%)
 ).with(numbering: none)
 $endif$
 

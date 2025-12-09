@@ -1,7 +1,7 @@
 -- Theorem-box filter for Quarto
 -- Converts ::: {.theorem} divs to Typst theorem function calls
 
--- Define the theorem environments we support
+-- Define the theorem environments we support (class-based)
 local theorem_environments = {
   "theorem",
   "proposition",
@@ -14,6 +14,22 @@ local theorem_environments = {
   "assumption",
   "remark",
   "proof"
+}
+
+-- Quarto cross-reference ID prefixes mapped to theorem types
+-- See: https://quarto.org/docs/authoring/cross-references.html#theorems-and-proofs
+local id_prefix_map = {
+  ["thm"] = "theorem",
+  ["lem"] = "lemma",
+  ["cor"] = "corollary",
+  ["prp"] = "proposition",
+  ["cnj"] = "conjecture",
+  ["def"] = "definition",
+  ["exm"] = "example",
+  ["exr"] = "exercise",
+  ["sol"] = "solution",
+  ["rem"] = "remark",
+  ["asm"] = "assumption"
 }
 
 -- Helper function to extract title from content
@@ -31,6 +47,19 @@ local function extractTitle(content)
     return nil, content
 end
 
+-- Helper function to get theorem type from ID prefix (e.g., "exr-one" -> "exercise")
+local function getTheoremTypeFromId(identifier)
+    if not identifier or identifier == "" then
+        return nil
+    end
+    -- Extract prefix before first hyphen
+    local prefix = identifier:match("^([^-]+)")
+    if prefix and id_prefix_map[prefix] then
+        return id_prefix_map[prefix]
+    end
+    return nil
+end
+
 -- Main function to process theorem divs
 local function processTheoremDiv(el)
     -- Check if this div has one of our theorem classes
@@ -40,6 +69,11 @@ local function processTheoremDiv(el)
             theorem_type = env
             break
         end
+    end
+
+    -- If not found by class, try to detect from ID prefix (Quarto cross-ref style)
+    if not theorem_type then
+        theorem_type = getTheoremTypeFromId(el.identifier)
     end
 
     if not theorem_type then
