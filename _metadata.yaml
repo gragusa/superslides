@@ -300,3 +300,23 @@ emph-style: "normal"   # No italic for emphasis
 # emph-style: "italic"   # Default - italic for emphasis
 crossref:
   eq-prefix: ""   # Prefix for equation references
+
+# Customize theorem box fill colors
+theorem-fill: "#e7e8ef"      # For theorem, lemma, proposition, corollary, conjecture
+definition-fill: "#e7e8ef"   # For definition, assumption
+example-fill: "#e7e8ef"      # For example, exercise
+remark-fill: "#e7e8ef"       # For remark, solution
+
+  # Color groupings:
+  # | Fill option     | Applies to                                         |
+  # |-----------------|----------------------------------------------------|
+  # | theorem-fill    | theorem, lemma, proposition, corollary, conjecture |
+  # | definition-fill | definition, assumption                             |
+  # | example-fill    | example, exercise                                  |
+  # | remark-fill     | remark, solution                                   |
+
+  # If not specified, the defaults are:
+  # - theorem-fill: primary-color lightened 80%
+  # - definition-fill: primary-color lightened 90%
+  # - example-fill: primary-color lightened 90%
+  # - remark-fill: primary-color lightened 95%
