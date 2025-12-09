@@ -1,4 +1,19 @@
 // Helper function to handle hex colors and Typst color functions
+#let is-hex-color(s) = {
+  // Check if string is a valid hex color (6 or 8 characters, all hex digits)
+  let len = s.len()
+  if len != 6 and len != 8 {
+    return false
+  }
+  let hex-chars = "0123456789abcdefABCDEF"
+  for c in s {
+    if not hex-chars.contains(c) {
+      return false
+    }
+  }
+  return true
+}
+
 #let parse-color(color-str) = {
   if color-str.starts-with("\\#") {
     rgb(color-str.slice(2))
@@ -7,6 +22,9 @@
   } else if color-str.starts-with("luma(") or color-str.starts-with("rgb(") or color-str.starts-with("color.") {
     // Handle Typst color functions - evaluate them directly
     eval(color-str)
+  } else if is-hex-color(color-str) {
+    // Handle hex color without # prefix (6 or 8 hex digits)
+    rgb(color-str)
   } else {
     // Assume it's a literal color name or other valid Typst color
     eval(color-str)
@@ -341,6 +359,18 @@
   $if(theorem-numbering)$
     theorem-numbering: $theorem-numbering$,
   $endif$
+  $if(theorem-fill)$
+    theorem-fill: parse-color("$theorem-fill$"),
+  $endif$
+  $if(definition-fill)$
+    definition-fill: parse-color("$definition-fill$"),
+  $endif$
+  $if(example-fill)$
+    example-fill: parse-color("$example-fill$"),
+  $endif$
+  $if(remark-fill)$
+    remark-fill: parse-color("$remark-fill$"),
+  $endif$
 )
 
 
@@ -383,6 +413,12 @@
 
 #let superslides-primary = parse-color("$if(primary-color)$$primary-color$$elseif(brand.color.primary)$$brand.color.primary$$else$#333399$endif$")
 
+// Theorem fill colors (customizable via YAML, defaults to primary-color lightened)
+#let theorem-fill-color = $if(theorem-fill)$parse-color("$theorem-fill$")$else$superslides-primary.lighten(80%)$endif$
+#let definition-fill-color = $if(definition-fill)$parse-color("$definition-fill$")$else$superslides-primary.lighten(75%)$endif$
+#let example-fill-color = $if(example-fill)$parse-color("$example-fill$")$else$superslides-primary.lighten(75%)$endif$
+#let remark-fill-color = $if(remark-fill)$parse-color("$remark-fill$")$else$superslides-primary.lighten(75%)$endif$
+
 // Theorem environments with proper numbering and cross-references
 // Each type has its own counter (simple sequential: 1, 2, 3...)
 // base: none gives global counting without section prefixes
@@ -390,77 +426,77 @@ $if(theorem-numbering)$
 #let theorem = thmbox(
   "theorem",
   translations-variant("theorem"),
-  fill: superslides-primary.lighten(80%),
+  fill: theorem-fill-color,
   base: none
 )
 
 #let lemma = thmbox(
   "lemma",
   translations-variant("lemma"),
-  fill: superslides-primary.lighten(80%),
+  fill: theorem-fill-color,
   base: none
 )
 
 #let proposition = thmbox(
   "proposition",
   translations-variant("proposition"),
-  fill: superslides-primary.lighten(80%),
+  fill: theorem-fill-color,
   base: none
 )
 
 #let corollary = thmbox(
   "corollary",
   translations-variant("corollary"),
-  fill: superslides-primary.lighten(80%),
+  fill: theorem-fill-color,
   base: none
 )
 
 #let definition = thmbox(
   "definition",
   translations-variant("definition"),
-  fill: superslides-primary.lighten(90%),
+  fill: definition-fill-color,
   base: none
 )
 
 #let example = thmbox(
   "example",
   translations-variant("example"),
-  fill: superslides-primary.lighten(90%),
+  fill: example-fill-color,
   base: none
 )
 
 #let assumption = thmbox(
   "assumption",
   translations-variant("assumption"),
-  fill: superslides-primary.lighten(90%),
+  fill: definition-fill-color,
   base: none
 )
 
 #let exercise = thmbox(
   "exercise",
   translations-variant("exercise"),
-  fill: superslides-primary.lighten(90%),
+  fill: example-fill-color,
   base: none
 )
 
 #let remark = thmbox(
   "remark",
   translations-variant("remark"),
-  fill: superslides-primary.lighten(95%),
+  fill: remark-fill-color,
   base: none
 )
 
 #let conjecture = thmbox(
   "conjecture",
   translations-variant("conjecture"),
-  fill: superslides-primary.lighten(80%),
+  fill: theorem-fill-color,
   base: none
 )
 
 #let solution = thmbox(
   "solution",
   translations-variant("solution"),
-  fill: superslides-primary.lighten(95%),
+  fill: remark-fill-color,
   base: none
 )
 $else$
@@ -468,67 +504,67 @@ $else$
 #let theorem = thmbox(
   "theorem",
   translations-variant("theorem"),
-  fill: superslides-primary.lighten(80%)
+  fill: theorem-fill-color
 ).with(numbering: none)
 
 #let lemma = thmbox(
   "lemma",
   translations-variant("lemma"),
-  fill: superslides-primary.lighten(80%)
+  fill: theorem-fill-color
 ).with(numbering: none)
 
 #let proposition = thmbox(
   "proposition",
   translations-variant("proposition"),
-  fill: superslides-primary.lighten(80%)
+  fill: theorem-fill-color
 ).with(numbering: none)
 
 #let corollary = thmbox(
   "corollary",
   translations-variant("corollary"),
-  fill: superslides-primary.lighten(80%)
+  fill: theorem-fill-color
 ).with(numbering: none)
 
 #let definition = thmbox(
   "definition",
   translations-variant("definition"),
-  fill: superslides-primary.lighten(90%)
+  fill: definition-fill-color
 ).with(numbering: none)
 
 #let example = thmbox(
   "example",
   translations-variant("example"),
-  fill: superslides-primary.lighten(90%)
+  fill: example-fill-color
 ).with(numbering: none)
 
 #let assumption = thmbox(
   "assumption",
   translations-variant("assumption"),
-  fill: superslides-primary.lighten(90%)
+  fill: definition-fill-color
 ).with(numbering: none)
 
 #let exercise = thmbox(
   "exercise",
   translations-variant("exercise"),
-  fill: superslides-primary.lighten(90%)
+  fill: example-fill-color
 ).with(numbering: none)
 
 #let remark = thmbox(
   "remark",
   translations-variant("remark"),
-  fill: superslides-primary.lighten(95%)
+  fill: remark-fill-color
 ).with(numbering: none)
 
 #let conjecture = thmbox(
   "conjecture",
   translations-variant("conjecture"),
-  fill: superslides-primary.lighten(80%)
+  fill: theorem-fill-color
 ).with(numbering: none)
 
 #let solution = thmbox(
   "solution",
   translations-variant("solution"),
-  fill: superslides-primary.lighten(95%)
+  fill: remark-fill-color
 ).with(numbering: none)
 $endif$
 

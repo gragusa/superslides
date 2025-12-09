@@ -4,6 +4,21 @@
 #import "@preview/cades:0.3.0": qr-code
 #import "@preview/mitex:0.2.5": *
 // Helper function to handle hex colors and Typst color functions
+#let is-hex-color(s) = {
+  // Check if string is a valid hex color (6 or 8 characters, all hex digits)
+  let len = s.len()
+  if len != 6 and len != 8 {
+    return false
+  }
+  let hex-chars = "0123456789abcdefABCDEF"
+  for c in s {
+    if not hex-chars.contains(c) {
+      return false
+    }
+  }
+  return true
+}
+
 #let parse-color(color-str) = {
   if color-str.starts-with("\\#") {
     rgb(color-str.slice(2))
@@ -12,6 +27,9 @@
   } else if color-str.starts-with("luma(") or color-str.starts-with("rgb(") or color-str.starts-with("color.") {
     // Handle Typst color functions - evaluate them directly
     eval(color-str)
+  } else if is-hex-color(color-str) {
+    // Handle hex color without # prefix (6 or 8 hex digits)
+    rgb(color-str)
   } else {
     // Assume it's a literal color name or other valid Typst color
     eval(color-str)
@@ -216,6 +234,16 @@
   theorem-package: "ctheorems",  // "ctheorems" or "theorion"
   theorem-lang: "en",  // "en" or "it"
   theorem-numbering: true,
+
+  // Theorem box colors (defaults to primary-color lightened)
+  // theorem-fill: auto uses primary-color.lighten(80%)
+  // definition-fill: auto uses primary-color.lighten(90%)
+  // example-fill: auto uses primary-color.lighten(90%)
+  // remark-fill: auto uses primary-color.lighten(95%)
+  theorem-fill: none,      // Fill for theorem, lemma, proposition, corollary, conjecture
+  definition-fill: none,   // Fill for definition, assumption
+  example-fill: none,      // Fill for example, exercise
+  remark-fill: none,       // Fill for remark, solution
   ..args,
   body,
 ) = {
