@@ -298,3 +298,5 @@ bold-emph-weight: "bold"    # Weight for **_bold emphasis_**
 emph-style: "normal"   # No italic for emphasis
 # or
 # emph-style: "italic"   # Default - italic for emphasis
+crossref:
+  eq-prefix: ""   # Prefix for equation references
