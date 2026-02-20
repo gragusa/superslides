@@ -15,6 +15,7 @@ contributes:
         - showy-box.lua
         - theorem-box.lua
         - assumption-filter.lua
+        - zebraw.lua
         - revealjs.lua
       template-partials:
         - typst-template.typ

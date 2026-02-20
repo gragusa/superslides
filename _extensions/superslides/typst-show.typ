@@ -234,6 +234,12 @@
   $else$
     font-color-heading: parse-color("#333399"),
   $endif$
+  $if(heading-inset-top)$
+    heading-inset-top: $heading-inset-top$,
+  $endif$
+  $if(heading-inset-bottom)$
+    heading-inset-bottom: $heading-inset-bottom$,
+  $endif$
   $if(font-family-date)$
     font-family-date: "$font-family-date$",
   $elseif(brand.superslides.date.family)$
@@ -282,6 +288,24 @@
   // Title page customization --------------------------------------------------
   $if(logo-path)$
     logo-path: "$logo-path$",
+  $endif$
+  $if(logo-width)$
+    logo-width: $logo-width$,
+  $endif$
+  $if(logo-align)$
+    logo-align: $logo-align$,
+  $endif$
+  $if(logo-inset-top)$
+    logo-inset-top: $logo-inset-top$,
+  $endif$
+  $if(logo-inset-bottom)$
+    logo-inset-bottom: $logo-inset-bottom$,
+  $endif$
+  $if(logo-inset-left)$
+    logo-inset-left: $logo-inset-left$,
+  $endif$
+  $if(logo-inset-right)$
+    logo-inset-right: $logo-inset-right$,
   $endif$
   $if(title-compact)$
     title-compact: $title-compact$,
@@ -360,16 +384,16 @@
     theorem-numbering: $theorem-numbering$,
   $endif$
   $if(theorem-fill)$
-    theorem-fill: parse-color("$theorem-fill$"),
+    theorem-fill: "$theorem-fill$",
   $endif$
   $if(definition-fill)$
-    definition-fill: parse-color("$definition-fill$"),
+    definition-fill: "$definition-fill$",
   $endif$
   $if(example-fill)$
-    example-fill: parse-color("$example-fill$"),
+    example-fill: "$example-fill$",
   $endif$
   $if(remark-fill)$
-    remark-fill: parse-color("$remark-fill$"),
+    remark-fill: "$remark-fill$",
   $endif$
 )
 
@@ -385,8 +409,55 @@
 #import "@preview/ctheorems:1.1.3": *
 
 // --- theorion rainbow theme import ---
-#import "@preview/theorion:0.4.1": cosmos
+#import "@preview/theorion:0.4.1": cosmos, make-frame
 #import cosmos.rainbow: *
+
+// --- Extra framed environments not in rainbow cosmos ---
+// Rainbow only defines: theorem, lemma, corollary, definition, axiom, postulate,
+// proposition, assumption, property, conjecture.
+// We create framed versions of example, exercise, remark, solution to match.
+#let _extra-render(fill: gray, prefix: none, title: "", full-title: auto, ..args, body) = {
+  block(
+    stroke: language-aware-start(.25em + fill),
+    inset: language-aware-start(1em) + (y: .75em),
+    width: 100%,
+    ..args,
+    [
+      #if full-title != "" {
+        block(sticky: true, strong(text(fill: fill, full-title)))
+      }
+      #body
+    ],
+  )
+}
+
+#let (_example-ctr, example-box, example, _show-example) = make-frame(
+  "example",
+  (en: "Example", ca: "Exemple", de: "Beispiel", fr: "Exemple", es: "Ejemplo", it: "Esempio"),
+  counter: theorem-counter,
+  render: _extra-render.with(fill: green.darken(10%)),
+)
+
+#let (_exercise-ctr, exercise-box, exercise, _show-exercise) = make-frame(
+  "exercise",
+  (en: "Exercise", ca: "Exercici", de: "Übung", fr: "Exercice", es: "Ejercicio", it: "Esercizio"),
+  counter: theorem-counter,
+  render: _extra-render.with(fill: olive.darken(10%)),
+)
+
+#let (_remark-ctr, remark-box, remark, _show-remark) = make-frame(
+  "remark",
+  (en: "Remark", ca: "Observació", de: "Bemerkung", fr: "Remarque", es: "Observación", it: "Osservazione"),
+  counter: theorem-counter,
+  render: _extra-render.with(fill: gray.darken(20%)),
+)
+
+#let (_solution-ctr, solution-box, solution, _show-solution) = make-frame(
+  "solution",
+  (en: "Solution", ca: "Solució", de: "Lösung", fr: "Solution", es: "Solución", it: "Soluzione"),
+  counter: theorem-counter,
+  render: _extra-render.with(fill: teal.darken(10%)),
+)
 
 // Inline translations (used by ctheorems fallback)
 #let translations-variants = (
@@ -419,12 +490,14 @@
 }
 
 #let superslides-primary = parse-color("$if(primary-color)$$primary-color$$elseif(brand.color.primary)$$brand.color.primary$$else$#333399$endif$")
+#let superslides-secondary = parse-color("$if(secondary-color)$$secondary-color$$elseif(brand.color.secondary)$$brand.color.secondary$$else$#c8102e$endif$")
 
 // Theorem fill colors (customizable via YAML, defaults to primary-color lightened)
-#let theorem-fill-color = $if(theorem-fill)$parse-color("$theorem-fill$")$else$superslides-primary.lighten(80%)$endif$
-#let definition-fill-color = $if(definition-fill)$parse-color("$definition-fill$")$else$superslides-primary.lighten(75%)$endif$
-#let example-fill-color = $if(example-fill)$parse-color("$example-fill$")$else$superslides-primary.lighten(75%)$endif$
-#let remark-fill-color = $if(remark-fill)$parse-color("$remark-fill$")$else$superslides-primary.lighten(75%)$endif$
+// Supports theme-relative values like "primary-color lightened 80%"
+#let theorem-fill-color = $if(theorem-fill)$parse-theme-color("$theorem-fill$", superslides-primary, superslides-secondary)$else$superslides-primary.lighten(80%)$endif$
+#let definition-fill-color = $if(definition-fill)$parse-theme-color("$definition-fill$", superslides-primary, superslides-secondary)$else$superslides-primary.lighten(75%)$endif$
+#let example-fill-color = $if(example-fill)$parse-theme-color("$example-fill$", superslides-primary, superslides-secondary)$else$superslides-primary.lighten(75%)$endif$
+#let remark-fill-color = $if(remark-fill)$parse-theme-color("$remark-fill$", superslides-primary, superslides-secondary)$else$superslides-primary.lighten(75%)$endif$
 
 // --- Save theorion rainbow versions before they get shadowed ---
 // Rainbow environments: theorem, lemma, proposition, corollary, conjecture,
@@ -449,11 +522,18 @@ $else$
 #let _th_definition = $if(definition-fill)$definition-box.with(fill: definition-fill-color)$else$definition-box$endif$
 #let _th_assumption = $if(definition-fill)$assumption-box.with(fill: definition-fill-color)$else$assumption-box$endif$
 $endif$
-// Default-cosmos environments (same API for numbered/unnumbered)
-#let _th_example = example
-#let _th_exercise = exercise
-#let _th_remark = remark
-#let _th_solution = solution
+// Extra framed environments (created above via make-frame)
+$if(theorem-numbering)$
+#let _th_example = $if(example-fill)$example.with(fill: example-fill-color)$else$example$endif$
+#let _th_exercise = $if(example-fill)$exercise.with(fill: example-fill-color)$else$exercise$endif$
+#let _th_remark = $if(remark-fill)$remark.with(fill: remark-fill-color)$else$remark$endif$
+#let _th_solution = $if(remark-fill)$solution.with(fill: remark-fill-color)$else$solution$endif$
+$else$
+#let _th_example = $if(example-fill)$example-box.with(fill: example-fill-color)$else$example-box$endif$
+#let _th_exercise = $if(example-fill)$exercise-box.with(fill: example-fill-color)$else$exercise-box$endif$
+#let _th_remark = $if(remark-fill)$remark-box.with(fill: remark-fill-color)$else$remark-box$endif$
+#let _th_solution = $if(remark-fill)$solution-box.with(fill: remark-fill-color)$else$solution-box$endif$
+$endif$
 
 // --- Conditional show rule ---
 #show: body => {
@@ -465,6 +545,10 @@ $endif$
   } else {
     {
       show: show-theorion
+      show: _show-example
+      show: _show-exercise
+      show: _show-remark
+      show: _show-solution
       body
     }
   }
@@ -511,6 +595,16 @@ $endif$
 #let solution = if _theorem_package == "ctheorems" { _ct_solution } else { _th_solution }
 
 
+
+// When zebraw is active, neutralize Quarto's default raw block styling
+// (from definitions.typ: set block(fill: luma(230), inset: 8pt, ...))
+// which adds padding and fill inside zebraw's grid cells causing white lines
+$if(use-zebraw)$
+#show raw.where(block: true): set block(fill: none, inset: 0pt, radius: 0pt, width: auto)
+$endif$
+
+// Enable equation numbering for cross-references
+#set math.equation(numbering: "(1)")
 
 #set table(
   stroke: none,

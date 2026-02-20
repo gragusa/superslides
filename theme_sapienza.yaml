@@ -1,0 +1,150 @@
+# =============================================================================
+# Superslides Configuration Metadata - SAPIENZA BRANDED
+# =============================================================================
+# Customized for Sapienza Università di Roma brand identity
+#
+# Sapienza Core Colors (from official PPT template):
+#   - Sapienza Red:  #822433 - Primary institutional color (Pantone 222)
+#   - Dark Crimson:  #830022 - Accent variant
+#   - Dark Text:     #040404 - Body text
+#   - White:         #FFFFFF - Clean backgrounds
+#
+# Sapienza Typography:
+#   - Body: Roboto
+#   - Headings: Oswald
+# =============================================================================
+
+format:
+  superslides-typst:
+    # -------------------------------------------------------------------------
+    # General Settings
+    # -------------------------------------------------------------------------
+    aspect-ratio: "16-9"
+    handout: false
+    lang: "it"
+    header: ""
+    footer: "Econometria"
+
+    # -------------------------------------------------------------------------
+    # Color System - Sapienza Palette
+    # -------------------------------------------------------------------------
+    text-color: "#040404"
+    primary-color: "#822433" # Sapienza Red
+    secondary-color: "#006778" # Dark crimson accent
+    background-color: "#FFFFFF"
+    email-color: "#822433"
+
+    # -------------------------------------------------------------------------
+    # Typography - Body Text
+    # -------------------------------------------------------------------------
+    font-size: 20pt
+    font-family-body: "Roboto"
+    font-weight-body: "regular"
+    font-family-math: "New Computer Modern"
+    strong-weight: "medium"
+
+    # -------------------------------------------------------------------------
+    # Typography - Headings
+    # -------------------------------------------------------------------------
+    font-size-heading: 1.75em
+    font-family-heading: "Raleway"
+    font-weight-heading: "medium"
+    font-color-heading: "#822433" # Sapienza Red
+    heading-inset-top: 6em
+    heading-inset-bottom: 5.5em
+    # -------------------------------------------------------------------------
+    # Typography - Title Slide
+    # -------------------------------------------------------------------------
+    # Title
+    font-size-title: 2em
+    font-family-title: "Roboto"
+    font-weight-title: "regular"
+    font-color-title: "#822433" # Sapienza Red
+
+    # Subtitle
+    font-size-subtitle: 1.6em
+    font-family-subtitle: "Roboto"
+    font-weight-subtitle: "regular"
+    font-style-subtitle: "italic"
+    font-color-subtitle: "#040404"
+
+    # Author
+    font-family-author: "Roboto"
+    font-size-author: 1.2em
+    font-weight-author: "medium"
+    font-color-author: "#040404"
+
+    # Affiliation
+    font-family-affiliation: "Roboto"
+    font-size-affiliation: 1em
+    font-weight-affiliation: "regular"
+    font-style-affiliation: "italic"
+    font-color-affiliation: "#040404"
+
+    # Email
+    font-family-email: "Roboto"
+    font-size-email: 0.8em
+    font-weight-email: "regular"
+    font-style-email: "italic"
+    font-color-email: "#822433" # Sapienza Red
+
+    # Date
+    font-family-date: "Roboto"
+    font-size-date: 1em
+    font-weight-date: "medium"
+    font-style-date: "normal"
+    font-color-date: "#040404"
+
+    # -------------------------------------------------------------------------
+    # Code Blocks & Inline Code
+    # -------------------------------------------------------------------------
+    raw-font-size: 1em
+    raw-inline-size: 1.0em
+
+    # -------------------------------------------------------------------------
+    # Lists
+    # -------------------------------------------------------------------------
+    list-indent: 0.6em
+    list-marker-1: "•"
+    list-marker-2: "◦"
+    list-marker-3: "▪"
+
+    # -------------------------------------------------------------------------
+    # Title Page Customization
+    # -------------------------------------------------------------------------
+    logo-path: sapienza-logo-1.png
+
+    logo-width: 4cm
+    logo-align: "right + bottom"
+    logo-inset-bottom: -2em
+    logo-inset-right: -2em
+
+    qr-code-url: null
+    qr-code-title: "QR Code"
+    qr-code-size: 5cm
+    qr-code-button-color: "#822433" # Sapienza Red
+    date-updated: null
+    last-updated-text: "Updated:"
+    updates-link: null
+
+    # -------------------------------------------------------------------------
+    # Emphasis Styling
+    # -------------------------------------------------------------------------
+    emph-color: "#822433" # Sapienza Red
+    emph-weight: "medium"
+    bold-emph-weight: "bold"
+    emph-style: "normal"
+
+    # -------------------------------------------------------------------------
+    # Theorem System
+    # -------------------------------------------------------------------------
+    theorem-package: "theorion"
+    theorem-lang: "it"
+    theorem-numbering: true
+    theorem-fill: "#C79900"
+    definition-fill: "#C54C00"
+    example-fill: "#A6BCC6"
+    remark-fill: "#A6BCC6"
+    exercise-fill: "#822433"
+
+    zebraw-lang-color: "#822433"

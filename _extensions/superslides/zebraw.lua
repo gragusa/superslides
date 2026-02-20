@@ -8,8 +8,9 @@ local zebraw_comment_style = "italic"
 local zebraw_numbering = true
 local zebraw_highlight_color = "luma(245)"
 local zebraw_background_color = "luma(245)"
-local raw_inset = "(top: 2pt, bottom: 2pt)"
-local injected_styling = false
+local zebraw_lang = "true"  -- true/false or custom string
+local zebraw_lang_color = nil  -- nil means use default (superslides-primary)
+local zebraw_lang_font_args = nil  -- nil means use default (fill: white, weight: "bold")
 
 local function get_option(meta, key)
   if meta[key] ~= nil then
@@ -37,6 +38,17 @@ local function meta_to_bool(value)
   return nil
 end
 
+-- Helper function to replace smart/curly quotes with straight quotes
+-- Pandoc converts "..." to \u201c...\u201d before Lua sees the string
+local function straighten_quotes(str)
+  if not str then return str end
+  str = str:gsub("\u{201c}", '"')  -- left double
+  str = str:gsub("\u{201d}", '"')  -- right double
+  str = str:gsub("\u{2018}", "'")  -- left single
+  str = str:gsub("\u{2019}", "'")  -- right single
+  return str
+end
+
 -- Function to read metadata and check if zebraw is enabled
 function Meta(meta)
   if quarto.doc.is_format("typst") then
@@ -59,7 +71,7 @@ function Meta(meta)
 
     local zebraw_comment_flag_meta = get_option(meta, 'zebraw-comment-flag')
     if zebraw_comment_flag_meta then
-      zebraw_comment_flag = pandoc.utils.stringify(zebraw_comment_flag_meta)
+      zebraw_comment_flag = straighten_quotes(pandoc.utils.stringify(zebraw_comment_flag_meta))
     end
 
     local zebraw_comment_color_meta = get_option(meta, 'zebraw-comment-color')
@@ -69,7 +81,7 @@ function Meta(meta)
 
     local zebraw_comment_style_meta = get_option(meta, 'zebraw-comment-style')
     if zebraw_comment_style_meta then
-      zebraw_comment_style = pandoc.utils.stringify(zebraw_comment_style_meta)
+      zebraw_comment_style = straighten_quotes(pandoc.utils.stringify(zebraw_comment_style_meta))
     end
 
     local zebraw_numbering_meta = get_option(meta, 'zebraw-numbering')
@@ -88,22 +100,35 @@ function Meta(meta)
       zebraw_background_color = pandoc.utils.stringify(zebraw_background_color_meta)
     end
 
-    local raw_inset_meta = get_option(meta, 'raw-inset')
-    if raw_inset_meta then
-      -- Simple format: raw-inset: 2 or raw-inset: 2pt
-      local val_str = pandoc.utils.stringify(raw_inset_meta)
-      if not string.match(val_str, "pt$") and not string.match(val_str, "em$") then
-        val_str = val_str .. "pt"
-      end
-      -- For zebraw, default to top/bottom spacing even with simple format
-      raw_inset = "(top: " .. val_str .. ", bottom: " .. val_str .. ")"
+    local zebraw_lang_meta = get_option(meta, 'zebraw-lang')
+    if zebraw_lang_meta then
+      zebraw_lang = pandoc.utils.stringify(zebraw_lang_meta)
     end
-    -- Note: Default is already set above if no raw-inset provided
+
+    local zebraw_lang_color_meta = get_option(meta, 'zebraw-lang-color')
+    if zebraw_lang_color_meta then
+      zebraw_lang_color = pandoc.utils.stringify(zebraw_lang_color_meta)
+    end
+
+    local zebraw_lang_font_args_meta = get_option(meta, 'zebraw-lang-font-args')
+    if zebraw_lang_font_args_meta then
+      zebraw_lang_font_args = straighten_quotes(pandoc.utils.stringify(zebraw_lang_font_args_meta))
+    end
 
     if use_zebraw then
       quarto.log.output("Zebraw code blocks enabled with font-size: " .. zebraw_font_size)
     end
   end
+end
+
+-- Helper function to escape special characters for Typst content brackets [...]
+local function escape_typst_content(str)
+  if not str then return str end
+  str = str:gsub("#", "\\#")
+  str = str:gsub("<", "\\<")
+  str = str:gsub("@", "\\@")
+  str = str:gsub("%$", "\\$")
+  return str
 end
 
 -- Helper function to escape special characters for Typst strings
@@ -143,7 +168,7 @@ local function extract_inline_comments(code_content, comment_flag)
       -- Extract comment text after the flag
       local comment_text = line:sub(comment_pos + #comment_flag):gsub("^%s+", "")
       if comment_text ~= "" then
-        table.insert(highlight_parts, "(" .. line_num .. ", [" .. comment_text .. "])")
+        table.insert(highlight_parts, "(" .. line_num .. ", [" .. escape_typst_content(comment_text) .. "])")
       end
     end
   end
@@ -188,6 +213,32 @@ local function process_color(color_str)
   else
     -- Assume it's a literal color name or other valid Typst color
     return color_str
+  end
+end
+
+-- Helper function to build lang-related zebraw options
+local function build_lang_options(options)
+  -- Lang: true/false or custom string
+  if zebraw_lang == "true" then
+    table.insert(options, "lang: true")
+  elseif zebraw_lang == "false" then
+    table.insert(options, "lang: false")
+  else
+    table.insert(options, 'lang: [' .. zebraw_lang .. ']')
+  end
+
+  -- Lang color: default to superslides-primary (Typst variable)
+  if zebraw_lang_color then
+    table.insert(options, 'lang-color: ' .. process_color(zebraw_lang_color))
+  else
+    table.insert(options, 'lang-color: superslides-primary')
+  end
+
+  -- Lang font args: default to white bold
+  if zebraw_lang_font_args then
+    table.insert(options, 'lang-font-args: ' .. zebraw_lang_font_args)
+  else
+    table.insert(options, 'lang-font-args: (fill: white, weight: "bold")')
   end
 end
 
@@ -310,7 +361,7 @@ local function process_yaml_comments(yaml_comments)
         local line_num, comment_text = comment_str:match("^(%d+):(.+)$")
         if line_num and comment_text then
           comment_text = comment_text:gsub("^%s+", "") -- trim leading spaces
-          table.insert(highlight_parts, "(" .. line_num .. ", [" .. comment_text .. "])")
+          table.insert(highlight_parts, "(" .. line_num .. ", [" .. escape_typst_content(comment_text) .. "])")
         end
       end
     else
@@ -321,7 +372,7 @@ local function process_yaml_comments(yaml_comments)
         local line_num, comment_text = line_comment:match("^(%d+):(.+)$")
         if line_num and comment_text then
           comment_text = comment_text:gsub("^%s+", "") -- trim leading spaces
-          table.insert(highlight_parts, "(" .. line_num .. ", [" .. comment_text .. "])")
+          table.insert(highlight_parts, "(" .. line_num .. ", [" .. escape_typst_content(comment_text) .. "])")
         end
       end
     end
@@ -344,36 +395,6 @@ function CodeBlock(el)
     local yaml_comments = el.attr.attributes["zebraw-comment"]
     local has_yaml_comments = yaml_comments ~= nil
 
-    -- Only process with zebraw if we have comments or specific zebraw attributes
-    if not has_inline_comments and not has_yaml_comments then
-      -- Check if there are any other zebraw-specific attributes that would indicate zebraw usage
-      local has_zebraw_attrs = false
-      for key, _ in pairs(el.attr.attributes) do
-        if key:match("^zebraw%-") or key == "numbering" or key == "highlight-lines" then
-          has_zebraw_attrs = true
-          break
-        end
-      end
-      if not has_zebraw_attrs then
-        return el  -- Return regular code block
-      end
-    end
-
-    -- Inject raw block styling override on first zebraw code block
-    local styling_override = ""
-    if not injected_styling then
-      styling_override = [[
-// Override Quarto's raw block inset for zebraw - injected by zebraw.lua filter
-#show raw.where(block: true): set block(
-  fill: ]] .. zebraw_background_color .. [[,
-  width: 100%,
-  inset: ]] .. raw_inset .. [[,
-  radius: 2pt)
-
-]]
-      injected_styling = true
-    end
-
     -- Build zebraw options using YAML configuration
     local options = {}
 
@@ -390,10 +411,13 @@ function CodeBlock(el)
     -- Colors
     table.insert(options, 'comment-color: ' .. process_color(zebraw_comment_color))
     table.insert(options, 'highlight-color: ' .. process_color(zebraw_highlight_color))
-    table.insert(options, 'background-color: ' .. process_color(zebraw_background_color))
+    table.insert(options, 'background-color: (' .. process_color(zebraw_background_color) .. ', ' .. process_color(zebraw_background_color) .. ')')
 
     -- Comment flag (use as-is, no escaping needed for comment-flag parameter)
     table.insert(options, 'comment-flag: "' .. zebraw_comment_flag .. '"')
+
+    -- Language tab
+    build_lang_options(options)
 
     -- Handle comments
     if has_inline_comments then
@@ -427,10 +451,9 @@ function CodeBlock(el)
     end
 
     -- Build the zebraw code block
-    local zebraw_code = styling_override .. "#text(size: " .. zebraw_font_size .. ")[\n"
-    zebraw_code = zebraw_code .. "#zebraw(" .. table.concat(options, ", ") .. ",\n"
-    zebraw_code = zebraw_code .. "```" .. language .. "\n" .. final_code_content .. "\n```\n)"
-    zebraw_code = zebraw_code .. "\n]"
+    local zebraw_code = "#{\nset text(size: " .. zebraw_font_size .. ")\n"
+    zebraw_code = zebraw_code .. "zebraw(" .. table.concat(options, ", ") .. ",\n"
+    zebraw_code = zebraw_code .. "```" .. language .. "\n" .. final_code_content .. "\n```\n)\n}"
 
     return pandoc.RawBlock('typst', zebraw_code)
   end
@@ -507,25 +530,10 @@ function Div(el)
           local line_num, comment_text = comment_line:match("^(%d+):(.+)$")
           if line_num and comment_text then
             comment_text = comment_text:gsub("^%s+", "") -- trim leading spaces
-            table.insert(highlight_parts, "(" .. line_num .. ", [" .. comment_text .. "])")
+            table.insert(highlight_parts, "(" .. line_num .. ", [" .. escape_typst_content(comment_text) .. "])")
           end
         end
 
-
-        -- Inject raw block styling override on first zebraw code block
-        local styling_override = ""
-        if not injected_styling then
-          styling_override = [=[
-// Override Quarto's raw block inset for zebraw - injected by zebraw.lua filter
-#show raw.where(block: true): set block(
-  fill: ]=] .. zebraw_background_color .. [=[,
-  width: 100%,
-  inset: ]=] .. raw_inset .. [=[,
-  radius: 2pt)
-
-]=]
-          injected_styling = true
-        end
 
         -- Build zebraw options using same comprehensive set as inline comments
         local options = {}
@@ -543,20 +551,22 @@ function Div(el)
         -- Colors
         table.insert(options, 'comment-color: ' .. process_color(zebraw_comment_color))
         table.insert(options, 'highlight-color: ' .. process_color(zebraw_highlight_color))
-        table.insert(options, 'background-color: ' .. process_color(zebraw_background_color))
+        table.insert(options, 'background-color: (' .. process_color(zebraw_background_color) .. ', ' .. process_color(zebraw_background_color) .. ')')
 
         -- Comment flag
         table.insert(options, 'comment-flag: "' .. zebraw_comment_flag .. '"')
+
+        -- Language tab
+        build_lang_options(options)
 
         if #highlight_parts > 0 then
           table.insert(options, "highlight-lines: (" .. table.concat(highlight_parts, ", ") .. ")")
         end
 
         -- Build the zebraw code block
-        local zebraw_code = styling_override .. "#text(size: " .. zebraw_font_size .. ")[\n"
-        zebraw_code = zebraw_code .. "#zebraw(" .. table.concat(options, ", ") .. ",\n"
-        zebraw_code = zebraw_code .. "```" .. language .. "\n" .. code_content .. "\n```\n)"
-        zebraw_code = zebraw_code .. "\n]"
+        local zebraw_code = "#{\nset text(size: " .. zebraw_font_size .. ")\n"
+        zebraw_code = zebraw_code .. "zebraw(" .. table.concat(options, ", ") .. ",\n"
+        zebraw_code = zebraw_code .. "```" .. language .. "\n" .. code_content .. "\n```\n)\n}"
 
         return pandoc.RawBlock('typst', zebraw_code)
       end

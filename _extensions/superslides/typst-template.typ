@@ -5,6 +5,7 @@
 #import "@preview/theorion:0.4.1": *
 #import "@preview/colorful-boxes:1.4.3": *
 #import "@preview/showybox:2.0.4": showybox
+#import "@preview/zebraw:0.6.1": *
 
 #let bluebox(body) = {
   outline-colorbox(
@@ -56,6 +57,36 @@
   }
 }
 
+// Parse a color string that may reference theme colors with operations.
+// Supports:  "primary-color lightened 80%", "secondary-color darkened 20%",
+//            or any plain color value handled by parse-color.
+// Operations: lightened/lighten, darkened/darken, saturated/saturate, desaturated/desaturate
+#let parse-theme-color(color-str, primary, secondary) = {
+  let parts = color-str.split(" ")
+  let base-name = parts.at(0)
+  let base = if base-name == "primary" or base-name == "primary-color" {
+    primary
+  } else if base-name == "secondary" or base-name == "secondary-color" {
+    secondary
+  } else if parts.len() == 1 {
+    return parse-color(color-str)
+  } else {
+    parse-color(base-name)
+  }
+
+  if parts.len() >= 3 {
+    let op = parts.at(1)
+    let amount = eval(parts.at(2))
+    if op == "lightened" or op == "lighten" { base.lighten(amount) }
+    else if op == "darkened" or op == "darken" { base.darken(amount) }
+    else if op == "saturated" or op == "saturate" { base.saturate(amount) }
+    else if op == "desaturated" or op == "desaturate" { base.desaturate(amount) }
+    else { base }
+  } else {
+    base
+  }
+}
+
 #let new-section-slide(self: none, body)  = touying-slide-wrapper(self => {
   let main-body = {
     set align(left + horizon)
@@ -70,12 +101,7 @@
 })
 
 
-// Fix math after items
-//  See https://github.com/typst/typst/issues/529
-#show math.equation.where(block: true): eq => {
-  block(width: 100%,align(center, $$eq$$))
-}
-
+// Display inline math as display-style (large fractions, etc.)
 #show math.equation.where(block: false): it => math.display(it)
 
 #let slide(
@@ -101,7 +127,7 @@
 
   let header(self) = {
     set std.align(top)
-    show: components.cell.with(fill: self.store.background-color, inset: (top: 5em, right: 2em, left: 2em, bottom: 4.5em))
+    show: components.cell.with(fill: self.store.background-color, inset: (top: self.store.heading-inset-top, right: 2em, left: 2em, bottom: self.store.heading-inset-bottom))
     set std.align(horizon)
     set text(fill: self.store.font-color-heading,
              weight: "medium",
@@ -162,6 +188,8 @@
   font-family-heading: ("Oswald"),
   font-weight-heading: "medium",
   font-color-heading: parse-color("#333399"),
+  heading-inset-top: 5em,
+  heading-inset-bottom: 4.5em,
 
   font-size-title: 2em,
   font-family-title: ("Roboto"),
@@ -227,6 +255,12 @@
   background-color: parse-color("#FFFFFF"),
   // Title page options
   logo-path: none,  // Set to none by default to avoid missing file errors
+  logo-width: 4cm,
+  logo-align: left + bottom,  // Alignment: left/center/right + top/bottom
+  logo-inset-top: 0em,
+  logo-inset-bottom: 0em,
+  logo-inset-left: 0em,
+  logo-inset-right: 0em,
   qr-code-url: none,
   qr-code-title: "QR Code",
   qr-code-size: 5cm,  // Size of QR code on title page
@@ -276,12 +310,14 @@ if font-family-math != none {
 }
 
   // Configure raw text styling for all code blocks
+  // When zebraw is enabled, it handles code block styling itself
+$if(use-zebraw)$
+$else$
   show raw.where(block: true): it => {
-    // Regular code blocks get normal styling
     set text(size: raw-font-size)
-    set block(inset: raw-inset, fill: luma(245), radius: 2pt)
-    it
+    block(inset: raw-inset, fill: luma(245), radius: 2pt, width: 100%, it)
   }
+$endif$
 
   // Inline code uses raw-inline-size if specified, otherwise uses body font size
   show raw.where(block: false): set text(
@@ -436,6 +472,8 @@ if font-family-math != none {
       font-weight-title: font-weight-title,
       font-weight-subtitle: font-weight-subtitle,
       font-color-heading: font-color-heading,
+      heading-inset-top: heading-inset-top,
+      heading-inset-bottom: heading-inset-bottom,
       font-family-title: font-family-title,
       font-family-subtitle: font-family-subtitle,
       font-color-title: font-color-title,
@@ -454,6 +492,12 @@ if font-family-math != none {
       font-size-email: font-size-email,
       background-image: background-image,
       logo-path: logo-path,
+      logo-width: logo-width,
+      logo-align: logo-align,
+      logo-inset-top: logo-inset-top,
+      logo-inset-bottom: logo-inset-bottom,
+      logo-inset-left: logo-inset-left,
+      logo-inset-right: logo-inset-right,
       qr-code-url: qr-code-url,
       qr-code-title: qr-code-title,
       qr-code-size: qr-code-size,
@@ -513,11 +557,13 @@ if font-family-math != none {
       if type(choice) == array { choice } else { (choice,) }
     } else { fallback }
 
-    // Logo at the top left if provided
+    // Logo if provided — use place() for absolute positioning
     if self.store.logo-path != none {
-      block(
-        inset: (bottom: 2em),
-        image(self.store.logo-path, width: 4cm)
+      place(
+        self.store.logo-align,
+        dx: self.store.logo-inset-left - self.store.logo-inset-right,
+        dy: self.store.logo-inset-top - self.store.logo-inset-bottom,
+        image(self.store.logo-path, width: self.store.logo-width)
       )
     }
 
@@ -773,12 +819,17 @@ if font-family-math != none {
 
 // Text scaling functions for font size classes
 #let text-scale-tiny(body) = {
-  set text(size: 0.6em)
+  set text(size: 0.7em)
+  body
+}
+
+#let text-scale-smallish(body) = {
+  set text(size: 0.95em)
   body
 }
 
 #let text-scale-small(body) = {
-  set text(size: 0.8em)
+  set text(size: 0.9em)
   body
 }
 
@@ -788,7 +839,7 @@ if font-family-math != none {
 }
 
 #let text-scale-large(body) = {
-  set text(size: 1.2em)
+  set text(size: 1.1em)
   body
 }
 
@@ -797,8 +848,13 @@ if font-family-math != none {
   body
 }
 
+#let text-scale-big(body) = {
+  set text(size: 1.3em)
+  body
+}
+
 #let text-scale-huge(body) = {
-  set text(size: 1.5em)
+  set text(size: 1.4em)
   body
 }
 

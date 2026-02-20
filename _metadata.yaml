@@ -1,322 +1,38 @@
 # =============================================================================
-# Superslides Configuration Metadata
+# Superslides Project Metadata
 # =============================================================================
-# This file contains all available configuration options for the Superslides
-# Typst presentation theme. All values shown are the defaults.
+# This file selects the active theme and adds functional settings.
+# All visual/branding options live in theme files (theme_*.yaml).
 #
-# To customize your presentation, copy the keys you want to modify to your
-# document's YAML frontmatter and adjust the values.
+# Available themes:
+#   - theme_sapienza.yaml  (Sapienza Università di Roma)
+#   - theme_lbs.yaml       (London Business School)
+#
+# To switch theme, change the metadata-files entry below.
+# Any keys set here will override the theme values.
 # =============================================================================
 
+metadata-files:
+  - theme_sapienza.yaml
+
+lang: it
 # -----------------------------------------------------------------------------
-# General Settings
+# Zebraw Code Blocks
 # -----------------------------------------------------------------------------
-
-# Aspect ratio for slides
-# Options: "16-9", "4-3"
-aspect-ratio: "16-9"
-
-# Enable handout mode (removes animations, compact layout)
-handout: false
-
-# Language for internationalization
-# Options: "en" (English), "it" (Italian)
-lang: "en"
-
-# Custom header content for slides (Level 2 heading by default)
-# Can be text or leave empty for auto-display of current heading
-header: ""
-
-# Custom footer content for slides
-footer: ""
+use-zebraw: true
+zebraw-font-size: 16pt
+zebraw-numbering: true
+zebraw-comment-flag: "##"
+zebraw-comment-color: blue
+zebraw-comment-style: italic
+zebraw-highlight-color: "luma(245)"
+zebraw-background-color: "luma(245)"
+zebraw-lang: true
+zebraw-lang-color: "red"
+zebraw-lang-font-args: '(weight: "bold", fill: white)'
 
 # -----------------------------------------------------------------------------
-# Color System (Simplified 3-Color Approach)
+# Cross-references
 # -----------------------------------------------------------------------------
-
-# Main text color (body text)
-text-color: "#040404"
-
-# Primary accent color (used for headings, lists, theorem boxes)
-primary-color: "#333399"
-
-# Secondary accent color (used for warnings, strong text)
-secondary-color: "#c8102e"
-
-# Background color for slides
-background-color: "#FFFFFF"
-
-# Background image (optional, use path to image file)
-# If set, this overrides background-color
-background-image: null
-
-# Email link color (optional, defaults to primary-color if not set)
-email-color: null
-
-# -----------------------------------------------------------------------------
-# Typography - Body Text
-# -----------------------------------------------------------------------------
-
-# Base font size for body text
-font-size: 20pt
-
-# Font family for body text
-# Examples: "Roboto", "Helvetica", "Arial"
-font-family-body: "Roboto"
-
-# Font weight for body text
-# Options: "thin", "light", "regular", "medium", "bold"
-font-weight-body: "regular"
-
-# Font family for mathematical equations (optional)
-# Leave as null to use default Typst math font
-font-family-math: null
-
-# Font weight for strong/bold text
-# Options: "thin", "light", "regular", "medium", "bold"
-strong-weight: "regular"
-
-# -----------------------------------------------------------------------------
-# Typography - Headings (Level 2 - Slide Titles)
-# -----------------------------------------------------------------------------
-
-# Font size for slide headings (level 2)
-font-size-heading: 1.75em
-
-# Font family for headings
-font-family-heading: "Oswald"
-
-# Font weight for headings
-font-weight-heading: "medium"
-
-# Color for slide headings
-font-color-heading: "#333399"
-
-# -----------------------------------------------------------------------------
-# Typography - Title Slide - Title
-# -----------------------------------------------------------------------------
-
-# Font size for presentation title
-font-size-title: 2em
-
-# Font family for title
-font-family-title: "Roboto"
-
-# Font weight for title
-font-weight-title: "regular"
-
-# Color for title text
-font-color-title: "#131516"
-
-# -----------------------------------------------------------------------------
-# Typography - Title Slide - Subtitle
-# -----------------------------------------------------------------------------
-
-# Font size for subtitle
-font-size-subtitle: 1.6em
-
-# Font family for subtitle
-font-family-subtitle: "Roboto"
-
-# Font weight for subtitle
-font-weight-subtitle: "regular"
-
-# Font style for subtitle
-# Options: "normal", "italic"
-font-style-subtitle: "italic"
-
-# Color for subtitle text
-font-color-subtitle: "#131516"
-
-# -----------------------------------------------------------------------------
-# Typography - Title Slide - Author
-# -----------------------------------------------------------------------------
-
-# Font family for author name
-font-family-author: "Roboto"
-
-# Font size for author name
-font-size-author: 1.2em
-
-# Font weight for author name
-font-weight-author: "medium"
-
-# Color for author text
-font-color-author: "#131516"
-
-# -----------------------------------------------------------------------------
-# Typography - Title Slide - Affiliation
-# -----------------------------------------------------------------------------
-
-# Font family for affiliation
-font-family-affiliation: "Roboto"
-
-# Font size for affiliation
-font-size-affiliation: 1em
-
-# Font weight for affiliation
-font-weight-affiliation: "regular"
-
-# Font style for affiliation
-# Options: "normal", "italic"
-font-style-affiliation: "italic"
-
-# Color for affiliation text
-font-color-affiliation: "#778899"
-
-# -----------------------------------------------------------------------------
-# Typography - Title Slide - Email
-# -----------------------------------------------------------------------------
-
-# Font family for email address
-font-family-email: "Roboto"
-
-# Font size for email
-font-size-email: 0.8em
-
-# Font weight for email
-font-weight-email: "regular"
-
-# Font style for email
-# Options: "normal", "italic"
-font-style-email: "italic"
-
-# Color for email text
-font-color-email: "#101e62"
-
-# -----------------------------------------------------------------------------
-# Typography - Title Slide - Date
-# -----------------------------------------------------------------------------
-
-# Font family for date
-font-family-date: "Roboto"
-
-# Font size for date
-font-size-date: 1em
-
-# Font weight for date
-font-weight-date: "medium"
-
-# Font style for date
-# Options: "normal", "italic"
-font-style-date: "normal"
-
-# Color for date text
-font-color-date: "#131516"
-
-# -----------------------------------------------------------------------------
-# Code Blocks & Inline Code
-# -----------------------------------------------------------------------------
-
-# Font size for code blocks
-raw-font-size: 1em
-
-# Font size for inline code (code within text)
-raw-inline-size: 0.9em
-
-# Internal padding for code blocks
-raw-inset: 8pt
-
-# -----------------------------------------------------------------------------
-# Lists
-# -----------------------------------------------------------------------------
-
-# Indentation for list items
-list-indent: 0.6em
-
-# Bullet marker for first-level lists
-list-marker-1: "•"
-
-# Bullet marker for second-level lists
-list-marker-2: "◦"
-
-# Bullet marker for third-level lists
-list-marker-3: "▪"
-
-# -----------------------------------------------------------------------------
-# Title Page Customization
-# -----------------------------------------------------------------------------
-
-# Path to logo image (shown at top left of title slide)
-# Example: "images/logo.png"
-logo-path: null
-
-# URL for QR code (shown at bottom right of title slide)
-qr-code-url: null
-
-# Title/label for QR code button
-qr-code-title: "QR Code"
-
-# Size of QR code
-qr-code-size: 5cm
-
-# Background color for QR code button
-qr-code-button-color: "#3B3B3B"
-
-# Date of last update (shown on title slide if provided)
-date-updated: null
-
-# Text label for "last updated" section
-# Automatically translates based on lang setting
-last-updated-text: "Updated:"
-
-# Optional URL link for the "last updated" button
-updates-link: null
-
-# -----------------------------------------------------------------------------
-# Theorem System
-# -----------------------------------------------------------------------------
-
-# Theorem package to use
-# Options: "theorion" (default), "ctheorems"
-theorem-package: "theorion"
-
-# Language for theorem labels
-# Options: "en" (English), "it" (Italian)
-theorem-lang: "en"
-
-# Enable sequential numbering for theorems
-# Set to true for numbered theorems (1, 2, 3...)
-# Set to false for unnumbered theorems
-theorem-numbering: true
-
-# -----------------------------------------------------------------------------
-# Column Variables (for use with column backgrounds)
-# -----------------------------------------------------------------------------
-# Define custom color variables here that can be referenced in column bg attributes
-# Example:
-# primary-bg: "#e8f4f8"
-# secondary-bg: "#fff5e6"
-#
-# Then use in markdown:
-# ::: {.column width="50%" bg="primary-bg"}
-
-emph-color: "#333399"      # Same as primary-color, or any color
-emph-weight: "medium"       # Weight for _emphasis_
-bold-emph-weight: "bold"    # Weight for **_bold emphasis_**
-
-emph-style: "normal"   # No italic for emphasis
-# or
-# emph-style: "italic"   # Default - italic for emphasis
 crossref:
-  eq-prefix: ""   # Prefix for equation references
-
-# Customize theorem box fill colors
-theorem-fill: "#e7e8ef"      # For theorem, lemma, proposition, corollary, conjecture
-definition-fill: "#e7e8ef"   # For definition, assumption
-example-fill: "#e7e8ef"      # For example, exercise
-remark-fill: "#e7e8ef"       # For remark, solution
-
-  # Color groupings:
-  # | Fill option     | Applies to                                         |
-  # |-----------------|----------------------------------------------------|
-  # | theorem-fill    | theorem, lemma, proposition, corollary, conjecture |
-  # | definition-fill | definition, assumption                             |
-  # | example-fill    | example, exercise                                  |
-  # | remark-fill     | remark, solution                                   |
-
-  # If not specified, the defaults are:
-  # - theorem-fill: primary-color lightened 80%
-  # - definition-fill: primary-color lightened 90%
-  # - example-fill: primary-color lightened 90%
-  # - remark-fill: primary-color lightened 95%
+  eq-prefix: ""

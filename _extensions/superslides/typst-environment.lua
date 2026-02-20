@@ -3,10 +3,12 @@ local classEnvironments = pandoc.MetaMap({
     ["uncover"] = "uncover",
     -- Font size classes
     ["tiny"] = "text-scale-tiny",
+    ["smallish"] = "text-scale-smallish",
     ["small"] = "text-scale-small",
     ["smaller"] = "text-scale-smaller",
     ["large"] = "text-scale-large",
     ["larger"] = "text-scale-larger",
+    ["big"] = "text-scale-big",
     ["huge"] = "text-scale-huge",
 })
 local classCommands = pandoc.MetaMap({
@@ -18,10 +20,12 @@ local classCommands = pandoc.MetaMap({
     ["uncover"] = "uncover",
     -- Font size classes (for inline spans)
     ["tiny"] = "text-scale-tiny",
+    ["smallish"] = "text-scale-smallish",
     ["small"] = "text-scale-small",
     ["smaller"] = "text-scale-smaller",
     ["large"] = "text-scale-large",
     ["larger"] = "text-scale-larger",
+    ["big"] = "text-scale-big",
     ["huge"] = "text-scale-huge",
 })
 

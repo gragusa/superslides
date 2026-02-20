@@ -14,6 +14,7 @@ date-format: full
 date-updated: "October 1, 2025"
 format:
     superslides-typst:
+        keep-typ: true
         fig-width: 9
         fig-height: 6
 editor:
@@ -28,36 +29,15 @@ Sys.setenv(RETICULATE_PYTHON = "~/.pyenv/shims/python3")
 
 ## Introduction
 
-::: {.simplebox}
 Welcome to **Superslides**! This template demonstrates:
 
-- Enhanced Typst presentations with Touying
+- Enhanced Typst presentations with `Touying` ni
+
 - Professional title slides with interactive elements
+
 - Advanced code blocks with zebraw integration
+
 - Simple 3-color customization system
-
-$$
-Y_t = A_1 Y_{t-1} + E_t \to \int f(x) dx
-$$
-:::
-
-## Math
-
-$$
-Y_i = X_i\beta + u_i, \quad i=1,\ldots,n
-$$
-
-## Features Overview
-
-### Key capabilities
-
-- 🎨 Professional title slides with left-aligned layout
-- 🔗 Interactive QR codes and clickable links
-- 📝 Enhanced code blocks with mathematical annotations
-- 🎯 Simple 3-color palette system
-- 🌐 Multi-language support (English/Italian)
-
-#### Note: This is a fourth level header `====`
 
 ## Typography
 
@@ -75,6 +55,11 @@ Standard markdown formatting works as expected:
 ```{r}
 #| fig-align: "center"
 #| layout-ncol: 2
+#| fig-cap:
+#|   - "Line Plot 1"
+#|   - "Line Plot 2"
+plot(rnorm(10))
+
 plot(rnorm(10))
 ```
 
@@ -165,7 +150,7 @@ You can also use `inline code` within text. The font size is controlled by the `
 #| tbl-cap-location: bottom
 library(tinytable)
 ## fontsize is in em
-tt(head(iris))|> style_tt(fontsize=0.8) |> theme_striped()
+tt(head(iris))|> style_tt(fontsize=1.1) |> theme_striped()
 ```
 ## Table using R with math
 
@@ -220,14 +205,16 @@ This is a simple information box with blue styling.
 :::
 
 ##
-
-```
+**Code:**
+```markdown
 ::: {.warningbox}
 ### Warning
 This is a warning box with
 red styling for alerts.
 :::
 ```
+
+**Results:**
 
 ::: {.warningbox}
 ### Warning
@@ -701,4 +688,18 @@ $$
   e = mc^2
 $$ {#eq-einstain}
 
-@eq-einstain is an important equation.
+@eq-einstain is an important equation. But (@eq-einstain) is better. Probablyss.
+
+## Boxes
+
+::: {.simplebox}
+
+This is simplebox
+
+:::
+
+::: {.simplebox bg="secondary-color"}
+
+This is simplebox
+
+:::

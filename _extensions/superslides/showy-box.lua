@@ -275,6 +275,10 @@ local function updateBoxPresets(meta)
     local bodyFontSize = meta["box-body-font-size"] and pandoc.utils.stringify(meta["box-body-font-size"]) or nil
     local bodyFontWeight = getParam("box-body-font-weight", "regular")
 
+    -- Store resolved colors for use in per-instance bg overrides
+    box_presets._primary_color = primaryColor
+    box_presets._secondary_color = secondaryColor
+
     -- Update simplebox (uses primary color)
     box_presets.simplebox.frame = "border-color: " .. primaryColor .. ", title-color: " .. primaryColor .. ".darken(10%), body-color: " .. primaryColor .. ".lighten(90%), footer-color: " .. primaryColor .. ".lighten(80%), thickness: " .. globalThickness .. ", radius: " .. globalRadius
 
@@ -339,6 +343,30 @@ local function processShowybox(el)
     
     -- Apply preset attributes if it's a preset box type
     if box_presets[box_type] then
+        -- Check if a custom bg color is specified — override the frame colors
+        local custom_bg = el.attributes["bg"]
+        if custom_bg then
+            -- Resolve color references like "primary-color", "secondary-color"
+            local base_color
+            if custom_bg == "primary-color" or custom_bg == "primary" then
+                base_color = box_presets._primary_color or "blue"
+            elseif custom_bg == "secondary-color" or custom_bg == "secondary" then
+                base_color = box_presets._secondary_color or "red"
+            else
+                -- Treat as a literal Typst color
+                if custom_bg:match("^#") then
+                    base_color = 'rgb("' .. custom_bg .. '")'
+                else
+                    base_color = custom_bg
+                end
+            end
+            -- Build a custom frame using the specified base color
+            local thickness = el.attributes["thickness"] or "1pt"
+            local radius = el.attributes["radius"] or "4pt"
+            el.attributes["frame"] = "border-color: " .. base_color .. ", title-color: " .. base_color .. ".darken(10%), body-color: " .. base_color .. ".lighten(90%), footer-color: " .. base_color .. ".lighten(80%), thickness: " .. thickness .. ", radius: " .. radius
+            el.attributes["bg"] = nil  -- consumed, don't pass through
+        end
+
         for attr_name, attr_value in pairs(box_presets[box_type]) do
             if not el.attributes[attr_name] then
                 el.attributes[attr_name] = attr_value

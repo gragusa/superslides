@@ -1,0 +1,153 @@
+# =============================================================================
+# Superslides Configuration Metadata - LBS BRANDED
+# =============================================================================
+# Customized for London Business School brand identity
+# Based on LBS Brand Guidelines (March 2020)
+#
+# LBS Core Colors:
+#   - Deep Blue: #001E62 (PMS 2758c) - Primary brand color
+#   - Rich Red:  #C8102E (PMS 186c) - Accent / "Red Thread"
+#   - Off-White: #EBE8E5 - Background alternative
+#   - White:     #FFFFFF - Clean backgrounds
+#
+# LBS Typography:
+#   - Headlines: GT Sectra Fine Bold (serif) -> using Source Serif Pro as substitute
+#   - Body:      Montserrat (Light for body, Medium for emphasis)
+# =============================================================================
+
+format:
+  superslides-typst:
+    # -------------------------------------------------------------------------
+    # General Settings
+    # -------------------------------------------------------------------------
+    aspect-ratio: "16-9"
+    handout: false
+    lang: "en"
+    header: ""
+    footer: ""
+
+    # -------------------------------------------------------------------------
+    # Color System - LBS Brand Palette
+    # -------------------------------------------------------------------------
+    text-color: "#040404"
+    primary-color: "#001E62"       # LBS Deep Blue
+    secondary-color: "#C8102E"     # LBS Rich Red - "The Red Thread"
+    background-color: "#FFFFFF"
+    email-color: "#C8102E"         # LBS Rich Red for links
+
+    # -------------------------------------------------------------------------
+    # Typography - Body Text (LBS: Montserrat)
+    # -------------------------------------------------------------------------
+    font-size: 20pt
+    font-family-body: "Montserrat"
+    font-weight-body: "light"
+    font-family-math: null
+    strong-weight: "medium"
+
+    # -------------------------------------------------------------------------
+    # Typography - Headings (LBS: GT Sectra Fine -> Source Serif Pro)
+    # -------------------------------------------------------------------------
+    font-size-heading: 1.75em
+    font-family-heading: "Source Serif Pro"
+    font-weight-heading: "bold"
+    font-color-heading: "#001E62"  # LBS Deep Blue
+
+    # -------------------------------------------------------------------------
+    # Typography - Title Slide
+    # -------------------------------------------------------------------------
+    # Title
+    font-size-title: 2em
+    font-family-title: "Source Serif Pro"
+    font-weight-title: "bold"
+    font-color-title: "#001E62"
+
+    # Subtitle
+    font-size-subtitle: 1.4em
+    font-family-subtitle: "Montserrat"
+    font-weight-subtitle: "light"
+    font-style-subtitle: "normal"
+    font-color-subtitle: "#001E62"
+
+    # Author
+    font-family-author: "Montserrat"
+    font-size-author: 1.2em
+    font-weight-author: "medium"
+    font-color-author: "#001E62"
+
+    # Affiliation
+    font-family-affiliation: "Montserrat"
+    font-size-affiliation: 1em
+    font-weight-affiliation: "light"
+    font-style-affiliation: "normal"
+    font-color-affiliation: "#001E62"
+
+    # Email
+    font-family-email: "Montserrat"
+    font-size-email: 0.8em
+    font-weight-email: "light"
+    font-style-email: "normal"
+    font-color-email: "#C8102E"    # LBS Rich Red
+
+    # Date
+    font-family-date: "Montserrat"
+    font-size-date: 1em
+    font-weight-date: "light"
+    font-style-date: "normal"
+    font-color-date: "#001E62"
+
+    # -------------------------------------------------------------------------
+    # Code Blocks & Inline Code
+    # -------------------------------------------------------------------------
+    raw-font-size: 1em
+    raw-inline-size: 0.9em
+    raw-inset: 8pt
+
+    # -------------------------------------------------------------------------
+    # Lists
+    # -------------------------------------------------------------------------
+    list-indent: 0.6em
+    list-marker-1: "•"
+    list-marker-2: "◦"
+    list-marker-3: "▪"
+
+    # -------------------------------------------------------------------------
+    # Title Page Customization
+    # -------------------------------------------------------------------------
+    logo-path: null
+    qr-code-url: null
+    qr-code-title: "QR Code"
+    qr-code-size: 5cm
+    qr-code-button-color: "#001E62"  # LBS Deep Blue
+    date-updated: null
+    last-updated-text: "Updated:"
+    updates-link: null
+
+    # -------------------------------------------------------------------------
+    # Emphasis Styling
+    # -------------------------------------------------------------------------
+    emph-color: "#514689"          # LBS Purple
+    emph-weight: "medium"
+    bold-emph-weight: "bold"
+    emph-style: "normal"
+
+    # -------------------------------------------------------------------------
+    # Theorem System
+    # -------------------------------------------------------------------------
+    theorem-package: "ctheorems"
+    theorem-lang: "en"
+    theorem-numbering: true
+    theorem-fill: "#e7e8ef"
+    definition-fill: "#e7e8ef"
+    example-fill: "#e7e8ef"
+    remark-fill: "#e7e8ef"
+
+    # -------------------------------------------------------------------------
+    # Column Variables - LBS Functional Palette
+    # -------------------------------------------------------------------------
+    column_bg: "#ebe8e5"           # LBS Off-White
+    lbs-blue-light: "#E6EAF2"
+    lbs-red-light: "#FCEAED"
+    lbs-amber: "#DC582A"
+    lbs-purple: "#514689"
+    lbs-sky: "#0072CE"
+    lbs-green: "#00685E"
