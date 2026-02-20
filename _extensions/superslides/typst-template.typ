@@ -1,8 +1,29 @@
 #import "@preview/touying:0.6.1": *
-#import "@preview/fontawesome:0.5.0": *
+#import "@preview/fontawesome:0.6.0": *
 #import "@preview/ctheorems:1.1.3": *
-#import "@preview/cades:0.3.0": qr-code
-#import "@preview/mitex:0.2.5": *
+#import "@preview/cades:0.3.1": qr-code
+#import "@preview/mitex:0.2.6": *
+#import "@preview/theorion:0.4.1": *
+#import "@preview/colorful-boxes:1.4.3": *
+#import "@preview/showybox:2.0.4": showybox
+
+#let bluebox(body) = {
+  outline-colorbox(
+    color: "blue",
+    title: "Sommario"
+  )[#body]
+}
+
+#let highlightbox(body) = {
+  showybox(
+    frame: (
+      border-color: blue,
+      title-color: blue.lighten(30%),
+      body-color: blue.lighten(95%),
+      footer-color: blue.lighten(80%)
+    )
+  )[#body]
+}
 // Helper function to handle hex colors and Typst color functions
 #let is-hex-color(s) = {
   // Check if string is a valid hex color (6 or 8 characters, all hex digits)
@@ -231,7 +252,7 @@
   // box-padding: 8pt,
 
   // Theorem system configuration (colors auto-generated from primary-color)
-  theorem-package: "ctheorems",  // "ctheorems" or "theorion"
+  theorem-package: "theorion",  // "ctheorems" or "theorion"
   theorem-lang: "en",  // "en" or "it"
   theorem-numbering: true,
 

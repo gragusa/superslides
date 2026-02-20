@@ -19,22 +19,4 @@ contributes:
       template-partials:
         - typst-template.typ
         - typst-show.typ
-      include-before-body:
-        - text: |
-            #import "@preview/colorful-boxes:1.4.3": *
-            #let bluebox(body) = {
-              outline-colorbox(
-                color: "blue",
-                title: "Sommario"
-              )[#body]}
-            #import "@preview/showybox:2.0.4": showybox
-            #import "@preview/cades:0.3.0": qr-code
-            #let highlightbox(body) = {
-            showybox(
-            frame: (
-              border-color: blue,
-              title-color: blue.lighten(30%),
-              body-color: blue.lighten(95%),
-              footer-color: blue.lighten(80%)
-            ))[#body]}
 

@@ -1,5 +1,6 @@
 -- Theorem-box filter for Quarto
 -- Converts ::: {.theorem} divs to Typst theorem function calls
+-- Supports both theorion (default) and ctheorems packages
 
 -- Define the theorem environments we support (class-based)
 local theorem_environments = {
@@ -31,6 +32,15 @@ local id_prefix_map = {
   ["rem"] = "remark",
   ["asm"] = "assumption"
 }
+
+-- Detect theorem package from document metadata
+local theorem_package = "theorion"  -- default
+
+local function readMeta(meta)
+    if meta["theorem-package"] then
+        theorem_package = pandoc.utils.stringify(meta["theorem-package"])
+    end
+end
 
 -- Helper function to extract title from content
 local function extractTitle(content)
@@ -80,9 +90,6 @@ local function processTheoremDiv(el)
         return nil
     end
 
-    print("DEBUG: Processing " .. theorem_type .. " div")
-    print("DEBUG: Number of content elements: " .. #el.content)
-
     -- Extract title if present (from heading)
     local title, content = extractTitle(el.content)
 
@@ -93,8 +100,14 @@ local function processTheoremDiv(el)
     local blocks = pandoc.List()
 
     -- Create the theorem function call with title as parameter
+    -- ctheorems uses positional title: #theorem("Title")[content]
+    -- theorion uses named title:      #theorem(title: "Title")[content]
     if title then
-        blocks:insert(pandoc.RawBlock('typst', '#' .. theorem_type .. '("' .. title .. '")['))
+        if theorem_package == "ctheorems" then
+            blocks:insert(pandoc.RawBlock('typst', '#' .. theorem_type .. '("' .. title .. '")['))
+        else
+            blocks:insert(pandoc.RawBlock('typst', '#' .. theorem_type .. '(title: "' .. title .. '")['))
+        end
     else
         blocks:insert(pandoc.RawBlock('typst', '#' .. theorem_type .. '['))
     end
@@ -117,6 +130,9 @@ end
 
 -- Return the filter
 return {
+    {
+        Meta = readMeta
+    },
     {
         Div = function(el)
             if quarto.doc.is_format("typst") then

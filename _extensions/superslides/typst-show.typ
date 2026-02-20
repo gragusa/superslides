@@ -351,7 +351,7 @@
   $if(theorem-package)$
     theorem-package: "$theorem-package$",
   $else$
-    theorem-package: "ctheorems",
+    theorem-package: "theorion",
   $endif$
   $if(theorem-lang)$
     theorem-lang: "$theorem-lang$",
@@ -378,10 +378,17 @@
 
 // Dynamic theorem setup based on YAML - colors generated from primary-color
 
-#import "@preview/ctheorems:1.1.3": *
-#show: thmrules
+// Determine which theorem package to use
+#let _theorem_package = "$if(theorem-package)$$theorem-package$$else$theorion$endif$"
 
-// Inline translations (avoids path issues between dev and installed extension)
+// --- ctheorems import (for fallback) ---
+#import "@preview/ctheorems:1.1.3": *
+
+// --- theorion rainbow theme import ---
+#import "@preview/theorion:0.4.1": cosmos
+#import cosmos.rainbow: *
+
+// Inline translations (used by ctheorems fallback)
 #let translations-variants = (
   "theorem": ("en": "Theorem", "ca": "Teorema", "de": "Satz", "fr": "Théorème", "es": "Teorema", "it": "Teorema"),
   "assumption": ("en": "Assumption", "ca": "Hipòtesi", "de": "Annahme", "fr": "Hypothèse", "es": "Hipótesis", "it": "Assunzione"),
@@ -419,154 +426,89 @@
 #let example-fill-color = $if(example-fill)$parse-color("$example-fill$")$else$superslides-primary.lighten(75%)$endif$
 #let remark-fill-color = $if(remark-fill)$parse-color("$remark-fill$")$else$superslides-primary.lighten(75%)$endif$
 
-// Theorem environments with proper numbering and cross-references
-// Each type has its own counter (simple sequential: 1, 2, 3...)
-// base: none gives global counting without section prefixes
+// --- Save theorion rainbow versions before they get shadowed ---
+// Rainbow environments: theorem, lemma, proposition, corollary, conjecture,
+//                       definition, assumption (each has its own rainbow color)
+// Default environments: example, exercise, remark, solution (simpler styling)
 $if(theorem-numbering)$
-#let theorem = thmbox(
-  "theorem",
-  translations-variant("theorem"),
-  fill: theorem-fill-color,
-  base: none
-)
-
-#let lemma = thmbox(
-  "lemma",
-  translations-variant("lemma"),
-  fill: theorem-fill-color,
-  base: none
-)
-
-#let proposition = thmbox(
-  "proposition",
-  translations-variant("proposition"),
-  fill: theorem-fill-color,
-  base: none
-)
-
-#let corollary = thmbox(
-  "corollary",
-  translations-variant("corollary"),
-  fill: theorem-fill-color,
-  base: none
-)
-
-#let definition = thmbox(
-  "definition",
-  translations-variant("definition"),
-  fill: definition-fill-color,
-  base: none
-)
-
-#let example = thmbox(
-  "example",
-  translations-variant("example"),
-  fill: example-fill-color,
-  base: none
-)
-
-#let assumption = thmbox(
-  "assumption",
-  translations-variant("assumption"),
-  fill: definition-fill-color,
-  base: none
-)
-
-#let exercise = thmbox(
-  "exercise",
-  translations-variant("exercise"),
-  fill: example-fill-color,
-  base: none
-)
-
-#let remark = thmbox(
-  "remark",
-  translations-variant("remark"),
-  fill: remark-fill-color,
-  base: none
-)
-
-#let conjecture = thmbox(
-  "conjecture",
-  translations-variant("conjecture"),
-  fill: theorem-fill-color,
-  base: none
-)
-
-#let solution = thmbox(
-  "solution",
-  translations-variant("solution"),
-  fill: remark-fill-color,
-  base: none
-)
+// Numbered theorion environments (default)
+#let _th_theorem = $if(theorem-fill)$theorem.with(fill: theorem-fill-color)$else$theorem$endif$
+#let _th_lemma = $if(theorem-fill)$lemma.with(fill: theorem-fill-color)$else$lemma$endif$
+#let _th_proposition = $if(theorem-fill)$proposition.with(fill: theorem-fill-color)$else$proposition$endif$
+#let _th_corollary = $if(theorem-fill)$corollary.with(fill: theorem-fill-color)$else$corollary$endif$
+#let _th_conjecture = $if(theorem-fill)$conjecture.with(fill: theorem-fill-color)$else$conjecture$endif$
+#let _th_definition = $if(definition-fill)$definition.with(fill: definition-fill-color)$else$definition$endif$
+#let _th_assumption = $if(definition-fill)$assumption.with(fill: definition-fill-color)$else$assumption$endif$
 $else$
-// Unnumbered theorem environments
-#let theorem = thmbox(
-  "theorem",
-  translations-variant("theorem"),
-  fill: theorem-fill-color
-).with(numbering: none)
-
-#let lemma = thmbox(
-  "lemma",
-  translations-variant("lemma"),
-  fill: theorem-fill-color
-).with(numbering: none)
-
-#let proposition = thmbox(
-  "proposition",
-  translations-variant("proposition"),
-  fill: theorem-fill-color
-).with(numbering: none)
-
-#let corollary = thmbox(
-  "corollary",
-  translations-variant("corollary"),
-  fill: theorem-fill-color
-).with(numbering: none)
-
-#let definition = thmbox(
-  "definition",
-  translations-variant("definition"),
-  fill: definition-fill-color
-).with(numbering: none)
-
-#let example = thmbox(
-  "example",
-  translations-variant("example"),
-  fill: example-fill-color
-).with(numbering: none)
-
-#let assumption = thmbox(
-  "assumption",
-  translations-variant("assumption"),
-  fill: definition-fill-color
-).with(numbering: none)
-
-#let exercise = thmbox(
-  "exercise",
-  translations-variant("exercise"),
-  fill: example-fill-color
-).with(numbering: none)
-
-#let remark = thmbox(
-  "remark",
-  translations-variant("remark"),
-  fill: remark-fill-color
-).with(numbering: none)
-
-#let conjecture = thmbox(
-  "conjecture",
-  translations-variant("conjecture"),
-  fill: theorem-fill-color
-).with(numbering: none)
-
-#let solution = thmbox(
-  "solution",
-  translations-variant("solution"),
-  fill: remark-fill-color
-).with(numbering: none)
+// Unnumbered theorion environments (use -box variants)
+#let _th_theorem = $if(theorem-fill)$theorem-box.with(fill: theorem-fill-color)$else$theorem-box$endif$
+#let _th_lemma = $if(theorem-fill)$lemma-box.with(fill: theorem-fill-color)$else$lemma-box$endif$
+#let _th_proposition = $if(theorem-fill)$proposition-box.with(fill: theorem-fill-color)$else$proposition-box$endif$
+#let _th_corollary = $if(theorem-fill)$corollary-box.with(fill: theorem-fill-color)$else$corollary-box$endif$
+#let _th_conjecture = $if(theorem-fill)$conjecture-box.with(fill: theorem-fill-color)$else$conjecture-box$endif$
+#let _th_definition = $if(definition-fill)$definition-box.with(fill: definition-fill-color)$else$definition-box$endif$
+#let _th_assumption = $if(definition-fill)$assumption-box.with(fill: definition-fill-color)$else$assumption-box$endif$
 $endif$
+// Default-cosmos environments (same API for numbered/unnumbered)
+#let _th_example = example
+#let _th_exercise = exercise
+#let _th_remark = remark
+#let _th_solution = solution
+
+// --- Conditional show rule ---
+#show: body => {
+  if _theorem_package == "ctheorems" {
+    {
+      show: thmrules
+      body
+    }
+  } else {
+    {
+      show: show-theorion
+      body
+    }
+  }
+}
+
+// --- ctheorems definitions (used when theorem-package == "ctheorems") ---
+$if(theorem-numbering)$
+#let _ct_theorem = thmbox("theorem", translations-variant("theorem"), fill: theorem-fill-color, base: none)
+#let _ct_lemma = thmbox("lemma", translations-variant("lemma"), fill: theorem-fill-color, base: none)
+#let _ct_proposition = thmbox("proposition", translations-variant("proposition"), fill: theorem-fill-color, base: none)
+#let _ct_corollary = thmbox("corollary", translations-variant("corollary"), fill: theorem-fill-color, base: none)
+#let _ct_conjecture = thmbox("conjecture", translations-variant("conjecture"), fill: theorem-fill-color, base: none)
+#let _ct_definition = thmbox("definition", translations-variant("definition"), fill: definition-fill-color, base: none)
+#let _ct_assumption = thmbox("assumption", translations-variant("assumption"), fill: definition-fill-color, base: none)
+#let _ct_example = thmbox("example", translations-variant("example"), fill: example-fill-color, base: none)
+#let _ct_exercise = thmbox("exercise", translations-variant("exercise"), fill: example-fill-color, base: none)
+#let _ct_remark = thmbox("remark", translations-variant("remark"), fill: remark-fill-color, base: none)
+#let _ct_solution = thmbox("solution", translations-variant("solution"), fill: remark-fill-color, base: none)
+$else$
+#let _ct_theorem = thmbox("theorem", translations-variant("theorem"), fill: theorem-fill-color).with(numbering: none)
+#let _ct_lemma = thmbox("lemma", translations-variant("lemma"), fill: theorem-fill-color).with(numbering: none)
+#let _ct_proposition = thmbox("proposition", translations-variant("proposition"), fill: theorem-fill-color).with(numbering: none)
+#let _ct_corollary = thmbox("corollary", translations-variant("corollary"), fill: theorem-fill-color).with(numbering: none)
+#let _ct_conjecture = thmbox("conjecture", translations-variant("conjecture"), fill: theorem-fill-color).with(numbering: none)
+#let _ct_definition = thmbox("definition", translations-variant("definition"), fill: definition-fill-color).with(numbering: none)
+#let _ct_assumption = thmbox("assumption", translations-variant("assumption"), fill: definition-fill-color).with(numbering: none)
+#let _ct_example = thmbox("example", translations-variant("example"), fill: example-fill-color).with(numbering: none)
+#let _ct_exercise = thmbox("exercise", translations-variant("exercise"), fill: example-fill-color).with(numbering: none)
+#let _ct_remark = thmbox("remark", translations-variant("remark"), fill: remark-fill-color).with(numbering: none)
+#let _ct_solution = thmbox("solution", translations-variant("solution"), fill: remark-fill-color).with(numbering: none)
+$endif$
+
+// --- Final bindings: select based on theorem package ---
+#let theorem = if _theorem_package == "ctheorems" { _ct_theorem } else { _th_theorem }
+#let lemma = if _theorem_package == "ctheorems" { _ct_lemma } else { _th_lemma }
+#let proposition = if _theorem_package == "ctheorems" { _ct_proposition } else { _th_proposition }
+#let corollary = if _theorem_package == "ctheorems" { _ct_corollary } else { _th_corollary }
+#let conjecture = if _theorem_package == "ctheorems" { _ct_conjecture } else { _th_conjecture }
+#let definition = if _theorem_package == "ctheorems" { _ct_definition } else { _th_definition }
+#let assumption = if _theorem_package == "ctheorems" { _ct_assumption } else { _th_assumption }
+#let example = if _theorem_package == "ctheorems" { _ct_example } else { _th_example }
+#let exercise = if _theorem_package == "ctheorems" { _ct_exercise } else { _th_exercise }
+#let remark = if _theorem_package == "ctheorems" { _ct_remark } else { _th_remark }
+#let solution = if _theorem_package == "ctheorems" { _ct_solution } else { _th_solution }
 
 
 
