@@ -268,8 +268,8 @@ updates-link: null
 # -----------------------------------------------------------------------------
 
 # Theorem package to use
-# Options: "ctheorems"
-theorem-package: "ctheorems"
+# Options: "theorion" (default), "ctheorems"
+theorem-package: "theorion"
 
 # Language for theorem labels
 # Options: "en" (English), "it" (Italian)

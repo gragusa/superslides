@@ -2,7 +2,7 @@
   #superslides-typst:
     #keep-typ: true
     #handout: false
-    #theorem-package: "ctheorems"
+    #theorem-package: "theorion"
     # #     # Color palette
     # text-color: "#131516"
     # primary-color: "#333399"
@@ -90,6 +90,6 @@
 #     box-padding: 8pt
 
 #     # Theorem configuration
-#     theorem-package: "ctheorems"
+#     theorem-package: "theorion"
 #     theorem-lang: "en"
 #     theorem-numbering: true

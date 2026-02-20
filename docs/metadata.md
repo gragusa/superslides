@@ -110,7 +110,7 @@ Document-level settings always win. When a value is omitted in the document, Sup
 
 | Key | Default | Notes |
 | --- | --- | --- |
-| `theorem-package` | `"ctheorems"` | Can be `"theorion"` |
+| `theorem-package` | `"theorion"` | Can be `"ctheorems"` |
 | `theorem-lang` | `"en"` | |
 | `theorem-numbering` | `false` | Enables sequential numbering |
 

@@ -244,7 +244,7 @@ Superslides provides a comprehensive theorem system using Quarto's native syntax
 The theorem system is configured in the YAML header:
 
 ```yaml
-theorem-package: "ctheorems"      # Package to use
+theorem-package: "theorion"       # Package to use ("theorion" or "ctheorems")
 theorem-lang: "en"                # Language: "en" or "it"
 theorem-numbering: true           # Sequential numbering (1, 2, 3...)
 # Colors automatically generated from primary-color
@@ -599,7 +599,7 @@ secondary-color: "#9a2515"  # Secondary accent (used for warnings)
 
 
 ```yaml
-theorem-package: "ctheorems"     # Package selection
+theorem-package: "theorion"      # Package selection ("theorion" or "ctheorems")
 theorem-lang: "en"               # Language: "en" or "it"
 theorem-numbering: true          # Sequential numbering (1, 2, 3...)
 ```

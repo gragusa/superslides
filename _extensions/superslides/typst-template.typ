@@ -1,6 +1,5 @@
 #import "@preview/touying:0.6.1": *
 #import "@preview/fontawesome:0.6.0": *
-#import "@preview/ctheorems:1.1.3": *
 #import "@preview/cades:0.3.1": qr-code
 #import "@preview/mitex:0.2.6": *
 #import "@preview/theorion:0.4.1": *
