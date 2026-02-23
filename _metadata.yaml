@@ -28,7 +28,7 @@ zebraw-comment-style: italic
 zebraw-highlight-color: "luma(245)"
 zebraw-background-color: "luma(245)"
 zebraw-lang: true
-zebraw-lang-color: "red"
+#zebraw-lang-color: "red"
 zebraw-lang-font-args: '(weight: "bold", fill: white)'
 
 # -----------------------------------------------------------------------------
