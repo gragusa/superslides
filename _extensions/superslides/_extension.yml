@@ -10,11 +10,11 @@ contributes:
       filters:
         - typst-environment.lua
         - incremental.lua
-        - columns.lua
-        - typst-function.lua
         - showy-box.lua
         - theorem-box.lua
         - assumption-filter.lua
+        - columns.lua
+        - typst-function.lua
         - zebraw.lua
         - revealjs.lua
       template-partials:

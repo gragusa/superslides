@@ -603,8 +603,14 @@ $if(use-zebraw)$
 #show raw.where(block: true): set block(fill: none, inset: 0pt, radius: 0pt, width: auto)
 $endif$
 
-// Enable equation numbering for cross-references
+// Enable equation numbering only for labeled equations.
+// The .where(numbering: "(1)") guard prevents recursion: reconstructed equations
+// with numbering: none do not match this rule, so no infinite loop.
 #set math.equation(numbering: "(1)")
+#show math.equation.where(numbering: "(1)"): it => {
+  if it.has("label") { it }
+  else { math.equation(it.body, block: it.block, numbering: none, supplement: it.supplement) }
+}
 
 #set table(
   stroke: none,
