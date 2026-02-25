@@ -417,10 +417,10 @@ $endif$
     title-compact: $title-compact$,
   $endif$
   $if(header)$
-    header: "$header$",
+    header: [$header$],
   $endif$
   $if(footer)$
-    footer: "$footer$",
+    footer: [$footer$],
   $endif$
   $if(qr-code-url)$
     qr-code-url: "$qr-code-url$",
