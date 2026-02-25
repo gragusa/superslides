@@ -84,44 +84,54 @@ $endif$
 )
 
 // --- Color definitions ---
+// YAML overrides via theorem-fill, definition-fill, etc.
+// Defaults match theorion's cosmos/rainbow palette (each environment has its own color).
 #let superslides-primary = parse-color("$if(primary-color)$$primary-color$$elseif(brand.color.primary)$$brand.color.primary$$else$#333399$endif$")
 #let superslides-secondary = parse-color("$if(secondary-color)$$secondary-color$$elseif(brand.color.secondary)$$brand.color.secondary$$else$#c8102e$endif$")
 
-#let theorem-fill-color = $if(theorem-fill)$parse-theme-color("$theorem-fill$", superslides-primary, superslides-secondary)$else$red.darken(20%)$endif$
-#let definition-fill-color = $if(definition-fill)$parse-theme-color("$definition-fill$", superslides-primary, superslides-secondary)$else$orange$endif$
-#let example-fill-color = $if(example-fill)$parse-theme-color("$example-fill$", superslides-primary, superslides-secondary)$else$green.darken(10%)$endif$
-#let remark-fill-color = $if(remark-fill)$parse-theme-color("$remark-fill$", superslides-primary, superslides-secondary)$else$gray.darken(20%)$endif$
-#let exercise-fill-color = $if(exercise-fill)$parse-theme-color("$exercise-fill$", superslides-primary, superslides-secondary)$else$olive.darken(10%)$endif$
+// Per-environment colors — rainbow defaults, overridable via YAML
+#let _clr-theorem     = $if(theorem-fill)$parse-theme-color("$theorem-fill$", superslides-primary, superslides-secondary)$else$red.darken(20%)$endif$
+#let _clr-lemma       = $if(theorem-fill)$parse-theme-color("$theorem-fill$", superslides-primary, superslides-secondary)$else$teal.darken(10%)$endif$
+#let _clr-proposition  = $if(theorem-fill)$parse-theme-color("$theorem-fill$", superslides-primary, superslides-secondary)$else$blue.darken(10%)$endif$
+#let _clr-corollary   = $if(theorem-fill)$parse-theme-color("$theorem-fill$", superslides-primary, superslides-secondary)$else$fuchsia.darken(10%)$endif$
+#let _clr-conjecture  = $if(theorem-fill)$parse-theme-color("$theorem-fill$", superslides-primary, superslides-secondary)$else$navy.darken(10%)$endif$
+#let _clr-definition  = $if(definition-fill)$parse-theme-color("$definition-fill$", superslides-primary, superslides-secondary)$else$orange$endif$
+#let _clr-assumption  = $if(definition-fill)$parse-theme-color("$definition-fill$", superslides-primary, superslides-secondary)$else$purple.darken(10%)$endif$
+#let _clr-axiom       = green.darken(20%)
+#let _clr-example     = $if(example-fill)$parse-theme-color("$example-fill$", superslides-primary, superslides-secondary)$else$green.darken(10%)$endif$
+#let _clr-exercise    = $if(exercise-fill)$parse-theme-color("$exercise-fill$", superslides-primary, superslides-secondary)$else$olive.darken(10%)$endif$
+#let _clr-remark      = $if(remark-fill)$parse-theme-color("$remark-fill$", superslides-primary, superslides-secondary)$else$gray.darken(20%)$endif$
+#let _clr-solution    = teal.darken(10%)
 
 // --- Theorem environments (rainbow-styled via ctheorems) ---
 $if(theorem-numbering)$
-#let theorem = rainbow-thmbox("theorem", theorem-fill-color, base: none)
-#let lemma = rainbow-thmbox("lemma", theorem-fill-color, base: none)
-#let proposition = rainbow-thmbox("proposition", theorem-fill-color, base: none)
-#let corollary = rainbow-thmbox("corollary", theorem-fill-color, base: none)
-#let conjecture = rainbow-thmbox("conjecture", theorem-fill-color, base: none)
-#let definition = rainbow-thmbox("definition", definition-fill-color, base: none)
-#let assumption = rainbow-thmbox("assumption", definition-fill-color, base: none)
-#let axiom = rainbow-thmbox("axiom", green.darken(20%), base: none)
-#let example = rainbow-thmbox("example", example-fill-color, base: none)
-#let exercise = rainbow-thmbox("exercise", exercise-fill-color, base: none)
-#let remark = rainbow-thmbox("remark", remark-fill-color, base: none)
-#let solution = rainbow-thmbox("solution", teal.darken(10%), base: none)
-#let proof = thmproof("proof", _thm-name("proof"))
+#let theorem     = rainbow-thmbox("theorem",     _clr-theorem,     base: none)
+#let lemma       = rainbow-thmbox("lemma",       _clr-lemma,       base: none)
+#let proposition = rainbow-thmbox("proposition", _clr-proposition, base: none)
+#let corollary   = rainbow-thmbox("corollary",   _clr-corollary,   base: none)
+#let conjecture  = rainbow-thmbox("conjecture",  _clr-conjecture,  base: none)
+#let definition  = rainbow-thmbox("definition",  _clr-definition,  base: none)
+#let assumption  = rainbow-thmbox("assumption",  _clr-assumption,  base: none)
+#let axiom       = rainbow-thmbox("axiom",       _clr-axiom,       base: none)
+#let example     = rainbow-thmbox("example",     _clr-example,     base: none)
+#let exercise    = rainbow-thmbox("exercise",    _clr-exercise,    base: none)
+#let remark      = rainbow-thmbox("remark",      _clr-remark,      base: none)
+#let solution    = rainbow-thmbox("solution",    _clr-solution,    base: none)
+#let proof       = thmproof("proof", _thm-name("proof"))
 $else$
-#let theorem = rainbow-thmbox("theorem", theorem-fill-color, base: none).with(numbering: none)
-#let lemma = rainbow-thmbox("lemma", theorem-fill-color, base: none).with(numbering: none)
-#let proposition = rainbow-thmbox("proposition", theorem-fill-color, base: none).with(numbering: none)
-#let corollary = rainbow-thmbox("corollary", theorem-fill-color, base: none).with(numbering: none)
-#let conjecture = rainbow-thmbox("conjecture", theorem-fill-color, base: none).with(numbering: none)
-#let definition = rainbow-thmbox("definition", definition-fill-color, base: none).with(numbering: none)
-#let assumption = rainbow-thmbox("assumption", definition-fill-color, base: none).with(numbering: none)
-#let axiom = rainbow-thmbox("axiom", green.darken(20%), base: none).with(numbering: none)
-#let example = rainbow-thmbox("example", example-fill-color, base: none).with(numbering: none)
-#let exercise = rainbow-thmbox("exercise", exercise-fill-color, base: none).with(numbering: none)
-#let remark = rainbow-thmbox("remark", remark-fill-color, base: none).with(numbering: none)
-#let solution = rainbow-thmbox("solution", teal.darken(10%), base: none).with(numbering: none)
-#let proof = thmproof("proof", _thm-name("proof"))
+#let theorem     = rainbow-thmbox("theorem",     _clr-theorem,     base: none).with(numbering: none)
+#let lemma       = rainbow-thmbox("lemma",       _clr-lemma,       base: none).with(numbering: none)
+#let proposition = rainbow-thmbox("proposition", _clr-proposition, base: none).with(numbering: none)
+#let corollary   = rainbow-thmbox("corollary",   _clr-corollary,   base: none).with(numbering: none)
+#let conjecture  = rainbow-thmbox("conjecture",  _clr-conjecture,  base: none).with(numbering: none)
+#let definition  = rainbow-thmbox("definition",  _clr-definition,  base: none).with(numbering: none)
+#let assumption  = rainbow-thmbox("assumption",  _clr-assumption,  base: none).with(numbering: none)
+#let axiom       = rainbow-thmbox("axiom",       _clr-axiom,       base: none).with(numbering: none)
+#let example     = rainbow-thmbox("example",     _clr-example,     base: none).with(numbering: none)
+#let exercise    = rainbow-thmbox("exercise",    _clr-exercise,    base: none).with(numbering: none)
+#let remark      = rainbow-thmbox("remark",      _clr-remark,      base: none).with(numbering: none)
+#let solution    = rainbow-thmbox("solution",    _clr-solution,    base: none).with(numbering: none)
+#let proof       = thmproof("proof", _thm-name("proof"))
 $endif$
 
 // =============================================================================
