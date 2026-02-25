@@ -174,6 +174,28 @@
   touying-slide(self: self, config: config, repeat: repeat, setting: setting, composer: composer, ..bodies)
 })
 
+// Full-bleed background image slide.
+// Usage (raw Typst):
+//   #image-slide(background: image("photo.png"))[
+//     #place(top + left)[Title text]
+//   ]
+// Parameters:
+//   background  – a Typst image(...) call used as the page background
+//   text-color  – optional override for the text color on the slide
+#let image-slide(body, background: none, text-color: none) = touying-slide-wrapper(self => {
+  self = utils.merge-dicts(
+    self,
+    config-page(
+      background: background,
+      margin: 2em,
+    ),
+  )
+  let fill-color = if text-color != none { text-color } else { self.colors.neutral-lightest }
+  set text(fill: fill-color, size: 2em)
+  set image(width: 100%, height: auto)
+  touying-slide(self: self, align(horizon + center, body))
+})
+
 
 #let superslides-theme(
   aspect-ratio: "16-9",
