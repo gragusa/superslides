@@ -31,6 +31,102 @@
   }
 }
 
+// =============================================================================
+// Set document language EARLY
+// =============================================================================
+$if(lang)$
+#set text(lang: "$lang$")
+$endif$
+
+// =============================================================================
+// Theorem system — uses ctheorems (injected by Quarto) styled like theorion rainbow
+// =============================================================================
+// Quarto already injects:  #import "@preview/ctheorems:1.1.3": *
+//                          #show: thmrules
+// We just define the environments with rainbow-like appearance.
+
+// --- i18n helper ---
+#let _thm-translations = (
+  "theorem": (en: "Theorem", it: "Teorema", de: "Satz", fr: "Théorème", es: "Teorema", ca: "Teorema"),
+  "lemma": (en: "Lemma", it: "Lemma", de: "Lemma", fr: "Lemme", es: "Lema", ca: "Lema"),
+  "proposition": (en: "Proposition", it: "Proposizione", de: "Proposition", fr: "Proposition", es: "Proposición", ca: "Proposició"),
+  "corollary": (en: "Corollary", it: "Corollario", de: "Korollar", fr: "Corollaire", es: "Corolario", ca: "Coroŀlari"),
+  "conjecture": (en: "Conjecture", it: "Congettura", de: "Vermutung", fr: "Conjecture", es: "Conjetura", ca: "Conjectura"),
+  "definition": (en: "Definition", it: "Definizione", de: "Definition", fr: "Définition", es: "Definición", ca: "Definició"),
+  "assumption": (en: "Assumption", it: "Assunzione", de: "Annahme", fr: "Hypothèse", es: "Hipótesis", ca: "Hipòtesi"),
+  "example": (en: "Example", it: "Esempio", de: "Beispiel", fr: "Exemple", es: "Ejemplo", ca: "Exemple"),
+  "exercise": (en: "Exercise", it: "Esercizio", de: "Übung", fr: "Exercice", es: "Ejercicio", ca: "Exercici"),
+  "remark": (en: "Remark", it: "Osservazione", de: "Bemerkung", fr: "Remarque", es: "Observación", ca: "Observació"),
+  "solution": (en: "Solution", it: "Soluzione", de: "Lösung", fr: "Solution", es: "Solución", ca: "Solució"),
+  "proof": (en: "Proof", it: "Dimostrazione", de: "Beweis", fr: "Démonstration", es: "Demostración", ca: "Demostració"),
+  "axiom": (en: "Axiom", it: "Assioma", de: "Axiom", fr: "Axiome", es: "Axioma", ca: "Axioma"),
+)
+
+$if(lang)$
+#let _thm-name(key) = _thm-translations.at(key).at("$lang$", default: _thm-translations.at(key).at("en"))
+$else$
+#let _thm-name(key) = _thm-translations.at(key).at("en")
+$endif$
+
+// --- Rainbow-styled thmbox: colored left border, colored bold title ---
+#let rainbow-thmbox(identifier, color, base: none, base_level: none) = thmbox(
+  identifier,
+  _thm-name(identifier),
+  stroke: (left: 0.25em + color),
+  fill: none,
+  inset: (left: 1em, top: 0.75em, bottom: 0.75em, right: 1em),
+  radius: 0em,
+  padding: (top: 0.3em, bottom: 0.3em),
+  titlefmt: title => strong(text(fill: color, title)),
+  separator: [\ ],
+  base: base,
+  base_level: base_level,
+)
+
+// --- Color definitions ---
+#let superslides-primary = parse-color("$if(primary-color)$$primary-color$$elseif(brand.color.primary)$$brand.color.primary$$else$#333399$endif$")
+#let superslides-secondary = parse-color("$if(secondary-color)$$secondary-color$$elseif(brand.color.secondary)$$brand.color.secondary$$else$#c8102e$endif$")
+
+#let theorem-fill-color = $if(theorem-fill)$parse-theme-color("$theorem-fill$", superslides-primary, superslides-secondary)$else$red.darken(20%)$endif$
+#let definition-fill-color = $if(definition-fill)$parse-theme-color("$definition-fill$", superslides-primary, superslides-secondary)$else$orange$endif$
+#let example-fill-color = $if(example-fill)$parse-theme-color("$example-fill$", superslides-primary, superslides-secondary)$else$green.darken(10%)$endif$
+#let remark-fill-color = $if(remark-fill)$parse-theme-color("$remark-fill$", superslides-primary, superslides-secondary)$else$gray.darken(20%)$endif$
+#let exercise-fill-color = $if(exercise-fill)$parse-theme-color("$exercise-fill$", superslides-primary, superslides-secondary)$else$olive.darken(10%)$endif$
+
+// --- Theorem environments (rainbow-styled via ctheorems) ---
+$if(theorem-numbering)$
+#let theorem = rainbow-thmbox("theorem", theorem-fill-color, base: none)
+#let lemma = rainbow-thmbox("lemma", theorem-fill-color, base: none)
+#let proposition = rainbow-thmbox("proposition", theorem-fill-color, base: none)
+#let corollary = rainbow-thmbox("corollary", theorem-fill-color, base: none)
+#let conjecture = rainbow-thmbox("conjecture", theorem-fill-color, base: none)
+#let definition = rainbow-thmbox("definition", definition-fill-color, base: none)
+#let assumption = rainbow-thmbox("assumption", definition-fill-color, base: none)
+#let axiom = rainbow-thmbox("axiom", green.darken(20%), base: none)
+#let example = rainbow-thmbox("example", example-fill-color, base: none)
+#let exercise = rainbow-thmbox("exercise", exercise-fill-color, base: none)
+#let remark = rainbow-thmbox("remark", remark-fill-color, base: none)
+#let solution = rainbow-thmbox("solution", teal.darken(10%), base: none)
+#let proof = thmproof("proof", _thm-name("proof"))
+$else$
+#let theorem = rainbow-thmbox("theorem", theorem-fill-color, base: none).with(numbering: none)
+#let lemma = rainbow-thmbox("lemma", theorem-fill-color, base: none).with(numbering: none)
+#let proposition = rainbow-thmbox("proposition", theorem-fill-color, base: none).with(numbering: none)
+#let corollary = rainbow-thmbox("corollary", theorem-fill-color, base: none).with(numbering: none)
+#let conjecture = rainbow-thmbox("conjecture", theorem-fill-color, base: none).with(numbering: none)
+#let definition = rainbow-thmbox("definition", definition-fill-color, base: none).with(numbering: none)
+#let assumption = rainbow-thmbox("assumption", definition-fill-color, base: none).with(numbering: none)
+#let axiom = rainbow-thmbox("axiom", green.darken(20%), base: none).with(numbering: none)
+#let example = rainbow-thmbox("example", example-fill-color, base: none).with(numbering: none)
+#let exercise = rainbow-thmbox("exercise", exercise-fill-color, base: none).with(numbering: none)
+#let remark = rainbow-thmbox("remark", remark-fill-color, base: none).with(numbering: none)
+#let solution = rainbow-thmbox("solution", teal.darken(10%), base: none).with(numbering: none)
+#let proof = thmproof("proof", _thm-name("proof"))
+$endif$
+
+// =============================================================================
+// Touying presentation theme (INNER — processes body first, splits into slides)
+// =============================================================================
 #show: superslides-theme.with(
   aspect-ratio: "16-9",
   $if(handout)$
@@ -334,48 +430,11 @@
     last-updated-text: "Updated:",
   $endif$
 
-  // Showybox customization (colors auto-generated from primary/secondary) ----
-  // Border and appearance settings
-  // $if(box-border-thickness)$
-  //   box-border-thickness: $box-border-thickness$,
-  // $endif$
-  // $if(box-border-radius)$
-  //   box-border-radius: $box-border-radius$,
-  // $endif$
-  // $if(box-shadow)$
-  //   box-shadow: $box-shadow$,
-  // $endif$
-
-  // // Typography settings
-  // $if(box-title-font-size)$
-  //   box-title-font-size: $box-title-font-size$,
-  // $endif$
-  // $if(box-title-font-weight)$
-  //   box-title-font-weight: "$box-title-font-weight$",
-  // $endif$
-  // $if(box-body-font-size)$
-  //   box-body-font-size: $box-body-font-size$,
-  // $endif$
-  // $if(box-body-font-weight)$
-  //   box-body-font-weight: "$box-body-font-weight$",
-  // $endif$
-
-  // // Spacing settings
-  // $if(box-spacing-above)$
-  //   box-spacing-above: $box-spacing-above$,
-  // $endif$
-  // $if(box-spacing-below)$
-  //   box-spacing-below: $box-spacing-below$,
-  // $endif$
-  // $if(box-padding)$
-  //   box-padding: $box-padding$,
-  // $endif$
-
-  // Theorem configuration (colors auto-generated from primary-color) ---------
+  // Theorem configuration (passed to theme for potential use) -----------------
   $if(theorem-package)$
     theorem-package: "$theorem-package$",
   $else$
-    theorem-package: "theorion",
+    theorem-package: "ctheorems",
   $endif$
   $if(theorem-lang)$
     theorem-lang: "$theorem-lang$",
@@ -397,215 +456,12 @@
   $endif$
 )
 
-
-
-
-// Dynamic theorem setup based on YAML - colors generated from primary-color
-
-// Determine which theorem package to use
-#let _theorem_package = "$if(theorem-package)$$theorem-package$$else$theorion$endif$"
-
-// --- ctheorems import (for fallback) ---
-#import "@preview/ctheorems:1.1.3": *
-
-// --- theorion rainbow theme import ---
-#import "@preview/theorion:0.4.1": cosmos, make-frame
-#import cosmos.rainbow: *
-
-// --- Extra framed environments not in rainbow cosmos ---
-// Rainbow only defines: theorem, lemma, corollary, definition, axiom, postulate,
-// proposition, assumption, property, conjecture.
-// We create framed versions of example, exercise, remark, solution to match.
-#let _extra-render(fill: gray, prefix: none, title: "", full-title: auto, ..args, body) = {
-  block(
-    stroke: language-aware-start(.25em + fill),
-    inset: language-aware-start(1em) + (y: .75em),
-    width: 100%,
-    ..args,
-    [
-      #if full-title != "" {
-        block(sticky: true, strong(text(fill: fill, full-title)))
-      }
-      #body
-    ],
-  )
-}
-
-#let (_example-ctr, example-box, example, _show-example) = make-frame(
-  "example",
-  (en: "Example", ca: "Exemple", de: "Beispiel", fr: "Exemple", es: "Ejemplo", it: "Esempio"),
-  counter: theorem-counter,
-  render: _extra-render.with(fill: green.darken(10%)),
-)
-
-#let (_exercise-ctr, exercise-box, exercise, _show-exercise) = make-frame(
-  "exercise",
-  (en: "Exercise", ca: "Exercici", de: "Übung", fr: "Exercice", es: "Ejercicio", it: "Esercizio"),
-  counter: theorem-counter,
-  render: _extra-render.with(fill: olive.darken(10%)),
-)
-
-#let (_remark-ctr, remark-box, remark, _show-remark) = make-frame(
-  "remark",
-  (en: "Remark", ca: "Observació", de: "Bemerkung", fr: "Remarque", es: "Observación", it: "Osservazione"),
-  counter: theorem-counter,
-  render: _extra-render.with(fill: gray.darken(20%)),
-)
-
-#let (_solution-ctr, solution-box, solution, _show-solution) = make-frame(
-  "solution",
-  (en: "Solution", ca: "Solució", de: "Lösung", fr: "Solution", es: "Solución", it: "Soluzione"),
-  counter: theorem-counter,
-  render: _extra-render.with(fill: teal.darken(10%)),
-)
-
-// Inline translations (used by ctheorems fallback)
-#let translations-variants = (
-  "theorem": ("en": "Theorem", "ca": "Teorema", "de": "Satz", "fr": "Théorème", "es": "Teorema", "it": "Teorema"),
-  "assumption": ("en": "Assumption", "ca": "Hipòtesi", "de": "Annahme", "fr": "Hypothèse", "es": "Hipótesis", "it": "Assunzione"),
-  "proposition": ("en": "Proposition", "ca": "Proposició", "de": "Proposition", "fr": "Proposition", "es": "Proposición", "it": "Proposizione"),
-  "lemma": ("en": "Lemma", "ca": "Lema", "de": "Lemma", "fr": "Lemme", "es": "Lema", "it": "Lemma"),
-  "corollary": ("en": "Corollary", "ca": "Coroŀlari", "de": "Korollar", "fr": "Corollaire", "es": "Corolario", "it": "Corollario"),
-  "definition": ("en": "Definition", "ca": "Definició", "de": "Definition", "fr": "Définition", "es": "Definición", "it": "Definizione"),
-  "example": ("en": "Example", "ca": "Exemple", "de": "Beispiel", "fr": "Exemple", "es": "Ejemplo", "it": "Esempio"),
-  "remark": ("en": "Remark", "ca": "Observació", "de": "Bemerkung", "fr": "Remarque", "es": "Observación", "it": "Osservazione"),
-  "note": ("en": "Note", "ca": "Nota", "de": "Notiz", "fr": "Note", "es": "Nota", "it": "Nota"),
-  "exercise": ("en": "Exercise", "ca": "Exercici", "de": "Übung", "fr": "Exercice", "es": "Ejercicio", "it": "Esercizio"),
-  "algorithm": ("en": "Algorithm", "ca": "Algorisme", "de": "Algorithmus", "fr": "Algorithme", "es": "Algoritmo", "it": "Algoritmo"),
-  "claim": ("en": "Claim", "ca": "Afirmació", "de": "Behauptung", "fr": "Assertion", "es": "Afirmación", "it": "Affermazione"),
-  "conjecture": ("en": "Conjecture", "ca": "Conjectura", "de": "Vermutung", "fr": "Conjecture", "es": "Conjetura", "it": "Congettura"),
-  "solution": ("en": "Solution", "ca": "Solució", "de": "Lösung", "fr": "Solution", "es": "Solución", "it": "Soluzione"),
-  "axiom": ("en": "Axiom", "ca": "Axioma", "de": "Axiom", "fr": "Axiome", "es": "Axioma", "it": "Assioma"),
-  "proof": ("en": "Proof", "ca": "Demostració", "de": "Beweis", "fr": "Démonstration", "es": "Demostración", "it": "Dimostrazione"),
-  "proof-of": ("en": "Proof of", "ca": "Demostració del", "de": "Beweis von", "fr": "Démonstration du", "es": "Demostración del", "it": "Dimostrazione di"),
-)
-
-#let translations-variant(key) = {
-  let lang-dict = translations-variants.at(key, default: key)
-  return if type(lang-dict) == str {
-    lang-dict
-  } else {
-    context lang-dict.at(text.lang, default: lang-dict.at("en", default: key))
-  }
-}
-
-#let superslides-primary = parse-color("$if(primary-color)$$primary-color$$elseif(brand.color.primary)$$brand.color.primary$$else$#333399$endif$")
-#let superslides-secondary = parse-color("$if(secondary-color)$$secondary-color$$elseif(brand.color.secondary)$$brand.color.secondary$$else$#c8102e$endif$")
-
-// Theorem fill colors (customizable via YAML, defaults to primary-color lightened)
-// Supports theme-relative values like "primary-color lightened 80%"
-#let theorem-fill-color = $if(theorem-fill)$parse-theme-color("$theorem-fill$", superslides-primary, superslides-secondary)$else$superslides-primary.lighten(80%)$endif$
-#let definition-fill-color = $if(definition-fill)$parse-theme-color("$definition-fill$", superslides-primary, superslides-secondary)$else$superslides-primary.lighten(75%)$endif$
-#let example-fill-color = $if(example-fill)$parse-theme-color("$example-fill$", superslides-primary, superslides-secondary)$else$superslides-primary.lighten(75%)$endif$
-#let remark-fill-color = $if(remark-fill)$parse-theme-color("$remark-fill$", superslides-primary, superslides-secondary)$else$superslides-primary.lighten(75%)$endif$
-
-// --- Save theorion rainbow versions before they get shadowed ---
-// Rainbow environments: theorem, lemma, proposition, corollary, conjecture,
-//                       definition, assumption (each has its own rainbow color)
-// Default environments: example, exercise, remark, solution (simpler styling)
-$if(theorem-numbering)$
-// Numbered theorion environments (default)
-#let _th_theorem = $if(theorem-fill)$theorem.with(fill: theorem-fill-color)$else$theorem$endif$
-#let _th_lemma = $if(theorem-fill)$lemma.with(fill: theorem-fill-color)$else$lemma$endif$
-#let _th_proposition = $if(theorem-fill)$proposition.with(fill: theorem-fill-color)$else$proposition$endif$
-#let _th_corollary = $if(theorem-fill)$corollary.with(fill: theorem-fill-color)$else$corollary$endif$
-#let _th_conjecture = $if(theorem-fill)$conjecture.with(fill: theorem-fill-color)$else$conjecture$endif$
-#let _th_definition = $if(definition-fill)$definition.with(fill: definition-fill-color)$else$definition$endif$
-#let _th_assumption = $if(definition-fill)$assumption.with(fill: definition-fill-color)$else$assumption$endif$
-$else$
-// Unnumbered theorion environments (use -box variants)
-#let _th_theorem = $if(theorem-fill)$theorem-box.with(fill: theorem-fill-color)$else$theorem-box$endif$
-#let _th_lemma = $if(theorem-fill)$lemma-box.with(fill: theorem-fill-color)$else$lemma-box$endif$
-#let _th_proposition = $if(theorem-fill)$proposition-box.with(fill: theorem-fill-color)$else$proposition-box$endif$
-#let _th_corollary = $if(theorem-fill)$corollary-box.with(fill: theorem-fill-color)$else$corollary-box$endif$
-#let _th_conjecture = $if(theorem-fill)$conjecture-box.with(fill: theorem-fill-color)$else$conjecture-box$endif$
-#let _th_definition = $if(definition-fill)$definition-box.with(fill: definition-fill-color)$else$definition-box$endif$
-#let _th_assumption = $if(definition-fill)$assumption-box.with(fill: definition-fill-color)$else$assumption-box$endif$
-$endif$
-// Extra framed environments (created above via make-frame)
-$if(theorem-numbering)$
-#let _th_example = $if(example-fill)$example.with(fill: example-fill-color)$else$example$endif$
-#let _th_exercise = $if(example-fill)$exercise.with(fill: example-fill-color)$else$exercise$endif$
-#let _th_remark = $if(remark-fill)$remark.with(fill: remark-fill-color)$else$remark$endif$
-#let _th_solution = $if(remark-fill)$solution.with(fill: remark-fill-color)$else$solution$endif$
-$else$
-#let _th_example = $if(example-fill)$example-box.with(fill: example-fill-color)$else$example-box$endif$
-#let _th_exercise = $if(example-fill)$exercise-box.with(fill: example-fill-color)$else$exercise-box$endif$
-#let _th_remark = $if(remark-fill)$remark-box.with(fill: remark-fill-color)$else$remark-box$endif$
-#let _th_solution = $if(remark-fill)$solution-box.with(fill: remark-fill-color)$else$solution-box$endif$
-$endif$
-
-// --- Conditional show rule ---
-#show: body => {
-  if _theorem_package == "ctheorems" {
-    {
-      show: thmrules
-      body
-    }
-  } else {
-    {
-      show: show-theorion
-      show: _show-example
-      show: _show-exercise
-      show: _show-remark
-      show: _show-solution
-      body
-    }
-  }
-}
-
-// --- ctheorems definitions (used when theorem-package == "ctheorems") ---
-$if(theorem-numbering)$
-#let _ct_theorem = thmbox("theorem", translations-variant("theorem"), fill: theorem-fill-color, base: none)
-#let _ct_lemma = thmbox("lemma", translations-variant("lemma"), fill: theorem-fill-color, base: none)
-#let _ct_proposition = thmbox("proposition", translations-variant("proposition"), fill: theorem-fill-color, base: none)
-#let _ct_corollary = thmbox("corollary", translations-variant("corollary"), fill: theorem-fill-color, base: none)
-#let _ct_conjecture = thmbox("conjecture", translations-variant("conjecture"), fill: theorem-fill-color, base: none)
-#let _ct_definition = thmbox("definition", translations-variant("definition"), fill: definition-fill-color, base: none)
-#let _ct_assumption = thmbox("assumption", translations-variant("assumption"), fill: definition-fill-color, base: none)
-#let _ct_example = thmbox("example", translations-variant("example"), fill: example-fill-color, base: none)
-#let _ct_exercise = thmbox("exercise", translations-variant("exercise"), fill: example-fill-color, base: none)
-#let _ct_remark = thmbox("remark", translations-variant("remark"), fill: remark-fill-color, base: none)
-#let _ct_solution = thmbox("solution", translations-variant("solution"), fill: remark-fill-color, base: none)
-$else$
-#let _ct_theorem = thmbox("theorem", translations-variant("theorem"), fill: theorem-fill-color).with(numbering: none)
-#let _ct_lemma = thmbox("lemma", translations-variant("lemma"), fill: theorem-fill-color).with(numbering: none)
-#let _ct_proposition = thmbox("proposition", translations-variant("proposition"), fill: theorem-fill-color).with(numbering: none)
-#let _ct_corollary = thmbox("corollary", translations-variant("corollary"), fill: theorem-fill-color).with(numbering: none)
-#let _ct_conjecture = thmbox("conjecture", translations-variant("conjecture"), fill: theorem-fill-color).with(numbering: none)
-#let _ct_definition = thmbox("definition", translations-variant("definition"), fill: definition-fill-color).with(numbering: none)
-#let _ct_assumption = thmbox("assumption", translations-variant("assumption"), fill: definition-fill-color).with(numbering: none)
-#let _ct_example = thmbox("example", translations-variant("example"), fill: example-fill-color).with(numbering: none)
-#let _ct_exercise = thmbox("exercise", translations-variant("exercise"), fill: example-fill-color).with(numbering: none)
-#let _ct_remark = thmbox("remark", translations-variant("remark"), fill: remark-fill-color).with(numbering: none)
-#let _ct_solution = thmbox("solution", translations-variant("solution"), fill: remark-fill-color).with(numbering: none)
-$endif$
-
-// --- Final bindings: select based on theorem package ---
-#let theorem = if _theorem_package == "ctheorems" { _ct_theorem } else { _th_theorem }
-#let lemma = if _theorem_package == "ctheorems" { _ct_lemma } else { _th_lemma }
-#let proposition = if _theorem_package == "ctheorems" { _ct_proposition } else { _th_proposition }
-#let corollary = if _theorem_package == "ctheorems" { _ct_corollary } else { _th_corollary }
-#let conjecture = if _theorem_package == "ctheorems" { _ct_conjecture } else { _th_conjecture }
-#let definition = if _theorem_package == "ctheorems" { _ct_definition } else { _th_definition }
-#let assumption = if _theorem_package == "ctheorems" { _ct_assumption } else { _th_assumption }
-#let example = if _theorem_package == "ctheorems" { _ct_example } else { _th_example }
-#let exercise = if _theorem_package == "ctheorems" { _ct_exercise } else { _th_exercise }
-#let remark = if _theorem_package == "ctheorems" { _ct_remark } else { _th_remark }
-#let solution = if _theorem_package == "ctheorems" { _ct_solution } else { _th_solution }
-
-
-
 // When zebraw is active, neutralize Quarto's default raw block styling
-// (from definitions.typ: set block(fill: luma(230), inset: 8pt, ...))
-// which adds padding and fill inside zebraw's grid cells causing white lines
 $if(use-zebraw)$
 #show raw.where(block: true): set block(fill: none, inset: 0pt, radius: 0pt, width: auto)
 $endif$
 
 // Enable equation numbering only for labeled equations.
-// The .where(numbering: "(1)") guard prevents recursion: reconstructed equations
-// with numbering: none do not match this rule, so no infinite loop.
 #set math.equation(numbering: "(1)")
 #show math.equation.where(numbering: "(1)"): it => {
   if it.has("label") { it }
@@ -614,9 +470,6 @@ $endif$
 
 #set table(
   stroke: none,
-  // fill: (x, y) =>
-  //   if calc.odd(x) and y>0 { luma(240) }
-  //   else { white },
   row-gutter: 0.0em,
   inset: (right: 1.5em),
 )
