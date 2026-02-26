@@ -5,13 +5,13 @@
 #
 # Sapienza Core Colors (from official PPT template):
 #   - Sapienza Red:  #822433 - Primary institutional color (Pantone 222)
-#   - Dark Crimson:  #830022 - Accent variant
+#   - Sapienza Blue: #006778 - Blue
 #   - Dark Text:     #040404 - Body text
 #   - White:         #FFFFFF - Clean backgrounds
 #
 # Sapienza Typography:
 #   - Body: Roboto
-#   - Headings: Oswald
+#   - Headings: Relway
 # =============================================================================
 
 format:
@@ -23,33 +23,32 @@ format:
     handout: false
     lang: "it"
     header: ""
-    footer: "Econometria"
+    footer: "Econometria 2026"
 
     # -------------------------------------------------------------------------
     # Color System - Sapienza Palette
     # -------------------------------------------------------------------------
     text-color: "#040404"
-    primary-color: "#822433" # Sapienza Red
-    secondary-color: "#006778" # Dark crimson accent
+    secondary-color: "#822433" # Sapienza Red
+    primary-color: "#006778" # Dark crimson accent
     background-color: "#FFFFFF"
     email-color: "#822433"
-
     # -------------------------------------------------------------------------
     # Typography - Body Text
     # -------------------------------------------------------------------------
-    font-size: 20pt
-    font-family-body: "Roboto"
+    font-size: 19pt
+    font-family-body: "Libertinus Serif"
     font-weight-body: "regular"
     font-family-math: "New Computer Modern"
-    strong-weight: "medium"
+    strong-weight: "bold"
 
     # -------------------------------------------------------------------------
     # Typography - Headings
     # -------------------------------------------------------------------------
     font-size-heading: 1.75em
-    font-family-heading: "Raleway"
+    font-family-heading: "Libertinus Serif"
     font-weight-heading: "medium"
-    font-color-heading: "#822433" # Sapienza Red
+    font-color-heading: "#006778"
     heading-inset-top: 6em
     heading-inset-bottom: 5.5em
     # -------------------------------------------------------------------------
@@ -57,44 +56,42 @@ format:
     # -------------------------------------------------------------------------
     # Title
     font-size-title: 2em
-    font-family-title: "Roboto"
+    font-family-title: "Libertinus Serif"
     font-weight-title: "regular"
-    font-color-title: "#822433" # Sapienza Red
-
+    font-color-title: "#830022"
     # Subtitle
     font-size-subtitle: 1.6em
-    font-family-subtitle: "Roboto"
+    font-family-subtitle: "Libertinus Serif"
     font-weight-subtitle: "regular"
     font-style-subtitle: "italic"
     font-color-subtitle: "#040404"
 
     # Author
-    font-family-author: "Roboto"
+    font-family-author: "Libertinus Serif"
     font-size-author: 1.2em
     font-weight-author: "medium"
     font-color-author: "#040404"
 
     # Affiliation
-    font-family-affiliation: "Roboto"
+    font-family-affiliation: "Libertinus Serif"
     font-size-affiliation: 1em
     font-weight-affiliation: "regular"
     font-style-affiliation: "italic"
     font-color-affiliation: "#040404"
 
     # Email
-    font-family-email: "Roboto"
+    font-family-email: "Libertinus Serif"
     font-size-email: 0.8em
     font-weight-email: "regular"
     font-style-email: "italic"
     font-color-email: "#822433" # Sapienza Red
 
     # Date
-    font-family-date: "Roboto"
+    font-family-date: "Libertinus Serif"
     font-size-date: 1em
     font-weight-date: "medium"
     font-style-date: "normal"
     font-color-date: "#040404"
-
     # -------------------------------------------------------------------------
     # Code Blocks & Inline Code
     # -------------------------------------------------------------------------
@@ -130,16 +127,16 @@ format:
     # -------------------------------------------------------------------------
     # Emphasis Styling
     # -------------------------------------------------------------------------
-    emph-color: "#822433" # Sapienza Red
-    emph-weight: "medium"
+    # _emphasis_ → orange, italic
+    emph-color: "#E67E00"
+    emph-weight: "regular"
+    emph-style: "italic"
+    # **_bold emphasis_** → orange, bold
     bold-emph-weight: "bold"
-    emph-style: "normal"
 
     # -------------------------------------------------------------------------
     # Theorem System
     # -------------------------------------------------------------------------
-    theorem-package: "theorion"
-    theorem-lang: "it"
     theorem-numbering: true
     theorem-fill: "#C79900"
     definition-fill: "#C54C00"

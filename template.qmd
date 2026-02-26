@@ -703,3 +703,39 @@ This is simplebox
 This is simplebox
 
 :::
+
+# Image Slides
+
+## Full-Bleed Background Images
+
+Use `image-slide` for cinematic, full-bleed background image slides.
+
+This is useful for title cards, photo slides, or dramatic visual breaks.
+
+The function is available in raw Typst blocks:
+
+```
+{=typst}
+#image-slide(background: image("photo.jpg"))[
+  #place(top + left)[Your overlay text here]
+]
+```
+
+Parameters:
+
+- `background` — a Typst `image(...)` call
+- `text-color` — optional color override (defaults to white)
+
+## Image Slide Example
+
+```{=typst}
+#image-slide(background: rect(width: 100%, height: 100%, fill: gradient.linear(rgb("#1a1a2e"), rgb("#16213e"), rgb("#0f3460"))))[
+  #place(horizon + center)[
+    #text(size: 1.5em, weight: "bold")[Image Slide Demo]
+
+    #v(0.5em)
+
+    #text(size: 0.8em)[Replace the gradient with `image("your-photo.jpg")` for a full-bleed background]
+  ]
+]
+```
