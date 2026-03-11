@@ -34,7 +34,7 @@ local id_prefix_map = {
 }
 
 -- Detect theorem package from document metadata
-local theorem_package = "theorion"  -- default
+local theorem_package = "ctheorems"  -- default (superslides uses ctheorems)
 
 local function readMeta(meta)
     if meta["theorem-package"] then

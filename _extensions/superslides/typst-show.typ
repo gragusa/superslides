@@ -77,7 +77,8 @@ $endif$
   inset: (left: 1em, top: 0.75em, bottom: 0.75em, right: 1em),
   radius: 0em,
   padding: (top: 0.3em, bottom: 0.3em),
-  titlefmt: title => strong(text(fill: color, title)),
+  titlefmt: title => text(fill: color, title),
+  namefmt: name => text(fill: color, [(#name)]),
   separator: [\ ],
   base: base,
   base_level: base_level,
@@ -104,33 +105,46 @@ $endif$
 #let _clr-solution    = teal.darken(10%)
 
 // --- Theorem environments (rainbow-styled via ctheorems) ---
+// Quarto's cross-ref system calls theorems with `title:` as a named parameter,
+// but ctheorems treats `title:` as replacing the head entirely.
+// This wrapper converts `title:` into a positional arg (the "name" in parentheses).
+#let _quarto-compat(raw-fn) = {
+  (title: auto, ..args, body) => {
+    if title != auto {
+      raw-fn(title, ..args, body)
+    } else {
+      raw-fn(..args, body)
+    }
+  }
+}
+
 $if(theorem-numbering)$
-#let theorem     = rainbow-thmbox("theorem",     _clr-theorem,     base: none)
-#let lemma       = rainbow-thmbox("lemma",       _clr-lemma,       base: none)
-#let proposition = rainbow-thmbox("proposition", _clr-proposition, base: none)
-#let corollary   = rainbow-thmbox("corollary",   _clr-corollary,   base: none)
-#let conjecture  = rainbow-thmbox("conjecture",  _clr-conjecture,  base: none)
-#let definition  = rainbow-thmbox("definition",  _clr-definition,  base: none)
-#let assumption  = rainbow-thmbox("assumption",  _clr-assumption,  base: none)
-#let axiom       = rainbow-thmbox("axiom",       _clr-axiom,       base: none)
-#let example     = rainbow-thmbox("example",     _clr-example,     base: none)
-#let exercise    = rainbow-thmbox("exercise",    _clr-exercise,    base: none)
-#let remark      = rainbow-thmbox("remark",      _clr-remark,      base: none)
-#let solution    = rainbow-thmbox("solution",    _clr-solution,    base: none)
+#let theorem     = _quarto-compat(rainbow-thmbox("theorem",     _clr-theorem,     base: none))
+#let lemma       = _quarto-compat(rainbow-thmbox("lemma",       _clr-lemma,       base: none))
+#let proposition = _quarto-compat(rainbow-thmbox("proposition", _clr-proposition, base: none))
+#let corollary   = _quarto-compat(rainbow-thmbox("corollary",   _clr-corollary,   base: none))
+#let conjecture  = _quarto-compat(rainbow-thmbox("conjecture",  _clr-conjecture,  base: none))
+#let definition  = _quarto-compat(rainbow-thmbox("definition",  _clr-definition,  base: none))
+#let assumption  = _quarto-compat(rainbow-thmbox("assumption",  _clr-assumption,  base: none))
+#let axiom       = _quarto-compat(rainbow-thmbox("axiom",       _clr-axiom,       base: none))
+#let example     = _quarto-compat(rainbow-thmbox("example",     _clr-example,     base: none))
+#let exercise    = _quarto-compat(rainbow-thmbox("exercise",    _clr-exercise,    base: none))
+#let remark      = _quarto-compat(rainbow-thmbox("remark",      _clr-remark,      base: none))
+#let solution    = _quarto-compat(rainbow-thmbox("solution",    _clr-solution,    base: none))
 #let proof       = thmproof("proof", _thm-name("proof"))
 $else$
-#let theorem     = rainbow-thmbox("theorem",     _clr-theorem,     base: none).with(numbering: none)
-#let lemma       = rainbow-thmbox("lemma",       _clr-lemma,       base: none).with(numbering: none)
-#let proposition = rainbow-thmbox("proposition", _clr-proposition, base: none).with(numbering: none)
-#let corollary   = rainbow-thmbox("corollary",   _clr-corollary,   base: none).with(numbering: none)
-#let conjecture  = rainbow-thmbox("conjecture",  _clr-conjecture,  base: none).with(numbering: none)
-#let definition  = rainbow-thmbox("definition",  _clr-definition,  base: none).with(numbering: none)
-#let assumption  = rainbow-thmbox("assumption",  _clr-assumption,  base: none).with(numbering: none)
-#let axiom       = rainbow-thmbox("axiom",       _clr-axiom,       base: none).with(numbering: none)
-#let example     = rainbow-thmbox("example",     _clr-example,     base: none).with(numbering: none)
-#let exercise    = rainbow-thmbox("exercise",    _clr-exercise,    base: none).with(numbering: none)
-#let remark      = rainbow-thmbox("remark",      _clr-remark,      base: none).with(numbering: none)
-#let solution    = rainbow-thmbox("solution",    _clr-solution,    base: none).with(numbering: none)
+#let theorem     = _quarto-compat(rainbow-thmbox("theorem",     _clr-theorem,     base: none).with(numbering: none))
+#let lemma       = _quarto-compat(rainbow-thmbox("lemma",       _clr-lemma,       base: none).with(numbering: none))
+#let proposition = _quarto-compat(rainbow-thmbox("proposition", _clr-proposition, base: none).with(numbering: none))
+#let corollary   = _quarto-compat(rainbow-thmbox("corollary",   _clr-corollary,   base: none).with(numbering: none))
+#let conjecture  = _quarto-compat(rainbow-thmbox("conjecture",  _clr-conjecture,  base: none).with(numbering: none))
+#let definition  = _quarto-compat(rainbow-thmbox("definition",  _clr-definition,  base: none).with(numbering: none))
+#let assumption  = _quarto-compat(rainbow-thmbox("assumption",  _clr-assumption,  base: none).with(numbering: none))
+#let axiom       = _quarto-compat(rainbow-thmbox("axiom",       _clr-axiom,       base: none).with(numbering: none))
+#let example     = _quarto-compat(rainbow-thmbox("example",     _clr-example,     base: none).with(numbering: none))
+#let exercise    = _quarto-compat(rainbow-thmbox("exercise",    _clr-exercise,    base: none).with(numbering: none))
+#let remark      = _quarto-compat(rainbow-thmbox("remark",      _clr-remark,      base: none).with(numbering: none))
+#let solution    = _quarto-compat(rainbow-thmbox("solution",    _clr-solution,    base: none).with(numbering: none))
 #let proof       = thmproof("proof", _thm-name("proof"))
 $endif$
 
