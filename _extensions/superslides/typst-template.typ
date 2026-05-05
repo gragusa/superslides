@@ -2,7 +2,7 @@
 #import "@preview/fontawesome:0.6.0": *
 #import "@preview/cades:0.3.1": qr-code
 #import "@preview/mitex:0.2.6": *
-#import "@preview/theorion:0.4.1": *
+#import "@preview/ctheorems:1.1.3": *
 #import "@preview/colorful-boxes:1.4.3": *
 #import "@preview/showybox:2.0.4": showybox
 #import "@preview/zebraw:0.6.1": *
@@ -307,7 +307,7 @@
   // box-padding: 8pt,
 
   // Theorem system configuration (colors auto-generated from primary-color)
-  theorem-package: "theorion",  // "ctheorems" or "theorion"
+  theorem-package: "ctheorems",
   theorem-lang: "en",  // "en" or "it"
   theorem-numbering: true,
 

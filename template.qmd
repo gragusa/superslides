@@ -50,6 +50,20 @@ Standard markdown formatting works as expected:
   - [alert]{.alert} (`[alert]{.alert}`)
   - [strong]{.strong} (`[strong]{.strong}`)
 
+## Mathemathics
+
+Superslides allows using a specific mathematical notation:
+
+For instance: `\E*{Y_t} = \Eb*{\CE*{Y_t \given \calI_t}}` is rendered as:
+
+
+
+$$
+\E*{Y_t} = \Eb*{\CE*{Y_t \given \calI_t}}
+$$
+
+
+
 ## Code Blocks
 
 ```{r}

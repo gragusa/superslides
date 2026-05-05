@@ -148,6 +148,8 @@ $else$
 #let proof       = thmproof("proof", _thm-name("proof"))
 $endif$
 
+#show: thmrules
+
 // =============================================================================
 // Touying presentation theme (INNER — processes body first, splits into slides)
 // =============================================================================
