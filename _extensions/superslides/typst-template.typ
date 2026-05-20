@@ -1,7 +1,7 @@
-#import "@preview/touying:0.6.1": *
+#import "@preview/touying:0.7.3": *
 #import "@preview/fontawesome:0.6.0": *
 #import "@preview/cades:0.3.1": qr-code
-#import "@preview/mitex:0.2.6": *
+#import "@preview/mitex:0.2.7": *
 #import "@preview/ctheorems:1.1.3": *
 #import "@preview/colorful-boxes:1.4.3": *
 #import "@preview/showybox:2.0.4": showybox
